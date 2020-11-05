@@ -1,0 +1,9 @@
+{
+    "diagnostic.errorSign": "✖",
+    "diagnostic.warningSign": "‼",
+    "snippets.ultisnips.directories": [
+        "UltiSnips",
+        "myUltiSnips"
+    ],
+    "python.jediEnabled": false
+}
