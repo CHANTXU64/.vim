@@ -25,35 +25,9 @@ function! EasyMotion#init()
     call EasyMotion#highlight#load()
     " Store previous motion info
     let s:previous = {}
-    " Store previous operator-pending motion info for '.' repeat
-    let s:dot_repeat = {}
-    " Prepare 1-key Migemo Dictionary
-    let s:migemo_dicts = {}
     let s:EasyMotion_is_active = 0
     call EasyMotion#reset()
-    " Anywhere regular expression: {{{
-    let re = '\v' .
-        \    '(<.|^$)' . '|' .
-        \    '(.>|^$)' . '|' .
-        \    '(\l)\zs(\u)' . '|' .
-        \    '(_\zs.)' . '|' .
-        \    '(#\zs.)'
-    " 1. word
-    " 2. end of word
-    " 3. CamelCase
-    " 4. after '_' hoge_foo
-    " 5. after '#' hoge#foo
-    let g:EasyMotion_re_anywhere = get(g:, 'EasyMotion_re_anywhere', re)
 
-    " Anywhere regular expression within line:
-    let re = '\v' .
-        \    '(<.|^$)' . '|' .
-        \    '(.>|^$)' . '|' .
-        \    '(\l)\zs(\u)' . '|' .
-        \    '(_\zs.)' . '|' .
-        \    '(#\zs.)'
-    let g:EasyMotion_re_line_anywhere = get(g:, 'EasyMotion_re_line_anywhere', re)
-    "}}}
     " For other plugin
     let s:EasyMotion_is_cancelled = 0
     " 0 -> Success
@@ -66,12 +40,10 @@ endfunction
 function! EasyMotion#reset()
     let s:flag = {
         \ 'within_line' : 0,
-        \ 'dot_repeat' : 0,
         \ 'regexp' : 0,
         \ 'bd_t' : 0,
         \ 'find_bd' : 0,
         \ 'linewise' : 0,
-        \ 'count_dot_repeat' : 0,
         \ }
         " regexp: -> regular expression
         "   This value is used when multi input find motion. If this values is
@@ -83,17 +55,12 @@ function! EasyMotion#reset()
         "   This value is used to recheck the motion is inclusive or exclusive
         "   because 'f' & 't' forward find motion is inclusive, but 'F' & 'T'
         "   backward find motion is exclusive
-        " count_dot_repeat: -> dot repeat with count
-        "   https://github.com/easymotion/vim-easymotion/issues/164
     let s:current = {
         \ 'is_operator' : 0,
         \ 'is_search' : 0,
-        \ 'dot_repeat_target_cnt' : 0,
         \ 'dot_prompt_user_cnt' : 0,
         \ 'changedtick' : 0,
         \ }
-        " \ 'start_position' : [],
-        " \ 'cursor_position' : [],
 
         " is_operator:
         "   Store is_operator value first because mode(1) value will be
@@ -108,11 +75,6 @@ function! EasyMotion#reset()
         "   which will change b:changedtick value. To overwrite g:repeat_tick
         "   value(defined tpope/vim-repeat), I can avoid this side effect of
         "   conflicting with tpope/vim-repeat
-        " start_position:
-        "   Original, start cursor position.
-        " cursor_position:
-        "   Usually, this values is same with start_position, but in
-        "   visualmode and 'n' key motion, this value could be different.
     return ""
 endfunction "}}}
 
@@ -149,20 +111,6 @@ endfunction
 
 " Helper Functions: {{{
 " -- Message -----------------------------
-function! s:Message(message) " {{{
-    if g:EasyMotion_verbose
-        echo 'EasyMotion: ' . a:message
-    else
-        " Make the current message disappear
-        echo ''
-        " redraw
-    endif
-endfunction " }}}
-function! s:Prompt(message) " {{{
-    echohl Question
-    echo a:message . ': '
-    echohl None
-endfunction " }}}
 function! s:Throw(message) "{{{
     throw 'EasyMotion: ' . a:message
 endfunction "}}}
@@ -213,7 +161,6 @@ function! s:GetChar(...) abort "{{{
         if char == 27 || char == 3
             " Escape or <C-c> key pressed
             redraw
-            call s:Message('Cancelled')
             return ''
         endif
         " Workaround for the <expr> mappings
@@ -294,101 +241,37 @@ function! s:restore_cursor_state(visualmode) "{{{
         keepjumps call cursor(s:current.original_position)
     endif
 endfunction " }}}
-" Grouping Algorithms: {{{
-let s:grouping_algorithms = {
-\   1: 'SCTree'
-\ }
-" -- Single-key/closest target priority tree {{{
-" This algorithm tries to assign one-key jumps to all the targets closest to the cursor.
-" It works recursively and will work correctly with as few keys as two.
-function! s:GroupingAlgorithmSCTree(targets, keys) "{{{
-    " Prepare variables for working
+
+function! s:GroupingAlgorithmOriginal(targets, keys)
+    " Split targets into groups (1 level)
     let targets_len = len(a:targets)
-    let keys_len = len(a:keys)
+    " let keys_len = len(a:keys)
 
     let groups = {}
 
-    let keys = reverse(copy(a:keys))
+    let i = 0
+    let root_group = 0
+    try
+        while root_group < targets_len
+            let groups[a:keys[root_group]] = {}
 
-    " Semi-recursively count targets {{{
-        " We need to know exactly how many child nodes (targets) this branch will have
-        " in order to pass the correct amount of targets to the recursive function.
-
-        " Prepare sorted target count list {{{
-            " This is horrible, I know. But dicts aren't sorted in vim, so we need to
-            " work around that. That is done by having one sorted list with key counts,
-            " and a dict which connects the key with the keys_count list.
-
-            let keys_count = []
-            let keys_count_keys = {}
-
-            let i = 0
-            for key in keys
-                call add(keys_count, 0)
-
-                let keys_count_keys[key] = i
-
-                let i += 1
-            endfor
-        " }}}
-
-        let targets_left = targets_len
-        let level = 0
-        let i = 0
-
-        while targets_left > 0
-            " Calculate the amount of child nodes based on the current level
-            let childs_len = (level == 0 ? 1 : (keys_len - 1) )
-
-            for key in keys
-                " Add child node count to the keys_count array
-                let keys_count[keys_count_keys[key]] += childs_len
-
-                " Subtract the child node count
-                let targets_left -= childs_len
-
-                if targets_left <= 0
-                    " Subtract the targets left if we added too many too
-                    " many child nodes to the key count
-                    let keys_count[keys_count_keys[key]] += targets_left
-
-                    break
-                endif
+            for key in a:keys
+                let groups[a:keys[root_group]][key] = a:targets[i]
 
                 let i += 1
             endfor
 
-            let level += 1
+            let root_group += 1
         endwhile
-    " }}}
-    " Create group tree {{{
-        let i = 0
-        let key = 0
+    catch | endtry
 
-        call reverse(keys_count)
+    " Flatten the group array
+    if len(groups) == 1
+        let groups = groups[a:keys[0]]
+    endif
 
-        for key_count in keys_count
-            if key_count > 1
-                " We need to create a subgroup
-                " Recurse one level deeper
-                let groups[a:keys[key]] = s:GroupingAlgorithmSCTree(a:targets[i : i + key_count - 1], a:keys)
-            elseif key_count == 1
-                " Assign single target key
-                let groups[a:keys[key]] = a:targets[i]
-            else
-                " No target
-                continue
-            endif
-
-            let key += 1
-            let i += key_count
-        endfor
-    " }}}
-
-    " Finally!
     return groups
-endfunction "}}}
-" }}}
+endfunction
 
 " -- Coord/key dictionary creation ------- {{{
 function! s:CreateCoordKeyDict(groups, ...)
@@ -430,7 +313,6 @@ function! s:CreateCoordKeyDict(groups, ...)
     return [sort_list, coord_keys]
 endfunction
 " }}}
-" }}}
 "}}}
 " Core Functions: {{{
 function! s:PromptUser(groups) "{{{
@@ -439,11 +321,6 @@ function! s:PromptUser(groups) "{{{
 
     " -- If only one possible match, jump directly to it {{{
     if len(group_values) == 1
-        if mode(1) ==# 'no'
-            " Consider jump to first match
-            " NOTE: matchstr() handles multibyte characters.
-            let s:dot_repeat['target'] = matchstr(g:EasyMotion_keys, '^.')
-        endif
         redraw
         return group_values[0]
     endif
@@ -486,8 +363,7 @@ function! s:PromptUser(groups) "{{{
         " Replace {target} with {marker} & Highlight {{{
         let col_add = 0 " Column add byte length
         " Disable two-key-combo feature?
-        let marker_max_length = g:EasyMotion_disable_two_key_combo == 1
-                                \ ? 1 : 2
+        let marker_max_length = 2
         for i in range(min([marker_chars_len, marker_max_length]))
             let marker_char = split(marker_chars, '\zs')[i]
             " EOL {{{
@@ -547,25 +423,12 @@ function! s:PromptUser(groups) "{{{
         redraw "}}}
 
         " Get target character {{{
-        call s:Prompt('Target key')
         let char = s:GetChar()
         "}}}
 
         " Convert uppercase {{{
         if g:EasyMotion_use_upper == 1 && match(g:EasyMotion_keys, '\l') == -1
             let char = toupper(char)
-        endif "}}}
-
-        " Jump first target when Enter or Space key is pressed "{{{
-        if (char ==# "\<CR>" && g:EasyMotion_enter_jump_first == 1) ||
-        \  (char ==# "\<Space>" && g:EasyMotion_space_jump_first == 1)
-            " NOTE: matchstr() is multibyte aware.
-            let char = matchstr(g:EasyMotion_keys, '^.')
-        endif "}}}
-
-        " For dot repeat {{{
-        if mode(1) ==# 'no'
-            let s:dot_repeat['target'] = char
         endif "}}}
 
     finally
@@ -676,14 +539,6 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
         endif
         "}}}
 
-        " Handle dot repeat with count
-        if s:flag.count_dot_repeat
-            let cursor_char = EasyMotion#helper#get_char_by_coord(s:current.cursor_position)
-            if cursor_char =~# regexp
-                call add(targets, s:current.cursor_position)
-            endif
-        endif
-
         let pos = searchpos(regexp, search_direction . (config.accept_cursor_pos ? 'c' : ''), search_stopline)
         while 1
             " Reached end of search range
@@ -705,7 +560,6 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
             "}}}
             let pos = searchpos(regexp, search_direction, search_stopline)
         endwhile
-        "}}}
 
         " Handle bidirection "{{{
         " For bi-directional t motion {{{
@@ -771,35 +625,7 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
         "}}}
 
         " Attach specific key as marker to gathered matched coordinates
-        let g:chant = g:EasyMotion_grouping
-        let GroupingFn = function('s:GroupingAlgorithm' . s:grouping_algorithms[g:EasyMotion_grouping])
-        let groups = GroupingFn(targets, split(g:EasyMotion_keys, '\zs'))
-
-        " -- Shade inactive source --------------- {{{
-        if g:EasyMotion_do_shade && targets_len != 1 && s:flag.dot_repeat != 1
-            if a:direction == 1 " Backward
-                let shade_hl_re = s:flag.within_line
-                                \ ? '^.*\%#'
-                                \ : '\%'. win_first_line .'l\_.*\%#'
-            elseif a:direction == 0 " Forward
-                let shade_hl_re = s:flag.within_line
-                                \ ? '\%#.*$'
-                                \ : '\%#\_.*\%'. win_last_line .'l'
-            else " Both directions
-                let shade_hl_re = s:flag.within_line
-                                \ ? '^.*\%#.*$'
-                                \ : '\_.*'
-            endif
-
-            call EasyMotion#highlight#add_highlight(
-                \ shade_hl_re, g:EasyMotion_hl_group_shade)
-            if g:EasyMotion_cursor_highlight
-                let cursor_hl_re = '\%#'
-                call EasyMotion#highlight#add_highlight(cursor_hl_re,
-                    \ g:EasyMotion_hl_inc_cursor)
-            endif
-        endif
-        " }}}
+        let groups = s:GroupingAlgorithmOriginal(targets, split(g:EasyMotion_keys, '\zs'))
 
         if ! empty(a:visualmode)
             keepjumps call winrestview({'lnum' : s:current.cursor_position[0], 'topline' : win_first_line})
@@ -807,7 +633,6 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
             " for adjusting cursorline
             keepjumps call cursor(s:current.cursor_position)
         endif
-        "}}}
 
         " -- Prompt user for target group/character {{{
         let coords = s:PromptUser(groups)
@@ -841,106 +666,44 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
             let true_direction = a:direction
         endif
 
-        if s:flag.dot_repeat == 1
-            " support dot repeat {{{
-            " Use visual mode to emulate dot repeat
+        " Handle inclusive & exclusive {{{
+        " Overwrite inclusive flag for special case {{{
+        if s:flag.find_bd == 1 && true_direction == 1
+            " Note: For bi-directional find motion s(f) & t
+            " If true_direction is backward, the motion is 'exclusive'
+            let is_inclusive_check = 0 " overwrite
+            let s:previous.is_inclusive = 0 " overwrite
+        endif "}}}
+        if is_inclusive_check
             normal! v
+        endif " }}}
 
-            " Deal with exclusive {{{
-            if s:dot_repeat.is_inclusive == 0
-                " exclusive
-                if s:dot_repeat.true_direction == 0 "Forward
-                    let coords[1] -= 1
-                elseif s:dot_repeat.true_direction == 1 "Backward
-                    " Shift visual selection to left by making cursor one key
-                    " left.
-                    normal! hoh
-                endif
-            endif "}}}
-
-            " Jump to destination
-            keepjumps call cursor(coords[0], coords[1])
-
-            " Execute previous operator
-            let cmd = s:dot_repeat.operator
-            if s:dot_repeat.operator ==# 'c'
-                let cmd .= getreg('.')
-            endif
-            exec 'normal! ' . cmd
-            "}}}
-        else
-            " Handle inclusive & exclusive {{{
-            " Overwrite inclusive flag for special case {{{
-            if s:flag.find_bd == 1 && true_direction == 1
-                " Note: For bi-directional find motion s(f) & t
-                " If true_direction is backward, the motion is 'exclusive'
-                let is_inclusive_check = 0 " overwrite
-                let s:previous.is_inclusive = 0 " overwrite
-            endif "}}}
-            if is_inclusive_check
-                normal! v
-            endif " }}}
-
-            if s:current.is_operator && s:flag.linewise
-                " TODO: Is there better solution?
-                " Maike it linewise
-                normal! V
-            endif
-
-            " Adjust screen especially for visual scroll & offscreen search {{{
-            " Otherwise, cursor line will move middle line of window
-            keepjumps call winrestview({'lnum' : win_first_line, 'topline' : win_first_line})
-
-            " Jump to destination
-            keepjumps call cursor(coords[0], coords[1])
-
-            " To avoid side effect of overwriting buffer {{{
-            " for tpope/vim-repeat
-            " See: :h b:changedtick
-            if exists('g:repeat_tick')
-                if g:repeat_tick == s:current.changedtick
-                    let g:repeat_tick = b:changedtick
-                endif
-            endif "}}}
+        if s:current.is_operator && s:flag.linewise
+            " TODO: Is there better solution?
+            " Maike it linewise
+            normal! V
         endif
 
-        " Set tpope/vim-repeat {{{
-        if s:current.is_operator == 1 &&
-                \ !(v:operator ==# 'y' && match(&cpo, 'y') == -1)
-            " Store previous info for dot repeat {{{
-            let s:dot_repeat.regexp = a:regexp
-            let s:dot_repeat.direction = a:direction
-            let s:dot_repeat.line_flag = s:flag.within_line
-            let s:dot_repeat.is_inclusive = is_inclusive_check
-            let s:dot_repeat.operator = v:operator
-            let s:dot_repeat.bd_t_flag = s:flag.bd_t " Bidirectional t motion
-            let s:dot_repeat.true_direction = true_direction " Check inclusive
-            "}}}
-            silent! call repeat#set("\<Plug>(easymotion-dotrepeat)")
+        " Adjust screen especially for visual scroll & offscreen search {{{
+        " Otherwise, cursor line will move middle line of window
+        keepjumps call winrestview({'lnum' : win_first_line, 'topline' : win_first_line})
+
+        " Jump to destination
+        keepjumps call cursor(coords[0], coords[1])
+
+        " To avoid side effect of overwriting buffer {{{
+        " for tpope/vim-repeat
+        " See: :h b:changedtick
+        if exists('g:repeat_tick')
+            if g:repeat_tick == s:current.changedtick
+                let g:repeat_tick = b:changedtick
+            endif
         endif "}}}
 
-        " Highlight all the matches by n-key find motions {{{
-        if s:current.is_search == 1 && s:current.is_operator == 0 && g:EasyMotion_add_search_history
-            " It seems let &hlsearch=&hlsearch doesn't work when called
-            " in script, so use :h feedkeys() instead.
-            " Ref: :h v:hlsearch
-            " FIXME: doesn't work with `c` operator
-            call EasyMotion#helper#silent_feedkeys(
-                                    \ ":let &hlsearch=&hlsearch\<CR>",
-                                    \ 'hlsearch', 'n')
-        endif "}}}
-
-        call s:Message('Jumping to [' . coords[0] . ', ' . coords[1] . ']')
         let s:EasyMotion_is_cancelled = 0 " Success
         "}}}
     catch /^EasyMotion:.*/
         redraw
-
-        " Show exception message
-        " The verbose option will take precedence
-        if g:EasyMotion_verbose == 1 && g:EasyMotion_ignore_exception != 1
-            echo v:exception
-        endif
 
         let s:previous['regexp'] = a:regexp
         " -- Activate EasyMotion ----------------- {{{
@@ -950,7 +713,6 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
         call s:restore_cursor_state(a:visualmode)
         let s:EasyMotion_is_cancelled = 1 " Cancel
     catch
-        call s:Message(v:exception . ' : ' . v:throwpoint)
         call s:restore_cursor_state(a:visualmode)
         let s:EasyMotion_is_cancelled = 1 " Cancel
     finally
@@ -964,19 +726,12 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
         " }}}
 
         if s:EasyMotion_is_cancelled == 0 " Success
-            " -- Landing Highlight ------------------- {{{
-            if g:EasyMotion_landing_highlight
-                call EasyMotion#highlight#add_highlight(a:regexp,
-                                                      \ g:EasyMotion_hl_move)
-                call EasyMotion#highlight#attach_autocmd()
-            endif "}}}
             " -- Activate EasyMotion ----------------- {{{
             let s:EasyMotion_is_active = 1
             call EasyMotion#attach_active_autocmd() "}}}
         endif
     endtry
 endfunction " }}}
-"}}}
 " }}}
 
 call EasyMotion#init()
