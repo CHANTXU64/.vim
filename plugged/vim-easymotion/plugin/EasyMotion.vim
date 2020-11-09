@@ -22,7 +22,7 @@ set cpo&vim
 
 " == Default configuration {{{
 let g:EasyMotion_keys               = get(g: , 'EasyMotion_keys', 'AOEUHTNS')
-let g:EasyMotion_startofline        = get(g: , 'EasyMotion_startofline'        , 1)
+let g:EasyMotion_startofline        = get(g: , 'EasyMotion_startofline'        , 0)
 let g:EasyMotion_skipfoldedline     = get(g: , 'EasyMotion_skipfoldedline'     , 1)
 let g:EasyMotion_use_upper          = get(g: , 'EasyMotion_use_upper'          , 1)
 " }}}

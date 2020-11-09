@@ -22,7 +22,6 @@ function! EasyMotion#init()
         return
     endif
     let s:loaded = s:TRUE
-    call EasyMotion#highlight#load()
     " Store previous motion info
     let s:previous = {}
     let s:EasyMotion_is_active = 0
@@ -51,10 +50,6 @@ function! EasyMotion#reset()
         " bd_t: -> bi-directional 't' motion
         "   This value is used to re-define regexp only for bi-directional 't'
         "   motion
-        " find_bd: -> bi-directional find motion
-        "   This value is used to recheck the motion is inclusive or exclusive
-        "   because 'f' & 't' forward find motion is inclusive, but 'F' & 'T'
-        "   backward find motion is exclusive
     let s:current = {
         \ 'is_operator' : 0,
         \ 'is_search' : 0,
@@ -530,15 +525,7 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
             let s:current.original_position = v_original_pos
         endif "}}}
 
-        " Handle bi-directional t motion {{{
-        " chant
-        if s:flag.bd_t == 1
-            let regexp = s:convert_t_regexp(a:regexp, 0) "forward
-        else
-            let regexp = a:regexp
-        endif
-        "}}}
-
+        let regexp = a:regexp
         let pos = searchpos(regexp, search_direction . (config.accept_cursor_pos ? 'c' : ''), search_stopline)
         while 1
             " Reached end of search range
@@ -561,12 +548,6 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
             let pos = searchpos(regexp, search_direction, search_stopline)
         endwhile
 
-        " Handle bidirection "{{{
-        " For bi-directional t motion {{{
-        if s:flag.bd_t == 1
-            let regexp = s:convert_t_regexp(a:regexp, 1) "backward
-        endif
-        "}}}
         " Reconstruct match dict
         if a:direction == 2
             " Backward
@@ -665,18 +646,6 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
         else
             let true_direction = a:direction
         endif
-
-        " Handle inclusive & exclusive {{{
-        " Overwrite inclusive flag for special case {{{
-        if s:flag.find_bd == 1 && true_direction == 1
-            " Note: For bi-directional find motion s(f) & t
-            " If true_direction is backward, the motion is 'exclusive'
-            let is_inclusive_check = 0 " overwrite
-            let s:previous.is_inclusive = 0 " overwrite
-        endif "}}}
-        if is_inclusive_check
-            normal! v
-        endif " }}}
 
         if s:current.is_operator && s:flag.linewise
             " TODO: Is there better solution?

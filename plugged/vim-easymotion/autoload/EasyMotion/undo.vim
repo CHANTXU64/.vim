@@ -10,13 +10,23 @@ function! s:undo_lock.save() abort
   return undo
 endfunction
 
+if exists('*getcmdwintype')
+    function! s:is_cmdwin() abort
+        return getcmdwintype() !=# ''
+    endfunction
+else
+    function! s:is_cmdwin() abort
+        return bufname('%') ==# '[Command Line]'
+    endfunction
+endif
+
 function! s:undo_lock._save() abort
   if undotree().seq_last == 0
     " if there are no undo history, disable undo feature by setting
     " 'undolevels' to -1 and restore it.
     let self.save_undolevels = &l:undolevels
     let &l:undolevels = -1
-  elseif !s:Buffer.is_cmdwin()
+  elseif !s:is_cmdwin()
     " command line window doesn't support :wundo.
     let self.undofile = tempname()
     execute 'wundo!' self.undofile
