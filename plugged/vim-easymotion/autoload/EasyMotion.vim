@@ -22,6 +22,7 @@ function! EasyMotion#init()
         return
     endif
     let s:loaded = s:TRUE
+    call EasyMotion#highlight#load()
     " Store previous motion info
     let s:previous = {}
     let s:EasyMotion_is_active = 0
