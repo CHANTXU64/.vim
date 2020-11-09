@@ -609,6 +609,31 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
         " Attach specific key as marker to gathered matched coordinates
         let groups = s:GroupingAlgorithmOriginal(targets, split(g:EasyMotion_keys, '\zs'))
 
+        " -- Shade inactive source --------------- {{{
+        if g:EasyMotion_do_shade && targets_len != 1
+            echo '123'
+            if a:direction == 1 " Backward
+                let shade_hl_re = s:flag.within_line
+                                \ ? '^.*\%#'
+                                \ : '\%'. win_first_line .'l\_.*\%#'
+            elseif a:direction == 0 " Forward
+                let shade_hl_re = s:flag.within_line
+                                \ ? '\%#.*$'
+                                \ : '\%#\_.*\%'. win_last_line .'l'
+            else " Both directions
+                let shade_hl_re = s:flag.within_line
+                                \ ? '^.*\%#.*$'
+                                \ : '\_.*'
+            endif
+
+            call EasyMotion#highlight#add_highlight(
+                \ shade_hl_re, g:EasyMotion_hl_group_shade)
+            let cursor_hl_re = '\%#'
+            call EasyMotion#highlight#add_highlight(cursor_hl_re,
+                        \ g:EasyMotion_hl_inc_cursor)
+        endif
+        " }}}
+
         if ! empty(a:visualmode)
             keepjumps call winrestview({'lnum' : s:current.cursor_position[0], 'topline' : win_first_line})
         else
