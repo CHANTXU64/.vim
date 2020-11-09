@@ -3,7 +3,7 @@
 """""""""""""""""""""""""""""""
 let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd',
       \'coc-markdownlint', 'coc-snippets', 'coc-css',
-      \'coc-html', 'coc-python']
+      \'coc-html', 'coc-python', 'coc-cmake']
 nnoremap <silent> <leader>h :call CocActionAsync('doHover')<cr>
 nmap gd <Plug>(coc-definition)
 nmap gD <Plug>(coc-implementation)
@@ -12,15 +12,25 @@ vmap <leader>fs <Plug>(coc-format-selected)
 nmap <leader>fs <Plug>(coc-format-selected)
 nmap <leader>fae <Plug>(coc-format)
 nmap <F2> <Plug>(coc-rename)
-autocmd CursorHold * silent call CocActionAsync('highlight')
+autocmd CursorHold * silent call FuncCursorHold()
 hi CocHighlightText ctermbg=254
 hi CocErrorSign ctermbg=248 ctermfg=9
 hi CocErrorFloat ctermbg=253
 hi CocWarningSign ctermbg=248
 hi CocWarningFloat ctermbg=253
+hi CocInfoSign ctermbg=248
+hi CocInfoFloat ctermbg=253
+hi CocHintSign ctermbg=248
+hi CocHintFloat ctermbg=253
 imap <C-l> <Plug>(coc-snippets-expand)
-nmap ]o <Plug>(coc-diagnostic-next)
-nmap [o <Plug>(coc-diagnostic-prev)
+nmap ]c <Plug>(coc-diagnostic-next)
+nmap [c <Plug>(coc-diagnostic-prev)
+
+function! FuncCursorHold()
+if exists('*CocActionAsync')
+  call CocActionAsync('highlight')
+endif
+endfunction
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -152,13 +162,17 @@ function! GetSearchCount()
   return "₴".substitute(airline#extensions#searchcount#status(),"\\v.+(\\[\\d+\\/\\d+\\])","\\1","")." "
 endfunction
 
-let g:airline_section_warning = '%{substitute(substitute(airline#extensions#whitespace#check(),"\\a\\+"," ","").(GetTotalWarningAndErrorInfo().W),"\\s$","","")}' 
+let g:airline_section_warning = '%{substitute(substitute(airline#extensions#whitespace#check(),"\\a\\+"," ","").(GetTotalWarningAndErrorInfo().W),"\\s$","","")}'
 let g:airline_section_error = '%{GetTotalWarningAndErrorInfo().E}'
 let g:airline#extensions#neomake#enabled = 0
 let g:airline#extensions#coc#enabled = 0
 
 function! GetNeomakeWarningAndErrorInfo()
-  let neomake_warning_and_error_info = neomake#statusline#LoclistCounts()
+  try
+    let neomake_warning_and_error_info = neomake#statusline#LoclistCounts()
+  catch
+    let neomake_warning_and_error_info = {}
+  endtry
   if (IsEmptyKeys(neomake_warning_and_error_info))
     return {'W': 0, 'E': 0}
   else
@@ -258,21 +272,9 @@ imap <C-h> <Plug>delimitMateBS
 """"""""""""""""""""""""""""""
 " => easymotion
 """"""""""""""""""""""""""""""
-let g:EasyMotion_do_mapping = 0
-map \w <Plug>(easymotion-w)
-map \W <Plug>(easymotion-W)
-map \b <Plug>(easymotion-b)
-map \B <Plug>(easymotion-B)
-map \f <Plug>(easymotion-f)
-map \F <Plug>(easymotion-F)
-map \t <Plug>(easymotion-t)
-map \T <Plug>(easymotion-T)
-map \e <Plug>(easymotion-e)
-map \E <Plug>(easymotion-E)
-map \ge <Plug>(easymotion-ge)
-map \gE <Plug>(easymotion-gE)
-map \. <Plug>(easymotion-repeat)
-map \h <Plug>(easymotion-bd-jk)
+nmap s <Plug>(easymotion-bd-jk)
+xmap s <Plug>(easymotion-bd-jk)
+let g:EasyMotion_startofline = 0
 
 
 """"""""""""""""""""""""""""""
@@ -315,5 +317,18 @@ nmap ga <Plug>(EasyAlign)
 let g:vista_sidebar_width = 35
 let g:vista_icon_indent = ['╰─▸ ', '├─▸ ']
 nmap <Leader>v :Vista!!<CR>
+
+
+""""""""""""""""""""""""""""""
+" => airline theme
+""""""""""""""""""""""""""""""
+let g:airline_theme='sol'
+
+
+""""""""""""""""""""""""""""""
+" => LargeFile
+""""""""""""""""""""""""""""""
+let g:LargeFile = 100
+
 
 " vim: et ts=2 sts=2 sw=2 tw=80

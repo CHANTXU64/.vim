@@ -21,6 +21,8 @@ Plug 'junegunn/vim-easy-align'
 
 Plug 'Yggdroot/LeaderF'
 
+Plug 'wsdjeg/vim-fetch'
+
 " 注释
 Plug 'tpope/vim-commentary'
 
@@ -171,8 +173,6 @@ xmap N gE
 
 " 默认虚拟替换
 nnoremap R gR
-
-let g:airline_theme='sol'
 
 let mapleader = " "
 map <space> <nop>
@@ -424,4 +424,3 @@ xmap <Leader><Leader>f :call Toggle_fcitx_auto_toggle_flag()<CR>
 "##### auto fcitx end ######
 
 so ~/.vim/plugin_config.vim
-

@@ -72,42 +72,6 @@ function! EasyMotion#helper#is_folded(line) "{{{
     return _foldclosed != -1 &&
         \ (g:EasyMotion_skipfoldedline == 1 || a:line != _foldclosed)
 endfunction "}}}
-function! EasyMotion#helper#should_case_sensitive(input, is_search) "{{{
-    if !a:is_search
-        if g:EasyMotion_smartcase == 0
-            return 0
-        else
-            " return 1 if input didn't match uppercase letter
-            return match(a:input, '\u') == -1
-        endif
-    endif
-
-    if (g:EasyMotion_smartcase == 1 && match(a:input, '\u') == -1) ||
-    \  (&ignorecase && &smartcase && match(a:input, '\u') == -1) ||
-    \  (&ignorecase && !&smartcase)
-        return 1
-    endif
-    return 0
-endfunction "}}}
-function! EasyMotion#helper#silent_feedkeys(expr, name, ...) "{{{
-    " Ref:
-    " https://github.com/osyo-manga/vim-over/blob/d51b028c29661d4a5f5b79438ad6d69266753711/autoload/over.vim#L6
-    let mode = get(a:, 1, "m")
-    let name = "easymotion-" . a:name
-    let map = printf("<Plug>(%s)", name)
-    if mode == "n"
-        let command = "nnoremap"
-    else
-        let command = "nmap"
-    endif
-    execute command "<silent>" map printf("%s:nunmap %s<CR>", a:expr, map)
-    if mode(1) !=# 'ce'
-        " FIXME: mode(1) !=# 'ce' exists only for the test
-        "        :h feedkeys() doesn't work while runnning a test script
-        "        https://github.com/kana/vim-vspec/issues/27
-        call feedkeys(printf("\<Plug>(%s)", name))
-    endif
-endfunction "}}}
 function! EasyMotion#helper#VarReset(var, ...) "{{{
     if ! exists('s:var_reset')
         let s:var_reset = {}
@@ -127,21 +91,6 @@ function! EasyMotion#helper#VarReset(var, ...) "{{{
 
         " Set new var value
         call setbufvar('%', a:var, new_value)
-    endif
-endfunction "}}}
-
-" Migemo {{{
-function! EasyMotion#helper#load_migemo_dict() "{{{
-    let enc = &l:encoding
-    if enc ==# 'utf-8'
-        return EasyMotion#migemo#utf8#load_dict()
-    elseif enc ==# 'cp932'
-        return EasyMotion#migemo#cp932#load_dict()
-    elseif enc ==# 'euc-jp'
-        return EasyMotion#migemo#eucjp#load_dict()
-    else
-        let g:EasyMotion_use_migemo = 0
-        throw "Error: ".enc." is not supported. Migemo is made disabled."
     endif
 endfunction "}}}
 
@@ -175,8 +124,6 @@ endfunction
 function! s:_virtual_tab2spacelen(col_num) abort
     return &tabstop - ((a:col_num - 1) % &tabstop)
 endfunction
-
-"}}}
 
 " Restore 'cpoptions' {{{
 let &cpo = s:save_cpo

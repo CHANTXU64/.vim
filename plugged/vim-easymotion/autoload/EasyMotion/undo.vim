@@ -1,5 +1,3 @@
-let s:Buffer = vital#easymotion#import('Vim.Buffer')
-
 function! EasyMotion#undo#save() abort
   return s:undo_lock.save()
 endfunction
