@@ -611,7 +611,6 @@ function! s:EasyMotion(regexp, direction, visualmode, is_inclusive, ...) " {{{
 
         " -- Shade inactive source --------------- {{{
         if g:EasyMotion_do_shade && targets_len != 1
-            echo '123'
             if a:direction == 1 " Backward
                 let shade_hl_re = s:flag.within_line
                                 \ ? '^.*\%#'

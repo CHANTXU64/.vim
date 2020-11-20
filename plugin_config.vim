@@ -94,6 +94,7 @@ else
         \ }, 2000)
 endif
 let g:neomake_javascript_enabled_makers=['semistandard']
+let g:neamake_typescript_enabled_makers=['semistandard']
 let g:neomake_cpp_enabled_makers=['cpplint']
 let g:neomake_error_sign = {
       \ 'text': '✖',
