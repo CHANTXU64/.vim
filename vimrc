@@ -5,7 +5,7 @@ set nocompatible
 filetype off
 
 call plug#begin('~/.vim/plugged')
-Plug 'vim-airline/vim-airline'
+Plug 'itchyny/lightline.vim'
 
 Plug 'mhinz/vim-signify'
 
@@ -37,7 +37,7 @@ Plug 'kana/vim-textobj-entire'
 " 语法高亮
 Plug 'sheerun/vim-polyglot'
 
-Plug 'neomake/neomake'
+Plug 'neomake/neomake' ", { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
 
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
@@ -54,15 +54,13 @@ Plug 'easymotion/vim-easymotion'
 Plug 'Yggdroot/indentLine'
 
 " google code style
-Plug 'google/vim-maktaba'
-Plug 'google/vim-glaive'
-Plug 'google/vim-codefmt'
+Plug 'google/vim-maktaba', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
+Plug 'google/vim-glaive', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
+Plug 'google/vim-codefmt', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
 
 " markdown
-Plug 'iamcco/mathjax-support-for-mkdp'
-Plug 'iamcco/markdown-preview.vim'
-
-Plug 'terryma/vim-expand-region'
+Plug 'iamcco/mathjax-support-for-mkdp', { 'for': 'markdown' }
+Plug 'iamcco/markdown-preview.vim', { 'for': 'markdown' }
 
 " runtime macros/matchit.vim
 Plug 'andymass/vim-matchup'
