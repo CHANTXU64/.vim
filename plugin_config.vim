@@ -336,4 +336,13 @@ function! GetTotalWarningAndErrorInfo()
 endfunction
 
 
+"""""""""""""""""""""""""""""""
+"" => cosco.vim
+"""""""""""""""""""""""""""""""
+nmap <silent> <Leader>a <Plug>(cosco-commaOrSemiColon)
+let g:cosco_ignore_comment_lines = 1
+let g:cosco_filetype_whitelist = ['php', 'javascript', 'css', 'typescript', 'c', 'cpp']
+let g:auto_comma_or_semicolon = 1
+
+
 " vim: et ts=2 sts=2 sw=2 tw=80
