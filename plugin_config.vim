@@ -68,53 +68,6 @@ let g:Lf_WildIgnore = {
 
 
 """"""""""""""""""""""""""""""
-" => Neomake
-""""""""""""""""""""""""""""""
-function! MyOnBattery()
-  if has('macunix')
-    return match(system('pmset -g batt'), 'Now drawing from 'Battery Power'') != -1
-  elseif has('unix')
-    return readfile('/sys/class/power_supply/ADP1/online') == ['0']
-  endif
-  return 0
-endfunction
-if MyOnBattery()
-  call neomake#configure#automake({
-        \ 'TextChanged': {},
-        \ 'InsertLeave': {},
-        \ 'BufWritePost': {'delay': 0},
-        \ 'BufWinEnter': {},
-        \ }, 5000)
-else
-  call neomake#configure#automake({
-        \ 'TextChanged': {},
-        \ 'InsertLeave': {},
-        \ 'BufWritePost': {'delay': 0},
-        \ 'BufWinEnter': {},
-        \ }, 2000)
-endif
-let g:neomake_javascript_enabled_makers=['semistandard']
-let g:neamake_typescript_enabled_makers=['semistandard']
-let g:neomake_cpp_enabled_makers=['cpplint']
-let g:neomake_error_sign = {
-      \ 'text': '✖',
-      \ 'texthl': 'NeomakeErrorSign',
-      \ }
-let g:neomake_warning_sign = {
-      \   'text': '‼',
-      \   'texthl': 'NeomakeWarningSign',
-      \ }
-let g:neomake_message_sign = {
-      \   'text': '>>',
-      \   'texthl': 'NeomakeMessageSign',
-      \ }
-let g:neomake_info_sign = {
-      \ 'text': '>>',
-      \ 'texthl': 'NeomakeInfoSign'
-      \ }
-
-
-""""""""""""""""""""""""""""""
 " => Signify
 """"""""""""""""""""""""""""""
 map <Leader>d :SignifyHunkDiff<CR>
@@ -336,13 +289,7 @@ function! GetTotalWarningAndErrorInfo()
 endfunction
 
 
-"""""""""""""""""""""""""""""""
-"" => cosco.vim
-"""""""""""""""""""""""""""""""
-nmap <silent> <Leader>a <Plug>(cosco-commaOrSemiColon)
-let g:cosco_ignore_comment_lines = 1
-let g:cosco_filetype_whitelist = ['php', 'javascript', 'css', 'typescript', 'c', 'cpp']
-let g:auto_comma_or_semicolon = 1
+let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 
 
 " vim: et ts=2 sts=2 sw=2 tw=80

@@ -63,6 +63,37 @@ function! g:LfRegisterPythonExtension(name, dict)
     let g:Lf_PythonExtensions[a:name] = a:dict
 endfunction
 
+let s:leaderf_path = expand("<sfile>:p:h:h")
+function! s:InstallCExtension(install) abort
+    let win_exists = 0
+    let bot_split = "botright new | let w:leaderf_installC = 1 |"
+    let use_cur_win = has("nvim") ? "" : " ++curwin"
+    for n in range(winnr('$'))
+        if getwinvar(n+1, 'leaderf_installC', 0) == 1
+            let win_exists = 1
+            let bot_split = ""
+            exec string(n+1) . "wincmd w"
+            break
+        endif
+    endfor
+    let terminal = exists(':terminal') == 2 ? bot_split ." terminal". use_cur_win : "!"
+    if has('win32') || has('win64')
+        let shell =  "cmd /c"
+        let cd_cmd = "cd /d"
+        let script = "install.bat"
+    else
+        let shell =  "sh -c"
+        let cd_cmd = "cd"
+        let script = "./install.sh"
+    endif
+    let reverse = a:install ? "" : " --reverse"
+    let cmd = printf('%s %s "%s %s && %s%s"', terminal, shell, cd_cmd, s:leaderf_path, script, reverse)
+    exec cmd
+    if has("nvim")
+        norm! G
+    endif
+endfunction
+
 augroup LeaderF_Mru
     autocmd BufAdd,BufEnter,BufWritePost * call lfMru#record(expand('<afile>:p')) |
                 \ call lfMru#recordBuffer(expand('<abuf>'))
@@ -214,3 +245,5 @@ catch /^Vim\%((\a\+)\)\=:E227/
 endtry
 
 command! -nargs=* -bang -complete=customlist,leaderf#Any#parseArguments Leaderf call leaderf#Any#start(<bang>0, <q-args>)
+command! -nargs=0 LeaderfInstallCExtension call s:InstallCExtension(1)
+command! -nargs=0 LeaderfUninstallCExtension call s:InstallCExtension(0)

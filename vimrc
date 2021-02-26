@@ -37,10 +37,11 @@ Plug 'kana/vim-textobj-entire'
 " 语法高亮
 Plug 'sheerun/vim-polyglot'
 
-Plug 'neomake/neomake' ", { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
-
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+
+" debug
+Plug 'puremourning/vimspector'
 
 " git
 Plug 'tpope/vim-fugitive'
@@ -66,9 +67,6 @@ Plug 'iamcco/markdown-preview.vim', { 'for': 'markdown' }
 Plug 'andymass/vim-matchup'
 
 Plug 'tpope/vim-repeat'
-
-" 自动添加分号
-Plug 'lfilho/cosco.vim'
 
 call plug#end()
 

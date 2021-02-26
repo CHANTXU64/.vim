@@ -45,6 +45,10 @@ nnoremap t f
 nnoremap f t
 xnoremap t f
 xnoremap f t
+nnoremap T F
+nnoremap F T
+xnoremap T F
+xnoremap F T
 
 nnoremap , ;
 nnoremap ; ,
@@ -82,20 +86,6 @@ set hid
 " vmap g: q:
 " nmap g/ q/
 " vmap g/ q/
-
-nnoremap <C-n> n
-nnoremap <C-p> N
-onoremap <C-n> n
-onoremap <C-p> N
-xnoremap <C-n> n
-xnoremap <C-p> N
-
-nmap n ge
-nmap N gE
-omap n ge
-omap N gE
-xmap n ge
-xmap N gE
 
 " 默认虚拟替换
 nnoremap R gR
@@ -285,7 +275,7 @@ map <leader>cd :cd %:p:h<CR>:pwd<CR>
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 "ctags
-nnoremap <f5> :!ctags -R --exclude=.git<CR>
+" nnoremap <f5> :!ctags -R --exclude=.git<CR>
 
 map <leader>ss :setlocal spell!<CR>
 
