@@ -6,5 +6,5 @@
         "UltiSnips",
         "myUltiSnips"
     ],
-    "python.jediEnabled": false
+    "python.linting.pytypeEnabled": true
 }

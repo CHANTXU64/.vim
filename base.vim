@@ -156,7 +156,8 @@ set cursorline
 set number
 set relativenumber
 
-set colorcolumn=81
+" set colorcolumn=81
+set colorcolumn=97
 
 set ignorecase
 set smartcase

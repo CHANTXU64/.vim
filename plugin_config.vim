@@ -3,7 +3,7 @@
 """""""""""""""""""""""""""""""
 let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd',
       \'coc-markdownlint', 'coc-snippets', 'coc-css',
-      \'coc-html', 'coc-python', 'coc-cmake']
+      \'coc-html', 'coc-cmake']
 nnoremap <silent> <leader>h :call CocActionAsync('doHover')<cr>
 nmap gd <Plug>(coc-definition)
 nmap gD <Plug>(coc-implementation)
