@@ -166,8 +166,11 @@ function! s:onGitStatusSuccessCB(job) abort
     let l:lines = split(l:output, "\n")
     let l:cache = gitstatus#util#ParseGitStatusLines(a:job.opts.cwd, l:lines, g:)
 
-    call s:listener.SetNext(l:cache)
-    call s:listener.TryUpdateNERDTreeUI()
+    try
+        call s:listener.SetNext(l:cache)
+        call s:listener.TryUpdateNERDTreeUI()
+    catch
+    endtry
 endfunction
 
 function! s:onGitStatusFailedCB(job) abort
@@ -321,7 +324,7 @@ function! s:enableLiveUpdate() abort
         " TODO: is it necessary to pass the buffer name?
         autocmd User FugitiveChanged silent! call s:onFileUpdate(expand('%:p'))
 
-        autocmd BufEnter NERD_tree_* call s:listener.TryUpdateNERDTreeUI()
+        autocmd BufEnter NERD_tree_* call s:onNERDTreeInit(s:path2str(b:NERDTree.root.path))
     augroup end
 endfunction
 
