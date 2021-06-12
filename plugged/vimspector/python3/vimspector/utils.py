@@ -356,18 +356,61 @@ def SelectFromList( prompt, options ):
       return None
 
 
-def AskForInput( prompt, default_value = None ):
+def AskForInput( prompt, default_value = None, completion = None ):
   if default_value is None:
-    default_option = ''
-  else:
-    default_option = ", '{}'".format( Escape( default_value ) )
+    default_value = ''
+
+  args = [ prompt, default_value ]
+
+  if completion is not None:
+    if completion == 'expr':
+      args.append( 'custom,vimspector#CompleteExpr' )
+    else:
+      args.append( completion )
 
   with InputSave():
     try:
-      return vim.eval( "input( '{}' {} )".format( Escape( prompt ),
-                                                  default_option ) )
+      return Call( 'input', *args )
     except ( KeyboardInterrupt, vim.error ):
       return None
+
+
+CONFIRM = {}
+CONFIRM_ID = 0
+
+
+def ConfirmCallback( confirm_id, result ):
+  try:
+    handler = CONFIRM.pop( confirm_id )
+  except KeyError:
+    UserMessage( f"Internal error: unexpected callback id { confirm_id }",
+                 persist = True,
+                 error = True )
+    return
+
+  handler( result )
+
+
+def Confirm( api_prefix,
+             prompt,
+             handler,
+             default_value = 2,
+             options: list = None,
+             keys: list = None ):
+  if not options:
+    options = [ '(Y)es', '(N)o' ]
+  if not keys:
+    keys = [ 'y', 'n' ]
+
+  global CONFIRM_ID
+  CONFIRM_ID += 1
+  CONFIRM[ CONFIRM_ID ] = handler
+  Call( f'vimspector#internal#{ api_prefix }popup#Confirm',
+        CONFIRM_ID,
+        prompt,
+        options,
+        default_value,
+        keys )
 
 
 def AppendToBuffer( buf, line_or_lines, modified=False ):
@@ -398,8 +441,10 @@ def AppendToBuffer( buf, line_or_lines, modified=False ):
 
 
 
-def ClearBuffer( buf ):
+def ClearBuffer( buf, modified = False ):
   buf[ : ] = None
+  if not modified:
+    buf.options[ 'modified' ] = False
 
 
 def SetBufferContents( buf, lines, modified=False ):
@@ -460,8 +505,8 @@ VAR_MATCH = re.compile(
       {(?P<braceddefault>               # or An {id:default} - default param, as
         (?P<defname>[_a-z][_a-z0-9]*)   #   an ID
         :                               #   then a colon
-        (?P<default>(?:[^}]|\})*)       #   then anything up to }, or a \}
-      )}                             |  #
+        (?P<default>(?:\\}|[^}])*)      #   then anything up to }, or a \}
+      )}                             |  #   then a }
       (?P<invalid>)                     # or Something else - invalid
     )
   """,
@@ -489,7 +534,6 @@ def _Substitute( template, mapping ):
     if mo.group( 'braceddefault' ) is not None:
       named = mo.group( 'defname' )
       if named not in mapping:
-        ''
         raise MissingSubstitution(
           named,
           mo.group( 'default' ).replace( '\\}', '}' ) )
@@ -531,8 +575,11 @@ def ExpandReferencesInString( orig_s,
         if default_value is None and e.default_value is not None:
           try:
             default_value = _Substitute( e.default_value, mapping )
-          except MissingSubstitution:
-            default_value = e.default_value
+          except MissingSubstitution as e2:
+            if e2.name in calculus:
+              default_value = calculus[ e2.name ]()
+            else:
+              default_value = e.default_value
 
         mapping[ key ] = AskForInput( 'Enter value for {}: '.format( key ),
                                       default_value )
@@ -634,15 +681,19 @@ def ParseVariables( variables_list,
   return new_variables
 
 
-def DisplayBaloon( is_term, display ):
+def DisplayBalloon( is_term, display, is_hover = False ):
   if not is_term:
-    display = '\n'.join( display )
     # To enable the Windows GUI to display the balloon correctly
     # Refer https://github.com/vim/vim/issues/1512#issuecomment-492070685
-    vim.eval( "balloon_show( '' )" )
+    display = '\n'.join( display )
 
-  vim.eval( "balloon_show( {0} )".format(
-    json.dumps( display ) ) )
+  created_win_id = int( vim.eval(
+    "vimspector#internal#balloon#CreateTooltip({}, {})".format(
+      int( is_hover ), json.dumps( display )
+    )
+  ) )
+
+  return created_win_id
 
 
 def GetBufferFilepath( buf ):
@@ -703,7 +754,7 @@ def SetSyntax( current_syntax, syntax, *args ):
     syntax = ''
 
   if current_syntax == syntax:
-    return
+    return syntax
 
   # We use set syn= because just setting vim.Buffer.options[ 'syntax' ]
   # doesn't actually trigger the Syntax autocommand, and i'm not sure that
@@ -717,6 +768,28 @@ def SetSyntax( current_syntax, syntax, *args ):
 def GetBufferFiletypes( buf ):
   ft = ToUnicode( vim.eval( f"getbufvar( {buf.number}, '&ft' )" ) )
   return ft.split( '.' )
+
+
+def GetVisualSelection( bufnr ):
+  start_line, start_col = vim.current.buffer.mark( "<" )
+  end_line, end_col = vim.current.buffer.mark( ">" )
+
+
+  # lines are 1 based, but columns are 0 based
+  # don't ask me why...
+  start_line -= 1
+  end_line -= 1
+
+  lines = vim.buffers[ bufnr ][ start_line : end_line + 1 ]
+  # Do end first, in case it's on the same line as start (as doing start first
+  # would change the offset)
+  lines[ -1 ] = lines[ -1 ][ : end_col + 1 ]
+  lines[ 0 ] = lines[ 0 ][ start_col : ]
+
+  _logger.debug( f'Visual selection: { lines } from '
+                 f'{ start_line }/{ start_col } -> { end_line }/{ end_col }' )
+
+  return lines
 
 
 def DisplaySplash( api_prefix, splash, text ):

@@ -184,6 +184,9 @@ endfunction
 " Optional argument: executive, coc or ctags
 " Ctags is the default.
 function! vista#finder#fzf#Run(...) abort
+  if g:vista_close_on_fzf_select
+    call vista#sidebar#Close()
+  endif
   if !exists('*fzf#run')
     return vista#error#Need('https://github.com/junegunn/fzf')
   endif

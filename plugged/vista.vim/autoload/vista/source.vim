@@ -5,8 +5,11 @@
 if exists('*bufwinid')
   function! s:GotoSourceWindow() abort
     let winid = g:vista.source.get_winid()
-    if winid != -1 && win_getid() != winid
-      noautocmd call win_gotoid(winid)
+    if winid != -1
+      if win_getid() != winid
+        " No use noautocmd here. Ref #362
+        call win_gotoid(winid)
+      endif
     else
       return vista#error#('Cannot find the source window id')
     endif
@@ -16,7 +19,7 @@ else
     " g:vista.source.winnr is not always correct.
     let winnr = g:vista.source.get_winnr()
     if winnr != -1
-      noautocmd execute winnr.'wincmd w'
+      execute winnr.'wincmd w'
     else
       return vista#error#('Cannot find the target window')
     endif

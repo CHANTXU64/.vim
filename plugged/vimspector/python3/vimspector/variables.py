@@ -19,7 +19,7 @@ import logging
 from functools import partial
 import typing
 
-from vimspector import utils
+from vimspector import utils, settings
 
 
 class Expandable:
@@ -32,8 +32,9 @@ class Expandable:
   a 'variablesReference' to be resolved by the 'variables' request. Records the
   current state expanded/collapsed. Implementations just implement
   VariablesReference to get the variables."""
-  def __init__( self ):
+  def __init__( self, container: 'Expandable' = None ):
     self.variables: typing.List[ 'Variable' ] = None
+    self.container: Expandable = container
     # None is Falsy and represents collapsed _by default_. WHen set to False,
     # this means the user explicitly collapsed it. When True, the user expanded
     # it (or we expanded it by default).
@@ -47,6 +48,9 @@ class Expandable:
 
   def IsExpandable( self ):
     return self.VariablesReference() > 0
+
+  def IsContained( self ):
+    return self.container is not None
 
   @abc.abstractmethod
   def VariablesReference( self ):
@@ -92,8 +96,8 @@ class WatchFailure( WatchResult ):
 
 class Variable( Expandable ):
   """Holds one level of an expanded value tree. Also itself expandable."""
-  def __init__( self, variable: dict ):
-    super().__init__()
+  def __init__( self, container: Expandable, variable: dict ):
+    super().__init__( container = container )
     self.variable = variable
     # A new variable appearing is marked as changed
     self.changed = True
@@ -117,17 +121,48 @@ class Watch:
     self.expression = expression
     self.result = None
 
+  @staticmethod
+  def New( frame, expression, context ):
+    watch = {
+      'expression': expression,
+      'context': context,
+    }
+    if frame:
+      watch[ 'frameId' ] = frame[ 'id' ]
+
+    return Watch( watch )
+
 
 class View:
   lines: typing.Dict[ int, Expandable ]
   draw: typing.Callable
+  syntax: str
 
   def __init__( self, win, lines, draw ):
     self.lines = lines
     self.draw = draw
-    self.buf = win.buffer
+    self.syntax = None
+    if win is not None:
+      self.buf = win.buffer
+      utils.SetUpUIWindow( win )
 
-    utils.SetUpUIWindow( win )
+
+class BufView( View ):
+  def __init__( self, buf, lines, draw ):
+    super().__init__( None, lines, draw )
+    self.buf = buf
+
+
+def AddExpandMappings( mappings = None ):
+  if mappings is None:
+    mappings = settings.Dict( 'mappings' )[ 'variables' ]
+  for mapping in utils.GetVimList( mappings, 'expand_collapse' ):
+    vim.command( f'nnoremap <silent> <buffer> { mapping } '
+                 ':<C-u>call vimspector#ExpandVariable()<CR>' )
+
+  for mapping in utils.GetVimList( mappings, 'set_value' ):
+    vim.command( f'nnoremap <silent> <buffer> { mapping } '
+                 ':<C-u>call vimspector#SetVariableValue()<CR>' )
 
 
 class VariablesView( object ):
@@ -137,19 +172,22 @@ class VariablesView( object ):
 
     self._connection = None
     self._current_syntax = ''
+    self._server_capabilities = None
 
-    def AddExpandMappings():
-      vim.command( 'nnoremap <silent> <buffer> <CR> '
-                   ':<C-u>call vimspector#ExpandVariable()<CR>' )
-      vim.command( 'nnoremap <silent> <buffer> <2-LeftMouse> '
-                   ':<C-u>call vimspector#ExpandVariable()<CR>' )
+    self._variable_eval: Scope = None
+    self._variable_eval_view: View = None
+
+    mappings = settings.Dict( 'mappings' )[ 'variables' ]
 
     # Set up the "Variables" buffer in the variables_win
     self._scopes: typing.List[ Scope ] = []
     self._vars = View( variables_win, {}, self._DrawScopes )
     utils.SetUpHiddenBuffer( self._vars.buf, 'vimspector.Variables' )
     with utils.LetCurrentWindow( variables_win ):
-      AddExpandMappings()
+      if utils.UseWinBar():
+        vim.command( 'nnoremenu <silent> 1.1 WinBar.Set '
+                     ':call vimspector#SetVariableValue()<CR>' )
+      AddExpandMappings( mappings )
 
     # Set up the "Watches" buffer in the watches_win (and create a WinBar in
     # there)
@@ -161,17 +199,20 @@ class VariablesView( object ):
                              'vimspector#AddWatchPrompt',
                              'vimspector#OmniFuncWatch' )
     with utils.LetCurrentWindow( watches_win ):
-      AddExpandMappings()
-      vim.command(
-        'nnoremap <buffer> <DEL> :call vimspector#DeleteWatch()<CR>' )
+      AddExpandMappings( mappings )
+      for mapping in utils.GetVimList( mappings, 'delete' ):
+        vim.command(
+          f'nnoremap <buffer> { mapping } :call vimspector#DeleteWatch()<CR>' )
 
       if utils.UseWinBar():
-        vim.command( 'nnoremenu 1.1 WinBar.New '
+        vim.command( 'nnoremenu <silent> 1.1 WinBar.New '
                      ':call vimspector#AddWatch()<CR>' )
-        vim.command( 'nnoremenu 1.2 WinBar.Expand/Collapse '
+        vim.command( 'nnoremenu <silent> 1.2 WinBar.Expand/Collapse '
                      ':call vimspector#ExpandVariable()<CR>' )
-        vim.command( 'nnoremenu 1.3 WinBar.Delete '
+        vim.command( 'nnoremenu <silent> 1.3 WinBar.Delete '
                      ':call vimspector#DeleteWatch()<CR>' )
+        vim.command( 'nnoremenu <silent> 1.1 WinBar.Set '
+                     ':call vimspector#SetVariableValue()<CR>' )
 
     # Set the (global!) balloon expr if supported
     has_balloon      = int( vim.eval( "has( 'balloon_eval' )" ) )
@@ -183,7 +224,9 @@ class VariablesView( object ):
         'balloonexpr': vim.options[ 'balloonexpr' ],
         'balloondelay': vim.options[ 'balloondelay' ],
       }
-      vim.options[ 'balloonexpr' ] = 'vimspector#internal#balloon#BalloonExpr()'
+      vim.options[ 'balloonexpr' ] = ( "vimspector#internal#"
+                                       "balloon#HoverTooltip()" )
+
       vim.options[ 'balloondelay' ] = 250
 
     if has_balloon:
@@ -201,21 +244,30 @@ class VariablesView( object ):
       utils.ClearBuffer( self._vars.buf )
     with utils.ModifiableScratchBuffer( self._watch.buf ):
       utils.ClearBuffer( self._watch.buf )
+    self.ClearTooltip()
     self._current_syntax = ''
 
   def ConnectionUp( self, connection ):
     self._connection = connection
 
+  def SetServerCapabilities( self, capabilities ):
+    self._server_capabilities = capabilities
+
   def ConnectionClosed( self ):
     self.Clear()
     self._connection = None
+    self._server_capabilities = None
 
   def Reset( self ):
+    self._server_capabilities = None
+
     for k, v in self._oldoptions.items():
       vim.options[ k ] = v
 
     utils.CleanUpHiddenBuffer( self._vars.buf )
     utils.CleanUpHiddenBuffer( self._watch.buf )
+    self.ClearTooltip()
+
 
   def LoadScopes( self, frame ):
     def scopes_consumer( message ):
@@ -267,15 +319,97 @@ class VariablesView( object ):
       },
     } )
 
-  def AddWatch( self, frame, expression ):
-    watch = {
-      'expression': expression,
-      'context': 'watch',
-    }
-    if frame:
-      watch[ 'frameId' ] = frame[ 'id' ]
+  def _DrawBalloonEval( self ):
+    watch = self._variable_eval
+    view = self._variable_eval_view
 
-    self._watches.append( Watch( watch ) )
+    with utils.RestoreCursorPosition():
+      with utils.ModifiableScratchBuffer( view.buf ):
+        utils.ClearBuffer( view.buf )
+        view.syntax = utils.SetSyntax( view.syntax,
+                                       self._current_syntax,
+                                       view.buf )
+
+        self._DrawWatchResult( view,
+                               0,
+                               watch,
+                               is_short = True )
+
+        vim.eval( "vimspector#internal#balloon#ResizeTooltip()" )
+
+  def ClearTooltip( self ):
+    # This will actually end up calling CleanUpTooltip via the popup close
+    # callback
+    vim.eval( 'vimspector#internal#balloon#Close()' )
+
+  def CleanUpTooltip( self ) :
+    # remove reference to old tooltip window
+    self._variable_eval_view = None
+    vim.vars[ 'vimspector_session_windows' ][ 'eval' ] = None
+
+  def VariableEval( self, frame, expression, is_hover ):
+    """Callback to display variable under cursor `:h ballonexpr`"""
+    if not self._connection:
+      return ''
+
+    def handler( message ):
+
+      watch = self._variable_eval
+      if watch.result is None:
+        watch.result = WatchResult( message[ 'body' ] )
+      else:
+        watch.result.Update( message[ 'body' ] )
+
+      popup_win_id = utils.DisplayBalloon( self._is_term, [], is_hover )
+      # record the global eval window id
+      vim.vars[ 'vimspector_session_windows' ][ 'eval' ] = int( popup_win_id )
+      popup_bufnr = int( vim.eval( "winbufnr({})".format( popup_win_id ) ) )
+
+      # We don't need to do any UI window setup here, as it's already done as
+      # part of the popup creation, so just pass the buffer to the View instance
+      self._variable_eval_view = BufView(
+        vim.buffers[ popup_bufnr ],
+        {},
+        self._DrawBalloonEval
+      )
+
+      if watch.result.IsExpandable():
+        # Always expand the first level
+        watch.result.expanded = Expandable.EXPANDED_BY_US
+
+      if watch.result.IsExpanded():
+        self._connection.DoRequest( partial( self._ConsumeVariables,
+                                             self._variable_eval_view.draw,
+                                             watch.result ), {
+          'command': 'variables',
+          'arguments': {
+            'variablesReference': watch.result.VariablesReference(),
+          },
+        } )
+
+      self._DrawBalloonEval()
+
+    def failure_handler( reason, message ):
+      display = [ reason ]
+      float_win_id = utils.DisplayBalloon( self._is_term, display, is_hover )
+      # record the global eval window id
+      vim.vars[ 'vimspector_session_windows' ][ 'eval' ] = int( float_win_id )
+
+    self._variable_eval = Watch.New( frame,
+                                     expression,
+                                     'hover' )
+
+    # Send async request
+    self._connection.DoRequest( handler, {
+      'command': 'evaluate',
+      'arguments': self._variable_eval.expression,
+    }, failure_handler )
+
+    # Return working (meanwhile)
+    return ''
+
+  def AddWatch( self, frame, expression ):
+    self._watches.append( Watch.New( frame, expression, 'watch' ) )
     self.EvaluateWatches()
 
   def DeleteWatch( self ):
@@ -338,19 +472,34 @@ class VariablesView( object ):
     watch.result = WatchFailure( reason )
     self._DrawWatches()
 
-  def ExpandVariable( self ):
-    if vim.current.buffer == self._vars.buf:
+  def _GetVariable( self, buf = None, line_num = None ):
+    none = ( None, None )
+
+    if buf is None:
+      buf = vim.current.buffer
+
+    if line_num is None:
+      line_num = vim.current.window.cursor[ 0 ]
+
+    if buf == self._vars.buf:
       view = self._vars
-    elif vim.current.buffer == self._watch.buf:
+    elif buf == self._watch.buf:
       view = self._watch
+    elif ( self._variable_eval_view is not None
+           and buf == self._variable_eval_view.buf ):
+      view = self._variable_eval_view
     else:
-      return
+      return none
 
-    current_line = vim.current.window.cursor[ 0 ]
-    if current_line not in view.lines:
-      return
+    if line_num not in view.lines:
+      return none
 
-    variable = view.lines[ current_line ]
+    return view.lines[ line_num ], view
+
+  def ExpandVariable( self, buf = None, line_num = None ):
+    variable, view = self._GetVariable( buf, line_num )
+    if variable is None:
+      return
 
     if variable.IsExpanded():
       # Collapse
@@ -371,25 +520,101 @@ class VariablesView( object ):
       },
     } )
 
-  def _DrawVariables( self, view,  variables, indent ):
+  def SetVariableValue( self, new_value = None, buf = None, line_num = None ):
+    variable: Variable
+    view: View
+
+    if not self._server_capabilities.get( 'supportsSetVariable' ):
+      return
+
+    variable, view = self._GetVariable( buf, line_num )
+    if variable is None:
+      return
+
+    if not variable.IsContained():
+      return
+
+    if new_value is None:
+      new_value = utils.AskForInput( 'New Value: ',
+                                     variable.variable.get( 'value', '' ),
+                                     completion = 'expr' )
+
+    if new_value is None:
+      return
+
+
+    def handler( message ):
+      # Annoyingly the response to setVariable request doesn't return a
+      # Variable, but some part of it, so take a copy of the existing Variable
+      # dict and update it, then call its update method with the updated copy.
+      new_variable = dict( variable.variable )
+      new_variable.update( message[ 'body' ] )
+
+      # Clear any existing known children (FIXME: Is this the right thing to do)
+      variable.variables = None
+
+      # If the variable is expanded, re-request its children
+      if variable.IsExpanded():
+        self._connection.DoRequest( partial( self._ConsumeVariables,
+                                             view.draw,
+                                             variable ), {
+          'command': 'variables',
+          'arguments': {
+            'variablesReference': variable.VariablesReference()
+          },
+        } )
+
+      variable.Update( new_variable )
+      view.draw()
+
+    def failure_handler( reason, message ):
+      utils.UserMessage( f'Cannot set value: { reason }', error = True )
+
+    self._connection.DoRequest( handler, {
+      'command': 'setVariable',
+      'arguments': {
+        'variablesReference': variable.container.VariablesReference(),
+        'name': variable.variable[ 'name' ],
+        'value': new_value
+      },
+    }, failure_handler = failure_handler )
+
+
+
+  def _DrawVariables( self, view, variables, indent, is_short = False ):
     assert indent > 0
     for variable in variables:
-      line = utils.AppendToBuffer(
-        view.buf,
-        '{indent}{marker}{icon} {name} ({type_}): {value}'.format(
+      text = ''
+      if is_short:
+        text = '{indent}{icon} {name}: {value}'.format(
+          # We borrow 1 space of indent to draw the change marker
+          indent = ' ' * ( indent - 1 ),
+          icon = '+' if ( variable.IsExpandable()
+                          and not variable.IsExpanded() ) else '-',
+          name = variable.variable.get( 'name', '' ),
+          value = variable.variable.get( 'value', '<unknown>' )
+        )
+      else:
+        text = '{indent}{marker}{icon} {name} ({type_}): {value}'.format(
           # We borrow 1 space of indent to draw the change marker
           indent = ' ' * ( indent - 1 ),
           marker = '*' if variable.changed else ' ',
           icon = '+' if ( variable.IsExpandable()
                           and not variable.IsExpanded() ) else '-',
-          name = variable.variable[ 'name' ],
+          name = variable.variable.get( 'name', '' ),
           type_ = variable.variable.get( 'type', '' ),
-          value = variable.variable.get( 'value',
-                                         '<unknown>' ) ).split( '\n' ) )
+          value = variable.variable.get( 'value', '<unknown>' )
+        )
+
+      line = utils.AppendToBuffer(
+        view.buf,
+        text.split( '\n' )
+      )
+
       view.lines[ line ] = variable
 
       if variable.ShouldDrawDrillDown():
-        self._DrawVariables( view, variable.variables, indent + 2 )
+        self._DrawVariables( view, variable.variables, indent + 2, is_short )
 
   def _DrawScopes( self ):
     # FIXME: The drawing is dumb and draws from scratch every time. This is
@@ -416,7 +641,7 @@ class VariablesView( object ):
                                        'Expression: '
                                        + watch.expression[ 'expression' ] )
           watch.line = line
-          self._DrawWatchResult( 2, watch )
+          self._DrawWatchResult( self._watch, 2, watch )
 
   def _DrawScope( self, indent, scope ):
     icon = '+' if scope.IsExpandable() and not scope.IsExpanded() else '-'
@@ -432,27 +657,36 @@ class VariablesView( object ):
       indent += 2
       self._DrawVariables( self._vars, scope.variables, indent )
 
-  def _DrawWatchResult( self, indent, watch ):
+  def _DrawWatchResult( self, view, indent, watch, is_short = False ):
     if not watch.result:
       return
 
-    assert indent > 0
-    icon = '+' if ( watch.result.IsExpandable() and
-                    not watch.result.IsExpanded() ) else '-'
+    assert is_short or indent > 0
 
-    line =  '{indent}{marker}{icon} Result: {result}'.format(
+    if is_short:
+      # The first result is always expanded in a hover (short format)
+      icon = ''
+      marker = ''
+      leader = ''
+    else:
+      icon = '+' if ( watch.result.IsExpandable() and
+                      not watch.result.IsExpanded() ) else '-'
+      marker = '*' if watch.result.changed else ' '
+      leader = ' Result: '
+
+    line =  '{indent}{marker}{icon}{leader}{result}'.format(
       # We borrow 1 space of indent to draw the change marker
       indent = ' ' * ( indent - 1 ),
-      marker = '*' if watch.result.changed else ' ',
+      marker = marker,
       icon = icon,
+      leader = leader,
       result = watch.result.result.get( 'result', '<unknown>' ) )
 
-    line = utils.AppendToBuffer( self._watch.buf, line.split( '\n' ) )
-    self._watch.lines[ line ] = watch.result
+    line = utils.AppendToBuffer( view.buf, line.split( '\n' ) )
+    view.lines[ line ] = watch.result
 
     if watch.result.ShouldDrawDrillDown():
-      indent = 4
-      self._DrawVariables( self._watch, watch.result.variables, indent )
+      self._DrawVariables( view, watch.result.variables, indent + 2, is_short )
 
   def _ConsumeVariables( self, draw, parent, message ):
     new_variables = []
@@ -467,9 +701,8 @@ class VariablesView( object ):
           variable = v
           found = True
           break
-
       if not found:
-        variable = Variable( variable_body )
+        variable = Variable( parent, variable_body )
       else:
         variable.Update( variable_body )
 
@@ -489,47 +722,10 @@ class VariablesView( object ):
 
     draw()
 
-  def ShowBalloon( self, frame, expression ):
-    """Callback to display variable under cursor `:h ballonexpr`"""
-    if not self._connection:
-      return ''
-
-    def handler( message ):
-      # TODO: this result count be expandable, but we have no way to allow the
-      # user to interact with the balloon to expand it, unless we use a popup
-      # instead, but even then we don't really want to trap the cursor.
-      body = message[ 'body' ]
-      result = body[ 'result' ]
-      if result is None:
-        result = 'null'
-      display = [
-        'Type: ' + body.get( 'type', '<unknown>' ),
-        'Value: ' + result
-      ]
-      utils.DisplayBaloon( self._is_term, display )
-
-    def failure_handler( reason, message ):
-      display = [ reason ]
-      utils.DisplayBaloon( self._is_term, display )
-
-    # Send async request
-    self._connection.DoRequest( handler, {
-      'command': 'evaluate',
-      'arguments': {
-        'expression': expression,
-        'frameId': frame[ 'id' ],
-        'context': 'hover',
-      }
-    }, failure_handler )
-
-    # Return working (meanwhile)
-    return '...'
-
-
   def SetSyntax( self, syntax ):
+    # TODO: Switch to View.syntax
     self._current_syntax = utils.SetSyntax( self._current_syntax,
                                             syntax,
                                             self._vars.buf,
                                             self._watch.buf )
-
 # vim: sw=2

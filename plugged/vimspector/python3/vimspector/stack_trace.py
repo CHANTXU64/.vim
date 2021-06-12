@@ -18,7 +18,7 @@ import os
 import logging
 import typing
 
-from vimspector import utils, signs
+from vimspector import utils, signs, settings
 
 
 class Thread:
@@ -102,28 +102,33 @@ class StackTraceView( object ):
     self._scratch_buffers = []
 
     # FIXME: This ID is by group, so should be module scope
-    self._next_sign_id = 1
+    self._current_thread_sign_id = 0 # 1 when used
+    self._current_frame_sign_id = 0 # 2 when used
 
     utils.SetUpHiddenBuffer( self._buf, 'vimspector.StackTrace' )
     utils.SetUpUIWindow( win )
 
+    mappings = settings.Dict( 'mappings' )[ 'stack_trace' ]
+
     with utils.LetCurrentWindow( win ):
-      vim.command( 'nnoremap <silent> <buffer> <CR> '
-                   ':<C-U>call vimspector#GoToFrame()<CR>' )
-      vim.command( 'nnoremap <silent> <buffer> <leader><CR> '
-                   ':<C-U>call vimspector#SetCurrentThread()<CR>' )
-      vim.command( 'nnoremap <silent> <buffer> <2-LeftMouse> '
-                   ':<C-U>call vimspector#GoToFrame()<CR>' )
+      for mapping in utils.GetVimList( mappings, 'expand_or_jump' ):
+        vim.command( f'nnoremap <silent> <buffer> { mapping } '
+                     ':<C-U>call vimspector#GoToFrame()<CR>' )
+
+      for mapping in utils.GetVimList( mappings, 'focus_thread' ):
+        vim.command( f'nnoremap <silent> <buffer> { mapping } '
+                     ':<C-U>call vimspector#SetCurrentThread()<CR>' )
 
       if utils.UseWinBar():
-        vim.command( 'nnoremenu 1.1 WinBar.Pause/Continue '
+        vim.command( 'nnoremenu <silent> 1.1 WinBar.Pause/Continue '
                      ':call vimspector#PauseContinueThread()<CR>' )
-        vim.command( 'nnoremenu 1.2 WinBar.Expand/Collapse '
+        vim.command( 'nnoremenu <silent> 1.2 WinBar.Expand/Collapse '
                      ':call vimspector#GoToFrame()<CR>' )
-        vim.command( 'nnoremenu 1.3 WinBar.Focus '
+        vim.command( 'nnoremenu <silent> 1.3 WinBar.Focus '
                      ':call vimspector#SetCurrentThread()<CR>' )
 
     win.options[ 'cursorline' ] = False
+    win.options[ 'signcolumn' ] = 'auto'
 
 
     if not signs.SignDefined( 'vimspectorCurrentThread' ):
@@ -131,6 +136,13 @@ class StackTraceView( object ):
                         text = '▶ ',
                         double_text = '▶',
                         texthl = 'MatchParen',
+                        linehl = 'CursorLine' )
+
+    if not signs.SignDefined( 'vimspectorCurrentFrame' ):
+      signs.DefineSign( 'vimspectorCurrentFrame',
+                        text = '▶ ',
+                        double_text = '▶',
+                        texthl = 'Special',
                         linehl = 'CursorLine' )
 
     self._line_to_frame = {}
@@ -154,9 +166,12 @@ class StackTraceView( object ):
     self._sources = {}
     self._requesting_threads = StackTraceView.ThreadRequestState.NO
     self._pending_thread_request = None
-    if self._next_sign_id:
-      signs.UnplaceSign( self._next_sign_id, 'VimspectorStackTrace' )
-    self._next_sign_id = 0
+    if self._current_thread_sign_id:
+      signs.UnplaceSign( self._current_thread_sign_id, 'VimspectorStackTrace' )
+    self._current_thread_sign_id = 0
+    if self._current_frame_sign_id:
+      signs.UnplaceSign( self._current_frame_sign_id, 'VimspectorStackTrace' )
+    self._current_frame_sign_id = 0
 
     with utils.ModifiableScratchBuffer( self._buf ):
       utils.ClearBuffer( self._buf )
@@ -270,10 +285,10 @@ class StackTraceView( object ):
     self._line_to_frame.clear()
     self._line_to_thread.clear()
 
-    if self._next_sign_id:
-      signs.UnplaceSign( self._next_sign_id, 'VimspectorStackTrace' )
+    if self._current_thread_sign_id:
+      signs.UnplaceSign( self._current_thread_sign_id, 'VimspectorStackTrace' )
     else:
-      self._next_sign_id = 1
+      self._current_thread_sign_id = 1
 
     with utils.ModifiableScratchBuffer( self._buf ):
       with utils.RestoreCursorPosition():
@@ -287,7 +302,7 @@ class StackTraceView( object ):
             f'({thread.State()})' )
 
           if self._current_thread == thread.id:
-            signs.PlaceSign( self._next_sign_id,
+            signs.PlaceSign( self._current_thread_sign_id,
                              'VimspectorStackTrace',
                              'vimspectorCurrentThread',
                              self._buf.name,
@@ -364,12 +379,61 @@ class StackTraceView( object ):
       self._JumpToFrame( frame )
 
 
+
+  def _GetFrameOffset( self, delta ):
+    thread: Thread
+    for thread in self._threads:
+      if thread.id != self._current_thread:
+        continue
+
+      if not thread.stacktrace:
+        return
+
+      frame_idx = None
+      for index, frame in enumerate( thread.stacktrace ):
+        if frame == self._current_frame:
+          frame_idx = index
+          break
+
+      if frame_idx is not None:
+        target_idx = frame_idx + delta
+        if target_idx >= 0 and target_idx < len( thread.stacktrace ):
+          return thread.stacktrace[ target_idx ]
+
+      break
+
+
+  def UpFrame( self ):
+    frame = self._GetFrameOffset( 1 )
+    if not frame:
+      utils.UserMessage( 'Top of stack' )
+    else:
+      self._JumpToFrame( frame, 'up' )
+
+
+  def DownFrame( self ):
+    frame = self._GetFrameOffset( -1 )
+    if not frame:
+      utils.UserMessage( 'Bottom of stack' )
+    else:
+      self._JumpToFrame( frame, 'down' )
+
+
+  def AnyThreadsRunning( self ):
+    for thread in self._threads:
+      if thread.state != Thread.TERMINATED:
+        return True
+
+    return False
+
+
   def _JumpToFrame( self, frame, reason = '' ):
     def do_jump():
       if 'line' in frame and frame[ 'line' ] > 0:
         # Should this set the current _Thread_ too ? If i jump to a frame in
         # Thread 2, should that become the focussed thread ?
         self._current_frame = frame
+        self._DrawThreads()
         return self._session.SetCurrentFrame( self._current_frame, reason )
       return False
 
@@ -459,9 +523,18 @@ class StackTraceView( object ):
 
     self.LoadThreads( infer_current_frame )
 
+  def OnExited( self, event ):
+    for thread in self._threads:
+      thread.Exited()
+
   def _DrawStackTrace( self, thread: Thread ):
     if not thread.IsExpanded():
       return
+
+    if self._current_frame_sign_id:
+      signs.UnplaceSign( self._current_frame_sign_id, 'VimspectorStackTrace' )
+    else:
+      self._current_frame_sign_id = 2
 
     for frame in thread.stacktrace:
       if frame.get( 'source' ):
@@ -486,6 +559,14 @@ class StackTraceView( object ):
                                        frame[ 'name' ],
                                        source[ 'name' ],
                                        frame[ 'line' ] ) )
+
+      if ( self._current_frame is not None and
+           self._current_frame[ 'id' ] == frame[ 'id' ] ):
+        signs.PlaceSign( self._current_frame_sign_id,
+                         'VimspectorStackTrace',
+                         'vimspectorCurrentFrame',
+                         self._buf.name,
+                         line )
 
       self._line_to_frame[ line ] = ( thread, frame )
 

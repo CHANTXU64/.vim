@@ -13,6 +13,9 @@
 " See the License for the specific language governing permissions and
 " limitations under the License.
 
+if !has( 'python3' )
+  finish
+endif
 
 " Boilerplate {{{
 let s:save_cpo = &cpoptions
@@ -41,11 +44,11 @@ function! s:Enabled() abort
   return s:enabled
 endfunction
 
-function! vimspector#Launch() abort
+function! vimspector#Launch( ... ) abort
   if !s:Enabled()
     return
   endif
-  py3 _vimspector_session.Start()
+  py3 _vimspector_session.Start( *vim.eval( 'a:000' ) )
 endfunction
 
 function! vimspector#LaunchWithSettings( settings ) abort
@@ -55,11 +58,16 @@ function! vimspector#LaunchWithSettings( settings ) abort
   py3 _vimspector_session.Start( launch_variables = vim.eval( 'a:settings' ) )
 endfunction
 
-function! vimspector#Reset() abort
+function! vimspector#Reset( ... ) abort
   if !s:Enabled()
     return
   endif
-  py3 _vimspector_session.Reset()
+  if a:0 == 0
+    let options = {}
+  else
+    let options = a:1
+  endif
+  py3 _vimspector_session.Reset( **vim.eval( 'options' ) )
 endfunction
 
 function! vimspector#Restart() abort
@@ -185,11 +193,16 @@ function! vimspector#SetCurrentThread() abort
   py3 _vimspector_session.SetCurrentThread()
 endfunction
 
-function! vimspector#Stop() abort
+function! vimspector#Stop( ... ) abort
   if !s:Enabled()
     return
   endif
-  py3 _vimspector_session.Stop()
+  if a:0 == 0
+    let options = {}
+  else
+    let options = a:1
+  endif
+  py3 _vimspector_session.Stop( **vim.eval( 'options' ) )
 endfunction
 
 function! vimspector#ExpandVariable() abort
@@ -197,6 +210,17 @@ function! vimspector#ExpandVariable() abort
     return
   endif
   py3 _vimspector_session.ExpandVariable()
+endfunction
+
+function! vimspector#SetVariableValue( ... ) abort
+  if !s:Enabled()
+    return
+  endif
+  if a:0 == 0
+    py3 _vimspector_session.SetVariableValue()
+  else
+    py3 _vimspector_session.SetVariableValue( new_value = vim.eval( 'a:1' ) )
+  endif
 endfunction
 
 function! vimspector#DeleteWatch() abort
@@ -213,12 +237,28 @@ function! vimspector#GoToFrame() abort
   py3 _vimspector_session.ExpandFrameOrThread()
 endfunction
 
+function! vimspector#UpFrame() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.UpFrame()
+endfunction
+
+function! vimspector#DownFrame() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.DownFrame()
+endfunction
+
 function! vimspector#AddWatch( ... ) abort
   if !s:Enabled()
     return
   endif
   if a:0 == 0
-    let expr = input( 'Enter watch expression: ' )
+    let expr = input( 'Enter watch expression: ',
+                    \ '',
+                    \ 'custom,vimspector#CompleteExpr' )
   else
     let expr = a:1
   endif
@@ -310,28 +350,6 @@ function! vimspector#CompleteOutput( ArgLead, CmdLine, CursorPos ) abort
   return join( buffers, "\n" )
 endfunction
 
-py3 <<EOF
-def _vimspector_GetExprCompletions( ArgLead, prev_non_keyword_char ):
-  if not _vimspector_session:
-    return []
-
-  items = []
-  for candidate in _vimspector_session.GetCompletionsSync(
-    ArgLead,
-    prev_non_keyword_char ):
-
-    label = candidate.get( 'text', candidate[ 'label' ] )
-
-    start = prev_non_keyword_char - 1
-
-    if 'start' in candidate and 'length' in candidate:
-      start = candidate[ 'start' ]
-
-    items.append( ArgLead[ 0 : start ] + label )
-
-  return items
-EOF
-
 function! vimspector#CompleteExpr( ArgLead, CmdLine, CursorPos ) abort
   if !s:Enabled()
     return
@@ -340,7 +358,7 @@ function! vimspector#CompleteExpr( ArgLead, CmdLine, CursorPos ) abort
   let col = len( a:ArgLead )
   let prev_non_keyword_char = match( a:ArgLead[ 0 : col - 1 ], '\k*$' ) + 1
 
-  return join( py3eval( '_vimspector_GetExprCompletions( '
+  return join( py3eval( '_vimspector_session.GetCommandLineCompletions( '
                       \ . 'vim.eval( "a:ArgLead" ), '
                       \ . 'int( vim.eval( "prev_non_keyword_char" ) ) )' ),
              \ "\n" )
@@ -521,6 +539,30 @@ function! vimspector#OnBufferCreated( file_name ) abort
   endif
 
   py3 _vimspector_session.RefreshSigns( vim.eval( 'a:file_name' ) )
+endfunction
+
+function! vimspector#ShowEvalBalloon( is_visual ) abort
+  if a:is_visual
+    let expr = py3eval( '__import__( "vimspector", fromlist = [ "utils" ] )'
+                      \ . '.utils.GetVisualSelection('
+                      \ . '    int( vim.eval( "winbufnr( winnr() )" ) ) )' )
+    let expr = join( expr, '\n' )
+  else
+    let expr = expand( '<cexpr>' )
+  endif
+
+  return py3eval( '_vimspector_session.ShowEvalBalloon('
+                \ . ' int( vim.eval( "winnr()" ) ), "'
+                \ . expr
+                \ . '", 0 )' )
+endfunction
+
+function! vimspector#PrintDebugInfo() abort
+  if !s:Enabled()
+    return
+  endif
+
+  py3 _vimspector_session.PrintDebugInfo()
 endfunction
 
 

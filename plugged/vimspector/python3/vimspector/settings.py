@@ -20,11 +20,20 @@ from vimspector import utils
 
 DEFAULTS = {
   # UI
-  'bottombar_height':  10,
-  'sidebar_width':     50,
-  'code_minwidth':     82,
-  'terminal_maxwidth': 80,
-  'terminal_minwidth': 10,
+  'ui_mode':            'auto',
+  'bottombar_height':   10,
+
+  # For ui_mode = 'horizontal':
+  'sidebar_width':      50,
+  'code_minwidth':      82,
+  'terminal_maxwidth':  80,
+  'terminal_minwidth':  10,
+
+  # For ui_mode = 'vertical':
+  'topbar_height':      15,
+  'code_minheight':     20,
+  'terminal_maxheight': 15,
+  'terminal_minheight': 5,
 
   # Signs
   'sign_priority': {
@@ -33,11 +42,28 @@ DEFAULTS = {
     'vimspectorBP':            9,
     'vimspectorBPCond':        9,
     'vimspectorBPDisabled':    9,
-    'vimspectorCurrentThread': 200
+    'vimspectorCurrentThread': 200,
+    'vimspectorCurrentFrame':  200,
   },
 
   # Installer
   'install_gadgets': [],
+
+  # Mappings
+  'mappings': {
+    'variables': {
+      'expand_collapse': [ '<CR>', '<2-LeftMouse>' ],
+      'delete': [ '<Del>' ],
+      'set_value': [ '<C-CR>', '<leader><CR>' ]
+    },
+    'stack_trace': {
+      'expand_or_jump': [ '<CR>', '<2-LeftMouse>' ],
+      'focus_thread': [ '<leader><CR>' ],
+    }
+  },
+
+  # Custom
+  'java_hotcodereplace_mode': 'ask',
 }
 
 
@@ -69,9 +95,44 @@ if hasattr( vim, 'Dictionary' ):
   DICT_TYPE = vim.Dictionary
 
 
-def Dict( option: str ):
-  d = DICT_TYPE( DEFAULTS.get( option, {} ) )
-  d.update( utils.GetVimValue( vim.vars,
-                               f'vimspector_{ option }',
-                               {} ) )
-  return d
+def Dict( option ):
+  return _UpdateDict( DICT_TYPE( DEFAULTS.get( option, {} ) ),
+                      vim.vars.get( f'vimspector_{ option }', DICT_TYPE() ) )
+
+
+def _UpdateDict( target, override ):
+  """Apply the updates in |override| to the dict |target|. This is like
+  dict.update, but recursive. i.e. if the existing element is a dict, then
+  override elements of the sub-dict rather than wholesale replacing.
+  e.g.
+  UpdateDict(
+    {
+      'outer': { 'inner': { 'key': 'oldValue', 'existingKey': True } }
+    },
+    {
+      'outer': { 'inner': { 'key': 'newValue' } },
+      'newKey': { 'newDict': True },
+    }
+  )
+  yields:
+    {
+      'outer': {
+        'inner': {
+           'key': 'newValue',
+           'existingKey': True
+        }
+      },
+      'newKey': { newDict: True }
+    }
+  """
+
+  for key, value in override.items():
+    current_value = target.get( key )
+    if not isinstance( current_value, DICT_TYPE ):
+      target[ key ] = value
+    elif isinstance( value, DICT_TYPE ):
+      target[ key ] = _UpdateDict( current_value, value )
+    else:
+      target[ key ] = value
+
+  return target

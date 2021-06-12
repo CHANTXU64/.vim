@@ -86,29 +86,6 @@ GADGETS = {
       },
     },
   },
-  'vscode-python': {
-    'language': 'python.legacy',
-    'enabled': False,
-    'download': {
-      'url': 'https://github.com/Microsoft/vscode-python/releases/download/'
-             '${version}/${file_name}',
-    },
-    'all': {
-      'version': '2019.11.50794',
-      'file_name': 'ms-python-release.vsix',
-      'checksum':
-        '6a9edf9ecabed14aac424e6007858068204a3638bf3bb4f235bd6035d823acc6',
-    },
-    'adapters': {
-      "vscode-python": {
-        "name": "vscode-python",
-        "command": [
-          "node",
-          "${gadgetDir}/vscode-python/out/client/debugger/debugAdapter/main.js",
-        ],
-      }
-    },
-  },
   'debugpy': {
     'language': 'python',
     'download': {
@@ -159,7 +136,8 @@ GADGETS = {
         "port": "${DAPPort}",
         "configuration": {
           "cwd": "${workspaceRoot}"
-        }
+        },
+        'custom_handler': 'vimspector.custom.java.JavaDebugAdapter'
       }
     },
   },
@@ -233,15 +211,15 @@ GADGETS = {
       'format': 'tar',
     },
     'all': {
-      'version': '1.2.0-635'
+      'version': '1.2.0-782'
     },
     'macos': {
       'file_name': 'netcoredbg-osx.tar.gz',
       'checksum':
-        '71c773e34d358950f25119bade7e3081c4c2f9d71847bd49027ca5792e918beb',
+        '',
     },
     'linux': {
-      'file_name': 'netcoredbg-linux-bionic.tar.gz',
+      'file_name': 'netcoredbg-linux-bionic-amd64.tar.gz',
       'checksum': '',
     },
     'windows': {
@@ -264,41 +242,6 @@ GADGETS = {
         },
         "configuration": {
           "cwd": "${workspaceRoot}"
-        }
-      },
-    }
-  },
-  'vscode-mono-debug': {
-    'language': 'csharp',
-    'enabled': False,
-    'download': {
-      'url': 'https://marketplace.visualstudio.com/_apis/public/gallery/'
-             'publishers/ms-vscode/vsextensions/mono-debug/${version}/'
-             'vspackage',
-      'target': 'vscode-mono-debug.vsix.gz',
-      'format': 'zip.gz',
-    },
-    'all': {
-      'file_name': 'vscode-mono-debug.vsix',
-      'version': '0.16.2',
-      'checksum':
-          '121eca297d83daeeb1e6e1d791305d1827998dbd595c330086b3b94d33dba3b9',
-    },
-    'adapters': {
-      'vscode-mono-debug': {
-        "name": "mono-debug",
-        "command": [
-          "mono",
-          "${gadgetDir}/vscode-mono-debug/bin/Release/mono-debug.exe"
-        ],
-        "attach": {
-          "pidSelect": "none"
-        },
-        "configuration": {
-          "cwd": "${workspaceRoot}",
-          "console": "integratedTerminal",
-          "args": [],
-          "env": {}
         }
       },
     }
@@ -376,14 +319,14 @@ GADGETS = {
     'enabled': False,
     'download': {
       'url':
-        'https://github.com/felixfbecker/vscode-php-debug/releases/download/'
+        'https://github.com/xdebug/vscode-php-debug/releases/download/'
         '${version}/${file_name}',
     },
     'all': {
-      'version': 'v1.13.0',
-      'file_name': 'php-debug.vsix',
+      'version': 'v1.16.0',
+            'file_name': 'php-debug-1.16.0.vsix',
       'checksum':
-        '8a51e593458fd14623c1c89ebab87347b087d67087717f18bcf77bb788052718',
+        '62d210f7b87b21315c37ea10a1a5dbae376ff9f963b8f8cf33361e01413731be',
     },
     'adapters': {
       'vscode-php-debug': {
@@ -451,12 +394,12 @@ GADGETS = {
              '${version}/${file_name}',
     },
     'all': {
-      'version': 'v1.5.3',
+      'version': 'v1.6.1',
     },
     'macos': {
       'file_name': 'codelldb-x86_64-darwin.vsix',
       'checksum':
-        '7505bc1cdfcfd1cb981e2996aec62d63577440709bac31dcadb41a3b4b44631a',
+        'b1c998e7421beea9f3ba21aa5706210bb2249eba93c99b809247ee831075262f',
       'make_executable': [
         'adapter/codelldb',
         'lldb/bin/debugserver',
@@ -467,7 +410,7 @@ GADGETS = {
     'linux': {
       'file_name': 'codelldb-x86_64-linux.vsix',
       'checksum':
-        'ce7efc3e94d775368e5942a02bf5c326b6809a0b4c389f79ffa6a8f6f6b72139',
+        'f2a36cb6971fd95a467cf1a7620e160914e8f11bf82929932ee0aa5afbf6ae6a',
       'make_executable': [
         'adapter/codelldb',
         'lldb/bin/lldb',
@@ -478,7 +421,7 @@ GADGETS = {
     'windows': {
       'file_name': 'codelldb-x86_64-windows.vsix',
       'checksum':
-        '',
+        'ca6a6525bf7719dc95265dc630b3cc817a8c0393b756fd242b710805ffdfb940',
       'make_executable': []
     },
     'adapters': {

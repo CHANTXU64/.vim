@@ -21,6 +21,7 @@ import shlex
 import subprocess
 import functools
 import vim
+import importlib
 
 from vimspector import ( breakpoints,
                          code,
@@ -99,7 +100,7 @@ class DebugSession( object ):
 
     return launch_config_file, configurations
 
-  def Start( self, launch_variables = None ):
+  def Start( self, force_choose=False, launch_variables = None ):
     # We mutate launch_variables, so don't mutate the default argument.
     # https://docs.python-guide.org/writing/gotchas/#mutable-default-arguments
     if launch_variables is None:
@@ -134,6 +135,11 @@ class DebugSession( object ):
 
     if 'configuration' in launch_variables:
       configuration_name = launch_variables.pop( 'configuration' )
+    elif force_choose:
+      # Always display the menu
+      configuration_name = utils.SelectFromList(
+        'Which launch configuration?',
+        sorted( configurations.keys() ) )
     elif ( len( configurations ) == 1 and
            next( iter( configurations.values() ) ).get( "autoselect", True ) ):
       configuration_name = next( iter( configurations.keys() ) )
@@ -320,7 +326,7 @@ class DebugSession( object ):
 
     if self._connection:
       self._logger.debug( "_StopDebugAdapter with callback: start" )
-      self._StopDebugAdapter( start )
+      self._StopDebugAdapter( interactive = False, callback = start )
       return
 
     start()
@@ -385,14 +391,15 @@ class DebugSession( object ):
     self._connection = None
 
   @IfConnected()
-  def Stop( self ):
+  def Stop( self, interactive = False ):
     self._logger.debug( "Stop debug adapter with no callback" )
-    self._StopDebugAdapter()
+    self._StopDebugAdapter( interactive = interactive )
 
-  def Reset( self ):
+  def Reset( self, interactive = False ):
     if self._connection:
       self._logger.debug( "Stop debug adapter with callback : self._Reset()" )
-      self._StopDebugAdapter( lambda: self._Reset() )
+      self._StopDebugAdapter( interactive = interactive,
+                              callback = lambda: self._Reset() )
     else:
       self._Reset()
 
@@ -412,6 +419,7 @@ class DebugSession( object ):
       self._outputView.Reset()
       self._codeView.Reset()
       vim.command( 'tabclose!' )
+      vim.command( 'doautocmd <nomodeline> User VimspectorDebugEnded' )
       self._stackTraceView = None
       self._variablesView = None
       self._outputView = None
@@ -520,8 +528,12 @@ class DebugSession( object ):
     self._stackTraceView.SetCurrentThread()
 
   @IfConnected()
-  def ExpandVariable( self ):
-    self._variablesView.ExpandVariable()
+  def ExpandVariable( self, buf = None, line_num = None ):
+    self._variablesView.ExpandVariable( buf, line_num )
+
+  @IfConnected()
+  def SetVariableValue( self, new_value = None, buf = None, line_num = None ):
+    self._variablesView.SetVariableValue( new_value, buf, line_num )
 
   @IfConnected()
   def AddWatch( self, expression ):
@@ -538,13 +550,13 @@ class DebugSession( object ):
   def DeleteWatch( self ):
     self._variablesView.DeleteWatch()
 
+
   @IfConnected()
-  def ShowBalloon( self, winnr, expression ):
-    """Proxy: ballonexpr -> variables.ShowBallon"""
+  def ShowEvalBalloon( self, winnr, expression, is_hover ):
     frame = self._stackTraceView.GetCurrentFrame()
     # Check if RIP is in a frame
     if frame is None:
-      self._logger.debug( 'Balloon: Not in a stack frame' )
+      self._logger.debug( 'Tooltip: Not in a stack frame' )
       return ''
 
     # Check if cursor in code window
@@ -555,11 +567,23 @@ class DebugSession( object ):
       return ''
 
     # Return variable aware function
-    return self._variablesView.ShowBalloon( frame, expression )
+    return self._variablesView.VariableEval( frame, expression, is_hover )
+
+
+  def CleanUpTooltip( self ):
+    return self._variablesView.CleanUpTooltip()
 
   @IfConnected()
   def ExpandFrameOrThread( self ):
     self._stackTraceView.ExpandFrameOrThread()
+
+  @IfConnected()
+  def UpFrame( self ):
+    self._stackTraceView.UpFrame()
+
+  @IfConnected()
+  def DownFrame( self ):
+    self._stackTraceView.DownFrame()
 
   def ToggleLog( self ):
     if self._HasUI():
@@ -622,6 +646,18 @@ class DebugSession( object ):
     return response[ 'body' ][ 'targets' ]
 
 
+  @IfConnected( otherwise=[] )
+  def GetCommandLineCompletions( self, ArgLead, prev_non_keyword_char ):
+    items = []
+    for candidate in self.GetCompletionsSync( ArgLead, prev_non_keyword_char ):
+      label = candidate.get( 'text', candidate[ 'label' ] )
+      start = prev_non_keyword_char - 1
+      if 'start' in candidate and 'length' in candidate:
+        start = candidate[ 'start' ]
+      items.append( ArgLead[ 0 : start ] + label )
+
+    return items
+
   def RefreshSigns( self, file_name ):
     if self._connection:
       self._codeView.Refresh( file_name )
@@ -633,6 +669,45 @@ class DebugSession( object ):
     vim.command( 'tab split' )
     self._uiTab = vim.current.tabpage
 
+    mode = settings.Get( 'ui_mode' )
+
+    if mode == 'auto':
+      # Go vertical if there isn't enough horizontal space for at least:
+      #  the left bar width
+      #  + the code min width
+      #  + the terminal min width
+      #  + enough space for a sign column and number column?
+      min_width = ( settings.Int( 'sidebar_width' )
+                    + 1 + 2 + 3
+                    + settings.Int( 'code_minwidth' )
+                    + 1 + settings.Int( 'terminal_minwidth' ) )
+
+      min_height = ( settings.Int( 'code_minheight' ) + 1 +
+                     settings.Int( 'topbar_height' ) + 1 +
+                     settings.Int( 'bottombar_height' ) + 1 +
+                     2 )
+
+      mode = ( 'vertical'
+               if vim.options[ 'columns' ] < min_width
+               else 'horizontal' )
+
+      if vim.options[ 'lines' ] < min_height:
+        mode = 'horizontal'
+
+      self._logger.debug( 'min_width/height: %s/%s, actual: %s/%s - result: %s',
+                          min_width,
+                          min_height,
+                          vim.options[ 'columns' ],
+                          vim.options[ 'lines' ],
+                          mode )
+
+    if mode == 'vertical':
+      self._SetUpUIVertical()
+    else:
+      self._SetUpUIHorizontal()
+
+
+  def _SetUpUIHorizontal( self ):
     # Code window
     code_window = vim.current.window
     self._codeView = code.CodeView( code_window, self._api_prefix )
@@ -673,12 +748,73 @@ class DebugSession( object ):
     # TODO: If/when we support multiple sessions, we'll need some way to
     # indicate which tab was created and store all the tabs
     vim.vars[ 'vimspector_session_windows' ] = {
+      'mode': 'horizontal',
       'tabpage': self._uiTab.number,
       'code': utils.WindowID( code_window, self._uiTab ),
       'stack_trace': utils.WindowID( stack_trace_window, self._uiTab ),
       'variables': utils.WindowID( vars_window, self._uiTab ),
       'watches': utils.WindowID( watch_window, self._uiTab ),
       'output': utils.WindowID( output_window, self._uiTab ),
+      'eval': None # this is going to be updated every time eval popup is opened
+    }
+    with utils.RestoreCursorPosition():
+      with utils.RestoreCurrentWindow():
+        with utils.RestoreCurrentBuffer( vim.current.window ):
+          vim.command( 'doautocmd User VimspectorUICreated' )
+
+
+  def _SetUpUIVertical( self ):
+    # Code window
+    code_window = vim.current.window
+    self._codeView = code.CodeView( code_window, self._api_prefix )
+
+    # Call stack
+    vim.command(
+      f'topleft { settings.Int( "topbar_height" ) }new' )
+    stack_trace_window = vim.current.window
+    one_third = int( vim.eval( 'winwidth( 0 )' ) ) / 3
+    self._stackTraceView = stack_trace.StackTraceView( self,
+                                                       stack_trace_window )
+
+
+    # Watches
+    vim.command( 'leftabove vertical new' )
+    watch_window = vim.current.window
+
+    # Variables
+    vim.command( 'leftabove vertical new' )
+    vars_window = vim.current.window
+
+
+    with utils.LetCurrentWindow( vars_window ):
+      vim.command( f'{ one_third }wincmd |' )
+    with utils.LetCurrentWindow( watch_window ):
+      vim.command( f'{ one_third }wincmd |' )
+    with utils.LetCurrentWindow( stack_trace_window ):
+      vim.command( f'{ one_third }wincmd |' )
+
+    self._variablesView = variables.VariablesView( vars_window,
+                                                   watch_window )
+
+
+    # Output/logging
+    vim.current.window = code_window
+    vim.command( f'rightbelow { settings.Int( "bottombar_height" ) }new' )
+    output_window = vim.current.window
+    self._outputView = output.DAPOutputView( output_window,
+                                             self._api_prefix )
+
+    # TODO: If/when we support multiple sessions, we'll need some way to
+    # indicate which tab was created and store all the tabs
+    vim.vars[ 'vimspector_session_windows' ] = {
+      'mode': 'vertical',
+      'tabpage': self._uiTab.number,
+      'code': utils.WindowID( code_window, self._uiTab ),
+      'stack_trace': utils.WindowID( stack_trace_window, self._uiTab ),
+      'variables': utils.WindowID( vars_window, self._uiTab ),
+      'watches': utils.WindowID( watch_window, self._uiTab ),
+      'output': utils.WindowID( output_window, self._uiTab ),
+      'eval': None # this is going to be updated every time eval popup is opened
     }
     with utils.RestoreCursorPosition():
       with utils.RestoreCurrentWindow():
@@ -758,43 +894,80 @@ class DebugSession( object ):
                                                  self._splash_screen,
                                                  "Unable to start adapter" )
     else:
+      if 'custom_handler' in self._adapter:
+        spec = self._adapter[ 'custom_handler' ]
+        if isinstance( spec, dict ):
+          module = spec[ 'module' ]
+          cls = spec[ 'class' ]
+        else:
+          module, cls = spec.rsplit( '.', 1 )
+
+        CustomHandler = getattr( importlib.import_module( module ), cls )
+        handlers = [ CustomHandler( self ), self ]
+      else:
+        handlers = [ self ]
+
       self._connection = debug_adapter_connection.DebugAdapterConnection(
-        self,
+        handlers,
         lambda msg: utils.Call(
           "vimspector#internal#{}#Send".format( self._connection_type ),
           msg ) )
 
     self._logger.info( 'Debug Adapter Started' )
 
-  def _StopDebugAdapter( self, callback = None ):
-    self._splash_screen = utils.DisplaySplash(
-      self._api_prefix,
-      self._splash_screen,
-      "Shutting down debug adapter..." )
-
-    def handler( *args ):
-      self._splash_screen = utils.HideSplash( self._api_prefix,
-                                              self._splash_screen )
-
-      if callback:
-        self._logger.debug( "Setting server exit handler before disconnect" )
-        assert not self._run_on_server_exit
-        self._run_on_server_exit = callback
-
-      vim.eval( 'vimspector#internal#{}#StopDebugSession()'.format(
-        self._connection_type ) )
-
+  def _StopDebugAdapter( self, interactive = False, callback = None ):
     arguments = {}
-    if self._server_capabilities.get( 'supportTerminateDebuggee' ):
-      # If we attached, we should _not_ terminate the debuggee
-      arguments[ 'terminateDebuggee' ] = False
 
-    self._connection.DoRequest( handler, {
-      'command': 'disconnect',
-      'arguments': arguments,
-    }, failure_handler = handler, timeout = 5000 )
+    def disconnect():
+      self._splash_screen = utils.DisplaySplash(
+        self._api_prefix,
+        self._splash_screen,
+        "Shutting down debug adapter..." )
 
-    # TODO: Use the 'tarminate' request if supportsTerminateRequest set
+      def handler( *args ):
+        self._splash_screen = utils.HideSplash( self._api_prefix,
+                                                self._splash_screen )
+
+        if callback:
+          self._logger.debug( "Setting server exit handler before disconnect" )
+          assert not self._run_on_server_exit
+          self._run_on_server_exit = callback
+
+        vim.eval( 'vimspector#internal#{}#StopDebugSession()'.format(
+          self._connection_type ) )
+
+      self._connection.DoRequest( handler, {
+        'command': 'disconnect',
+        'arguments': arguments,
+      }, failure_handler = handler, timeout = 5000 )
+
+    if not interactive:
+      disconnect()
+    elif not self._server_capabilities.get( 'supportTerminateDebuggee' ):
+      disconnect()
+    elif not self._stackTraceView.AnyThreadsRunning():
+      disconnect()
+    else:
+      def handle_choice( choice ):
+        if choice == 1:
+          # yes
+          arguments[ 'terminateDebuggee' ] = True
+        elif choice == 2:
+          # no
+          arguments[ 'terminateDebuggee' ] = False
+        elif choice <= 0:
+          # Abort
+          return
+        # Else, use server default
+
+        disconnect()
+
+      utils.Confirm( self._api_prefix,
+                     "Terminate debuggee?",
+                     handle_choice,
+                     default_value = 3,
+                     options = [ '(Y)es', '(N)o', '(D)efault' ],
+                     keys = [ 'y', 'n', 'd' ] )
 
 
   def _PrepareAttach( self, adapter_config, launch_config ):
@@ -975,6 +1148,7 @@ class DebugSession( object ):
     def handle_initialize_response( msg ):
       self._server_capabilities = msg.get( 'body' ) or {}
       self._breakpoints.SetServerCapabilities( self._server_capabilities )
+      self._variablesView.SetServerCapabilities( self._server_capabilities )
       self._Launch()
 
     self._connection.DoRequest( handle_initialize_response, {
@@ -1017,14 +1191,14 @@ class DebugSession( object ):
       self._splash_screen = utils.DisplaySplash(
         self._api_prefix,
         self._splash_screen,
-        "Attaching to debugee..." )
+        "Attaching to debuggee..." )
 
       self._PrepareAttach( self._adapter, self._launch_config )
     elif request == "launch":
       self._splash_screen = utils.DisplaySplash(
         self._api_prefix,
         self._splash_screen,
-        "Launching debugee..." )
+        "Launching debuggee..." )
 
       # FIXME: This cmdLine hack is not fun.
       self._PrepareLaunch( self._configuration.get( 'remote-cmdLine', [] ),
@@ -1096,6 +1270,37 @@ class DebugSession( object ):
       self._stackTraceView.LoadThreads( True )
 
 
+  @IfConnected()
+  @RequiresUI()
+  def PrintDebugInfo( self ):
+    def Line():
+      return ( "--------------------------------------------------------------"
+               "------------------" )
+
+    def Pretty( obj ):
+      if obj is None:
+        return [ "None" ]
+      return [ Line() ] + json.dumps( obj, indent=2 ).splitlines() + [ Line() ]
+
+
+    debugInfo = [
+      "Vimspector Debug Info",
+      Line(),
+      f"ConnectionType: { self._connection_type }",
+      "Adapter: " ] + Pretty( self._adapter ) + [
+      "Configuration: " ] + Pretty( self._configuration ) + [
+      f"API Prefix: { self._api_prefix }",
+      f"Launch/Init: { self._launch_complete } / { self._init_complete }",
+      f"Workspace Root: { self._workspace_root }",
+      "Launch Config: " ] + Pretty( self._launch_config ) + [
+      "Server Capabilities: " ] + Pretty( self._server_capabilities ) + [
+    ]
+
+    self._outputView.ClearCategory( 'DebugInfo' )
+    self._outputView.Print( "DebugInfo", debugInfo )
+    self.ShowOutput( "DebugInfo" )
+
+
   def OnEvent_loadedSource( self, msg ):
     pass
 
@@ -1158,13 +1363,25 @@ class DebugSession( object ):
 
     self._connection.DoResponse( message, None, response )
 
-  def OnEvent_exited( self, message ):
-    utils.UserMessage( 'The debugee exited with status code: {}'.format(
-      message[ 'body' ][ 'exitCode' ] ) )
+  def OnEvent_terminated( self, message ):
+    # The debugging _session_ has terminated. This does not mean that the
+    # debuggee has terminated (that's the exited event).
+    #
+    # We will handle this when the server actually exists.
+    #
+    # FIXME we should always wait for this event before disconnecting closing
+    # any socket connection
     self.SetCurrentFrame( None )
 
+
+  def OnEvent_exited( self, message ):
+    utils.UserMessage( 'The debuggee exited with status code: {}'.format(
+      message[ 'body' ][ 'exitCode' ] ) )
+    self._stackTraceView.OnExited( message )
+    self._codeView.SetCurrentFrame( None )
+
   def OnEvent_process( self, message ):
-    utils.UserMessage( 'The debugee was started: {}'.format(
+    utils.UserMessage( 'The debuggee was started: {}'.format(
       message[ 'body' ][ 'name' ] ) )
 
   def OnEvent_module( self, message ):
@@ -1203,11 +1420,6 @@ class DebugSession( object ):
       callback()
     else:
       self._logger.debug( "No server exit handler" )
-
-  def OnEvent_terminated( self, message ):
-    # We will handle this when the server actually exists
-    utils.UserMessage( "Debugging was terminated by the server." )
-    self.SetCurrentFrame( None )
 
   def OnEvent_output( self, message ):
     if self._outputView:

@@ -33,7 +33,7 @@ BUFFER_MAP = {
   'console': 'Console',
   'stdout': 'Console',
   'stderr': 'stderr',
-  'telemetry': 'Telemetry',
+  'telemetry': None,
 }
 
 
@@ -64,8 +64,11 @@ class OutputView( object ):
     self._api_prefix = api_prefix
     VIEWS.add( self )
 
-  def Print( self, categroy, text ):
-    self._Print( 'server', text.splitlines() )
+  def Print( self, category, text: typing.Union[ str, list ] ):
+    if not isinstance( text, list ):
+      text = text.splitlines()
+
+    self._Print( category, text )
 
   def OnOutput( self, event ):
     category = CategoryToBuffer( event.get( 'category' ) or 'output' )
@@ -77,6 +80,10 @@ class OutputView( object ):
     self._Print( category, text_lines )
 
   def _Print( self, category, text_lines ):
+    if category is None:
+      # This category is supressed
+      return
+
     if category not in self._buffers:
       self._CreateBuffer( category )
 
@@ -100,12 +107,25 @@ class OutputView( object ):
 
   def Clear( self ):
     for category, tab_buffer in self._buffers.items():
-      if tab_buffer.is_job:
-        utils.CleanUpCommand( category, self._api_prefix )
-      utils.CleanUpHiddenBuffer( tab_buffer.buf )
+      self._CleanUpBuffer( category, tab_buffer )
 
     # FIXME: nunmenu the WinBar ?
     self._buffers = {}
+
+
+  def ClearCategory( self, category: str ):
+    if category not in self._buffers:
+      return
+
+    self._CleanUpBuffer( category, self._buffers[ category ] )
+
+
+  def _CleanUpBuffer( self, category: str, tab_buffer: TabBuffer ):
+    if tab_buffer.is_job:
+      utils.CleanUpCommand( category, self._api_prefix )
+
+    utils.CleanUpHiddenBuffer( tab_buffer.buf )
+
 
   def WindowIsValid( self ):
     return self._window.valid
@@ -230,7 +250,7 @@ class OutputView( object ):
           raise
 
       vim.command(
-        "nnoremenu  1.{0} WinBar.{1}{2} "
+        "nnoremenu <silent> 1.{0} WinBar.{1}{2} "
         ":call vimspector#ShowOutputInWindow( {3}, '{1}' )<CR>".format(
           tab_buffer.index,
           utils.Escape( category ),
@@ -251,7 +271,8 @@ class DAPOutputView( OutputView ):
 
     self._connection = None
     for b in set( BUFFER_MAP.values() ):
-      self._CreateBuffer( b )
+      if b is not None:
+        self._CreateBuffer( b )
 
     self.AddLogFileView()
     self._ShowOutput( 'Console' )

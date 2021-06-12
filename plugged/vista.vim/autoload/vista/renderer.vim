@@ -13,10 +13,12 @@ let s:icons = {
 \    'variables': "\uf71b",
 \    'const': "\uf8ff",
 \    'constant': "\uf8ff",
+\    'constructor': "\uf976",
 \    'method': "\uf6a6",
 \    'package': "\ue612",
 \    'packages': "\ue612",
 \    'enum': "\uf702",
+\    'enummember': "\uf282",
 \    'enumerator': "\uf702",
 \    'module': "\uf136",
 \    'modules': "\uf136",
@@ -70,7 +72,7 @@ function! vista#renderer#Decorate(kind) abort
 endfunction
 
 function! s:Render(data) abort
-  if g:vista.provider ==# 'coc'
+  if g:vista.provider ==# 'coc' && type(a:data) == v:t_list
     return vista#renderer#hir#lsp#Coc(a:data)
   elseif g:vista.provider ==# 'ctags' && g:vista#renderer#ctags ==# 'default'
     return vista#renderer#hir#ctags#Render()

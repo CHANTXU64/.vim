@@ -13,6 +13,13 @@
 " See the License for the specific language governing permissions and
 " limitations under the License.
 
+if !has( 'python3' )
+  echohl WarningMsg
+  echom 'Vimspector unavailable: Requires Vim compiled with +python3'
+  echohl None
+  finish
+endif
+
 " Boilerplate {{{
 let s:save_cpo = &cpoptions
 set cpoptions&vim
@@ -35,6 +42,8 @@ let s:mappings = get( g:, 'vimspector_enable_mappings', '' )
 
 nnoremap <silent> <Plug>VimspectorContinue
       \ :<c-u>call vimspector#Continue()<CR>
+nnoremap <silent> <Plug>VimspectorLaunch
+      \ :<c-u>call vimspector#Launch( v:true )<CR>
 nnoremap <silent> <Plug>VimspectorStop
       \ :<c-u>call vimspector#Stop()<CR>
 nnoremap <silent> <Plug>VimspectorRestart
@@ -60,6 +69,18 @@ nnoremap <silent> <Plug>VimspectorStepOut
 nnoremap <silent> <Plug>VimspectorRunToCursor
       \ :<c-u>call vimspector#RunToCursor()<CR>
 
+" Eval for normal mode
+nnoremap <silent> <Plug>VimspectorBalloonEval
+      \ :<c-u>call vimspector#ShowEvalBalloon( 0 )<CR>
+" And for visual modes
+xnoremap <silent> <Plug>VimspectorBalloonEval
+      \ :<c-u>call vimspector#ShowEvalBalloon( 1 )<CR>
+
+nnoremap <silent> <Plug>VimspectorUpFrame
+      \ :<c-u>call vimspector#UpFrame()<CR>
+nnoremap <silent> <Plug>VimspectorDownFrame
+      \ :<c-u>call vimspector#DownFrame()<CR>
+
 if s:mappings ==# 'VISUAL_STUDIO'
   nmap <F5>         <Plug>VimspectorContinue
   nmap <S-F5>       <Plug>VimspectorStop
@@ -72,6 +93,7 @@ if s:mappings ==# 'VISUAL_STUDIO'
   nmap <S-F11>      <Plug>VimspectorStepOut
 elseif s:mappings ==# 'HUMAN'
   nmap <F5>         <Plug>VimspectorContinue
+  nmap <leader><F5> <Plug>VimspectorLaunch
   nmap <F3>         <Plug>VimspectorStop
   nmap <F4>         <Plug>VimspectorRestart
   nmap <F6>         <Plug>VimspectorPause
@@ -93,12 +115,15 @@ command! -bar -nargs=? -complete=custom,vimspector#CompleteOutput
 command! -bar
       \ VimspectorToggleLog
       \ call vimspector#ToggleLog()
-command! -bar -nargs=1 -complete=custom,vimspector#CompleteExpr
+command! -bar
+      \ VimspectorDebugInfo
+      \ call vimspector#PrintDebugInfo()
+command! -nargs=1 -complete=custom,vimspector#CompleteExpr
       \ VimspectorEval
       \ call vimspector#Evaluate( <f-args> )
 command! -bar
       \ VimspectorReset
-      \ call vimspector#Reset()
+      \ call vimspector#Reset( { 'interactive': v:true } )
 
 " Installer commands
 command! -bar -bang -nargs=* -complete=custom,vimspector#CompleteInstall
@@ -118,8 +143,11 @@ augroup VimspectorUserAutoCmds
   autocmd!
   autocmd User VimspectorUICreated      silent
   autocmd User VimspectorTerminalOpened silent
+  autocmd user VimspectorJumpedToFrame  silent
+  autocmd user VimspectorDebugEnded     silent
 augroup END
 
+" FIXME: Only register this _while_ debugging is active
 augroup Vimspector
   autocmd!
   autocmd BufNew * call vimspector#OnBufferCreated( expand( '<afile>' ) )

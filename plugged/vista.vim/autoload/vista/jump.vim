@@ -2,6 +2,10 @@
 " MIT License
 " vim: ts=2 sw=2 sts=2 et
 
+function! s:EscapeForVimRegexp(str) abort
+  return escape(a:str, '^$.*?/\[]')
+endfunction
+
 " Jump to the source line containing the given tag
 function! vista#jump#TagLine(tag) abort
   let cur_line = split(getline('.'), ':')
@@ -19,7 +23,7 @@ function! vista#jump#TagLine(tag) abort
   endif
 
   try
-    let [_, start, _] = matchstrpos(line[0], a:tag)
+    let [_, start, _] = matchstrpos(line[0], s:EscapeForVimRegexp(a:tag))
   catch /^Vim\%((\a\+)\)\=:E869/
     let start  = -1
   endtry
@@ -27,7 +31,10 @@ function! vista#jump#TagLine(tag) abort
   call vista#source#GotoWin()
   " Move cursor to the column of tag located, otherwise the first column
   call vista#util#Cursor(lnum, start > -1 ? start+1 : 1)
-  normal! zz
+
+  if g:vista_enable_centering_jump
+    normal! zz
+  endif
 
   call call('vista#util#Blink', g:vista_blink)
 

@@ -413,7 +413,7 @@ function! s:undo_hunk(sy, vcs, diff) abort
     return
   endif
 
-  let [_old_line, _old_count, new_line, _new_count] = sy#sign#parse_hunk(header)
+  let [_old_line, _old_count, new_line, new_count] = sy#sign#parse_hunk(header)
 
   for line in hunk
     let op = line[0]
@@ -425,7 +425,7 @@ function! s:undo_hunk(sy, vcs, diff) abort
       endif
       let new_line += 1
     elseif op == '-'
-      call append(new_line-1, text)
+      call append(new_count == 0 ? new_line : new_line - 1, text)
       let new_line += 1
     elseif op == '+'
       if text != getline(new_line)
@@ -469,7 +469,7 @@ endfunction
 function! s:wrap_cmd(bufnr, vcs, cmd) abort
   if has('win32')
     if has('nvim')
-      let cmd = &shell =~ '\v%(cmd|powershell)' ? a:cmd : ['sh', '-c', a:cmd]
+      let cmd = &shell =~ '\v%(cmd|powershell|pwsh)' ? a:cmd : ['sh', '-c', a:cmd]
     else
       if &shell =~ 'cmd'
         let cmd = join([&shell, &shellcmdflag, '(', a:cmd, ')'])
