@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pilrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pilrc', 'syntax/pilrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	pilrc - a resource compiler for Palm OS development
@@ -136,5 +138,3 @@ hi def link pilrcIdentifier		Number
 
 
 let b:current_syntax = "pilrc"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ch') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ch', 'indent/ch.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Ch
@@ -18,5 +20,3 @@ let b:did_indent = 1
 
 " Ch indenting is built-in, thus this is very simple
 setlocal cindent
-
-endif

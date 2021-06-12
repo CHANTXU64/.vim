@@ -1,9 +1,12 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'awk') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'awk', 'ftplugin/awk.vim')
+  finish
+endif
 
 " Vim filetype plugin
-" Language:	awk, nawk, gawk, mawk
-" Maintainer:	Antonio Colombo <azc100@gmail.com>
-" Last Change:	2020 Sep 28
+" Language:		awk, nawk, gawk, mawk
+" Maintainer:		Doug Kearns <dougkearns@gmail.com>
+" Previous Maintainer:	Antonio Colombo <azc100@gmail.com>
+" Last Change:		2020 Sep 28
 
 " This plugin was prepared by Mark Sikora
 " This plugin was updated as proposed by Doug Kearns
@@ -55,5 +58,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: nowrap sw=2 sts=2 ts=8
-
-endif

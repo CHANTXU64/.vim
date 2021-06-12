@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'treetop') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'treetop', 'indent/treetop.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             Treetop
@@ -38,5 +40,3 @@ function GetTreetopIndent()
 
   retur ind
 endfunction
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hex') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hex', 'syntax/hex.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Intel HEX
@@ -89,5 +91,3 @@ hi def link hexChecksum            DiffChange
 let b:current_syntax = "hex"
 
 " vim: ts=8
-
-endif

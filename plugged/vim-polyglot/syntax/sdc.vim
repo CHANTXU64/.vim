@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sdc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sdc', 'syntax/sdc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     SDC - Synopsys Design Constraints
@@ -41,5 +43,3 @@ hi def link sdcFlags		Special
 let b:current_syntax = "sdc"
 
 " vim: ts=8
-
-endif

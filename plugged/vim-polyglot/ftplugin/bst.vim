@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bst') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bst', 'ftplugin/bst.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	bst
@@ -15,5 +17,3 @@ setlocal comments=:%
 setlocal fo-=t fo+=croql
 
 let b:undo_ftplugin = "setlocal com< cms< fo<"
-
-endif

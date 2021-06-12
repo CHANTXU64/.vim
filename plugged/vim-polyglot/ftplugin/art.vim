@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'art') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'art', 'ftplugin/art.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:      ART-IM and ART*Enterprise
@@ -15,5 +17,3 @@ run ftplugin/lisp.vim
 
 setl lw-=if
 setl lw+=def-art-fun,deffacts,defglobal,defrule,defschema,for,schema,while
-
-endif

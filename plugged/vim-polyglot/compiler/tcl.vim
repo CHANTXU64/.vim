@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tcl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tcl', 'compiler/tcl.vim')
+  finish
+endif
 
 " Vim compiler file
 " Compiler:	tcl
@@ -17,5 +19,3 @@ endif
 CompilerSet makeprg=tcl
 
 CompilerSet errorformat=%EError:\ %m,%+Z\ %\\{4}(file\ \"%f\"\ line\ %l),%-G%.%#
-
-endif

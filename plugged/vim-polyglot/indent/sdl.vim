@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sdl', 'indent/sdl.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	SDL
@@ -93,5 +95,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim:sw=2
-
-endif

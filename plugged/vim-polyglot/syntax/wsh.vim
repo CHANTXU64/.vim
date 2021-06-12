@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'wsh') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'wsh', 'syntax/wsh.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Windows Scripting Host
@@ -45,5 +47,3 @@ let b:current_syntax = "wsh"
 
 let &cpo = s:wsh_cpo_save
 unlet s:wsh_cpo_save
-
-endif

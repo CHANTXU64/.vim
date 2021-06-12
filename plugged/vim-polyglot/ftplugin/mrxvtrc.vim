@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mrxvtrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mrxvtrc', 'ftplugin/mrxvtrc.vim')
+  finish
+endif
 
 " Created	: Wed 26 Apr 2006 01:20:53 AM CDT
 " Modified	: Fri 28 Apr 2006 03:24:01 AM CDT
@@ -22,5 +24,3 @@ let b:undo_ftplugin = "setl com< cms< fo<"
 
 setlocal comments=:!,:# commentstring=#\ %s
 setlocal formatoptions-=t formatoptions+=croql
-
-endif

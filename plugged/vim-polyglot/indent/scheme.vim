@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'scheme') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'scheme', 'indent/scheme.vim')
+  finish
+endif
 
 " Vim indent file
 " Language: Scheme
@@ -14,5 +16,3 @@ endif
 
 " Use the Lisp indenting
 runtime! indent/lisp.vim
-
-endif

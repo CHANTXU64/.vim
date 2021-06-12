@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'htmldjango') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'htmldjango', 'syntax/django.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Django template
@@ -83,5 +85,3 @@ hi def link djangoTodo Todo
 
 
 let b:current_syntax = "django"
-
-endif

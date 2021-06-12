@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vhdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vhdl', 'syntax/vhdl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		VHDL [VHSIC (Very High Speed Integrated Circuit) Hardware Description Language]
@@ -268,5 +270,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8
-
-endif

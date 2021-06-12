@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pinfo') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pinfo', 'syntax/pinfo.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             pinfo(1) configuration file
@@ -110,5 +112,3 @@ let b:current_syntax = "pinfo"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

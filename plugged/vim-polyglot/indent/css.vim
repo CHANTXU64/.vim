@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'css') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'css', 'indent/css.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	    CSS
@@ -84,5 +86,3 @@ endfunction
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

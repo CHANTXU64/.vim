@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lpc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lpc', 'syntax/lpc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	LPC
@@ -447,5 +449,3 @@ unlet s:cpo_save
 
 " vim:ts=8:nosta:sw=2:ai:si:
 " vim600:set fdm=marker: }}}1
-
-endif

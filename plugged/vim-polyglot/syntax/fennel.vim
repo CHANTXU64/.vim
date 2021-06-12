@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'fennel') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'fennel', 'syntax/fennel.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: FENNEL
@@ -283,5 +285,3 @@ let b:current_syntax = "fennel"
 
 let &cpo = s:cpo_sav
 unlet! s:cpo_sav
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lynx') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lynx', 'syntax/lynx.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Lynx configuration file (lynx.cfg)
@@ -140,5 +142,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8 fdm=marker:
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'falcon') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'falcon', 'indent/falcon.vim')
+  finish
+endif
 
 " Vim indent file
 " Language: Falcon
@@ -451,5 +453,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: set sw=4 sts=4 et tw=80 :
-
-endif

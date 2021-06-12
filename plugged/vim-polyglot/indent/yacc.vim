@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'yacc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'yacc', 'indent/yacc.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             YACC input file
@@ -41,5 +43,3 @@ function GetYaccIndent()
 
   return ind
 endfunction
-
-endif

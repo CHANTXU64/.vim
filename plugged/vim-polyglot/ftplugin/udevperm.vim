@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'udevperm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'udevperm', 'ftplugin/udevperm.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             udev(8) permissions file
@@ -19,5 +21,3 @@ setlocal comments=:# commentstring=#\ %s formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

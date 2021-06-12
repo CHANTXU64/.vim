@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gpg') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gpg', 'syntax/gpg.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             gpg(1) configuration file
@@ -105,5 +107,3 @@ let b:current_syntax = "gpg"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

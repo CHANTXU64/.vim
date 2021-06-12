@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mupad') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mupad', 'syntax/mupad.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    MuPAD source
@@ -283,5 +285,3 @@ hi def link mupadIdentifier	Identifier
 
 
 " TODO  More comprehensive listing.
-
-endif

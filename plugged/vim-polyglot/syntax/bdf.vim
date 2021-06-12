@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bdf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bdf', 'syntax/bdf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             BDF font definition
@@ -97,5 +99,3 @@ let b:current_syntax = "bdf"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

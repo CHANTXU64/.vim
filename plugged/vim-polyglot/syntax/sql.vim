@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sql', 'syntax/sql.vim')
+  finish
+endif
 
 " Vim syntax file loader
 " Language:    SQL
@@ -36,5 +38,3 @@ endif
 exec 'runtime syntax/'.filename.'.vim'
 
 " vim:sw=4:
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jproperties') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jproperties', 'syntax/jproperties.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Java Properties resource file (*.properties[_*])
@@ -135,5 +137,3 @@ hi def link jpropertiesError	Error
 let b:current_syntax = "jproperties"
 
 " vim:ts=8
-
-endif

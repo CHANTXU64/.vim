@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mail') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mail', 'syntax/mail.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		Mail file
@@ -112,5 +114,3 @@ let b:current_syntax = "mail"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

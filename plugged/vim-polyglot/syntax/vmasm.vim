@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vmasm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vmasm', 'syntax/vmasm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	(VAX) Macro Assembly
@@ -238,5 +240,3 @@ hi def link vmasmLabel		Type
 let b:current_syntax = "vmasm"
 
 " vim: ts=8 sw=2
-
-endif

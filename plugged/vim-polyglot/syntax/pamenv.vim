@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pamenv') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pamenv', 'syntax/pamenv.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             pam_env.conf(5) configuration file
@@ -28,5 +30,3 @@ hi def link     pamenvValue             String
 hi def link     pamenvValueWithQuote    String
 
 let b:current_syntax = "pamenv"
-
-endif

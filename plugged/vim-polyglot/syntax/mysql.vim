@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mysql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mysql', 'syntax/mysql.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     mysql
@@ -288,5 +290,3 @@ hi def link mysqlFunction           Function
 
 let b:current_syntax = "mysql"
 
-
-endif

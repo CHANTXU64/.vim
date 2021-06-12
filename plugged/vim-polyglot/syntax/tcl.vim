@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tcl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tcl', 'syntax/tcl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Tcl/Tk
@@ -274,5 +276,3 @@ hi def link tclVarRef		Identifier
 let b:current_syntax = "tcl"
 
 " vim: ts=8 noet nolist
-
-endif

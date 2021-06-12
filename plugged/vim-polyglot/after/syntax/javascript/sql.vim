@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'javascript-sql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'javascript-sql', 'after/syntax/javascript/sql.vim')
+  finish
+endif
 
 " Vim plugin
 " Language: JavaScript
@@ -22,5 +24,3 @@ hi def link sqlTaggedTemplate jsTaggedTemplate
 
 syn cluster jsExpression add=sqlTaggedTemplate
 syn cluster sqlTaggedTemplate add=sqlTemplateString
-
-endif

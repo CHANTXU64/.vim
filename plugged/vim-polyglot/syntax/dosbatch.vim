@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dosbatch') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dosbatch', 'syntax/dosbatch.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	MSDOS batch file (with NT command extensions)
@@ -147,5 +149,3 @@ hi def link dosbatchCmd		PreProc
 let b:current_syntax = "dosbatch"
 
 " vim: ts=8
-
-endif

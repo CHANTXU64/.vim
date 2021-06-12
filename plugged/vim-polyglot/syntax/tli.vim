@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tli') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tli', 'syntax/tli.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	TealInfo source files (*.tli)
@@ -58,5 +60,3 @@ hi def link tliStyle      PreProc
 let b:current_syntax = "tli"
 
 " vim: ts=8
-
-endif

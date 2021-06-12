@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hb', 'syntax/hb.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Hyper Builder
@@ -89,5 +91,3 @@ let b:current_syntax = "hb"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

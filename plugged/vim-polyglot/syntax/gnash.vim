@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gnash') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gnash', 'syntax/gnash.vim')
+  finish
+endif
 
 " Vim syntax file
 " Maintainer: 	Thilo Six
@@ -96,5 +98,3 @@ hi def link GnashKeyword    Keyword
 
 let b:current_syntax = "gnash"
 
-
-endif

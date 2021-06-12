@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nim') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nim', 'syntax/nim.vim')
+  finish
+endif
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
@@ -204,5 +206,3 @@ endif
 
 let b:current_syntax = 'nim'
 
-
-endif

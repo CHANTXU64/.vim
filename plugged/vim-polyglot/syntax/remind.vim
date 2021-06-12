@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'remind') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'remind', 'syntax/remind.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Remind
@@ -73,5 +75,3 @@ hi def link remindWarning		Error
 let b:current_syntax = "remind"
 
 " vim: ts=8 sw=2
-
-endif

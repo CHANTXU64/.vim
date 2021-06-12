@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'htmldjango') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'htmldjango', 'syntax/htmldjango.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Django HTML template
@@ -26,5 +28,3 @@ syn region djangoComment start="{%\s*comment\(\s\+.\{-}\)\?%}" end="{%\s*endcomm
 syn region djangoComBlock start="{#" end="#}" contains=djangoTodo containedin=ALLBUT,@djangoBlocks
 
 let b:current_syntax = "htmldjango"
-
-endif

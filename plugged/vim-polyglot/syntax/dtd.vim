@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dtd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dtd', 'syntax/dtd.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: DTD (Document Type Definition for XML)
@@ -161,5 +163,3 @@ unlet s:dtd_cpo_save
 let b:current_syntax = "dtd"
 
 " vim: ts=8
-
-endif

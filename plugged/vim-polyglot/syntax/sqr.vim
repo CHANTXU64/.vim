@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sqr') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sqr', 'syntax/sqr.vim')
+  finish
+endif
 
 " Vim syntax file
 "    Language: Structured Query Report Writer (SQR)
@@ -262,5 +264,3 @@ hi def link sqrError Error
 let b:current_syntax = "sqr"
 
 " vim: ts=8 sw=2
-
-endif

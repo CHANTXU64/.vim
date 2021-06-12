@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dockerfile') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dockerfile', 'ftplugin/dockerfile.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:	Dockerfile
@@ -16,5 +18,3 @@ let b:did_ftplugin = 1
 let b:undo_ftplugin = "setl commentstring<"
 
 setlocal commentstring=#\ %s
-
-endif

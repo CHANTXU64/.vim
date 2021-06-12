@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'upstreamdat') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'upstreamdat', 'syntax/upstreamdat.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		Innovation Data Processing upstream.dat file
@@ -305,5 +307,3 @@ hi def link upstreamdat_Parameter Type
 hi def link upstreamdat_Comment Comment
 
 let b:current_syntax = "upstreamdat"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'eterm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'eterm', 'indent/eterm.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             Eterm configuration file
@@ -36,5 +38,3 @@ function GetEtermIndent()
 
   return ind
 endfunction
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'verilog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'verilog', 'indent/verilog.vim')
+  finish
+endif
 
 " Language:     Verilog HDL
 " Maintainer:	Chih-Tsun Huang <cthuang@cs.nthu.edu.tw>
@@ -229,5 +231,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim:sw=2
-
-endif

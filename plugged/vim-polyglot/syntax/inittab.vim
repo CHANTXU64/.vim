@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'inittab') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'inittab', 'syntax/inittab.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: SysV-compatible init process control file `inittab'
@@ -62,5 +64,3 @@ hi def link inittabShCommand Statement
 
 
 let b:current_syntax = "inittab"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sass') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sass', 'indent/sass.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Sass
@@ -38,5 +40,3 @@ function! GetSassIndent()
 endfunction
 
 " vim:set sw=2:
-
-endif

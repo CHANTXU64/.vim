@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cdrtoc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cdrtoc', 'syntax/cdrtoc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             cdrdao(1) TOC file
@@ -537,5 +539,3 @@ let b:current_syntax = "cdrtoc"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

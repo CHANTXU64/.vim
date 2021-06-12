@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'framescript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'framescript', 'syntax/framescript.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             FrameScript v4.0
@@ -491,5 +493,3 @@ let b:current_syntax = "framescript"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

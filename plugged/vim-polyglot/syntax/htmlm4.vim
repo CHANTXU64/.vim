@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'htmlm4') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'htmlm4', 'syntax/htmlm4.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	HTML and M4
@@ -30,6 +32,4 @@ let b:current_syntax = "htmlm4"
 
 if main_syntax == 'htmlm4'
   unlet main_syntax
-endif
-
 endif

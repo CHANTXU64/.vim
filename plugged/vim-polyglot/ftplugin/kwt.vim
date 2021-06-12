@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'kwt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'kwt', 'ftplugin/kwt.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	Kimwitu++
@@ -32,5 +34,3 @@ endif
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

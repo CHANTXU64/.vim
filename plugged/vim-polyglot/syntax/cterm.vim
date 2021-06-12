@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cterm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cterm', 'syntax/cterm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Century Term Command Script
@@ -177,5 +179,3 @@ hi def link ctermNumber		Number
 let b:current_syntax = "cterm"
 
 " vim: ts=8
-
-endif

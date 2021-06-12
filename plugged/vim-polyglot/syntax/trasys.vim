@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'trasys') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'trasys', 'syntax/trasys.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     TRASYS input file
@@ -160,5 +162,3 @@ hi def link trasysTodo		Todo
 let b:current_syntax = "trasys"
 
 " vim: ts=8 sw=2
-
-endif

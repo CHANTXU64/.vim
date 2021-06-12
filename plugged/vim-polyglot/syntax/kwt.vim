@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'kwt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'kwt', 'syntax/kwt.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	kimwitu++
@@ -70,5 +72,3 @@ syn sync lines=300
 let b:current_syntax = "kwt"
 
 " vim: ts=8
-
-endif

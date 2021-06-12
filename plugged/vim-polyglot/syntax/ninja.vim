@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ninja') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ninja', 'syntax/ninja.vim')
+  finish
+endif
 
 " ninja build file syntax.
 " Language: ninja build file as described at
@@ -87,5 +89,3 @@ let b:current_syntax = "ninja"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

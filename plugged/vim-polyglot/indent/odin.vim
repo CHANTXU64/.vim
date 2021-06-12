@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'odin') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'odin', 'indent/odin.vim')
+  finish
+endif
 
 if exists("b:did_indent")
   finish
@@ -37,5 +39,3 @@ function! GetOdinIndent(lnum)
 
   return ind
 endfunction
-
-endif

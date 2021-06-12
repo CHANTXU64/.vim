@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'elf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'elf', 'syntax/elf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    ELF
@@ -82,5 +84,3 @@ hi def link elfPunct Delimiter
 let b:current_syntax = "elf"
 
 " vim:ts=8:sw=4:nocindent:smartindent:
-
-endif

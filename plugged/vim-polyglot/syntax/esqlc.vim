@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'esqlc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'esqlc', 'syntax/esqlc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	ESQL-C
@@ -58,5 +60,3 @@ hi def link esqlcPreProc	PreProc
 
 let b:current_syntax = "esqlc"
 
-
-endif

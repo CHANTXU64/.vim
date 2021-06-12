@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jal') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jal', 'syntax/jal.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	JAL
@@ -236,5 +238,3 @@ hi def link picIdentifier		Identifier
 let b:current_syntax = "jal"
 
 " vim: ts=8 sw=2
-
-endif

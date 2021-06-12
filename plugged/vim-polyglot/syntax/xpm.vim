@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xpm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xpm', 'syntax/xpm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	X Pixmap
@@ -138,5 +140,3 @@ hi def link xpmPixelString	String
 let b:current_syntax = "xpm"
 
 " vim: ts=8:sw=3:noet:
-
-endif

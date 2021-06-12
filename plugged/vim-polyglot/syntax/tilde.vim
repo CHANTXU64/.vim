@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tilde') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tilde', 'syntax/tilde.vim')
+  finish
+endif
 
 " Vim syntax file
 " This file works only for Vim6.x
@@ -41,5 +43,3 @@ hi def link	tildeSymtab	Identifier
 hi def link	tildeError	Error
 
 let b:current_syntax = "tilde"
-
-endif

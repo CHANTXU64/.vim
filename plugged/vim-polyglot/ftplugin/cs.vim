@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cs', 'ftplugin/cs.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	C#
@@ -29,5 +31,3 @@ endif
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

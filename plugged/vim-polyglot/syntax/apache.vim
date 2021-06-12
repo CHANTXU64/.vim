@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'apache') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'apache', 'syntax/apache.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Apache configuration (httpd.conf, srm.conf, access.conf, .htaccess)
@@ -203,5 +205,3 @@ hi def link apacheUserID Number
 
 
 let b:current_syntax = "apache"
-
-endif

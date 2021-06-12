@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xf86conf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xf86conf', 'indent/xf86conf.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             XFree86 Configuration File
@@ -37,5 +39,3 @@ function GetXF86ConfIndent()
 
   return ind
 endfunction
-
-endif

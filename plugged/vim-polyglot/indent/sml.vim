@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sml', 'indent/sml.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:     SML
@@ -217,5 +219,3 @@ function! GetSMLIndent()
 endfunction
 
 " vim:sw=2
-
-endif

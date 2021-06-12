@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tsscl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tsscl', 'syntax/tsscl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     TSS (Thermal Synthesizer System) Command Line
@@ -204,5 +206,3 @@ hi def link tssclScientific	Number
 let b:current_syntax = "tsscl"
 
 " vim: ts=8 sw=2
-
-endif

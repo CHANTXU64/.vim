@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'scilab') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'scilab', 'syntax/scilab.vim')
+  finish
+endif
 
 "
 " Vim syntax file
@@ -102,5 +104,3 @@ hi def link scilabOverload				Special
 let b:current_syntax = "scilab"
 
 "EOF	vim: ts=4 noet tw=100 sw=4 sts=0
-
-endif

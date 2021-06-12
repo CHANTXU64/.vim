@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gitignore') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gitignore', 'syntax/gitignore.vim')
+  finish
+endif
 
 scriptencoding utf-8
 
@@ -29,5 +31,3 @@ highlight default link gitignoreSet Character
 let b:current_syntax = 'gitignore'
 
 " vim: ts=2 et sw=2
-
-endif

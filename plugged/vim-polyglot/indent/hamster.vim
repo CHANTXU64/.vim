@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hamster') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hamster', 'indent/hamster.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:    Hamster Script 
@@ -55,5 +57,3 @@ function HamGetFreeIndent()
 endfunction
 
 " vim:sw=2 tw=80
-
-endif

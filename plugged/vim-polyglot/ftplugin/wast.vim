@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'wast') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'wast', 'ftplugin/wast.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:     WebAssembly
@@ -17,5 +19,3 @@ setlocal formatoptions-=t
 setlocal iskeyword+=$,.,/
 
 let b:undo_ftplugin = "setlocal comments< commentstring< formatoptions< iskeyword<"
-
-endif

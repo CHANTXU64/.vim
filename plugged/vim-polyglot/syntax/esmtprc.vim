@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'esmtprc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'esmtprc', 'syntax/esmtprc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Esmtp setup file (based on esmtp 0.5.0)
@@ -31,5 +33,3 @@ highlight link esmtprcIdentifier 	Identifier
 highlight link esmtprcFulladd		Include
 
 let b:current_syntax = "esmtprc"
-
-endif

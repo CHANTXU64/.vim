@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lite') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lite', 'syntax/lite.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	lite
@@ -168,5 +170,3 @@ if main_syntax == 'lite'
 endif
 
 " vim: ts=8
-
-endif

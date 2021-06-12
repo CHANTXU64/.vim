@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dhall') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dhall', 'syntax/dhall.vim')
+  finish
+endif
 
 scriptencoding utf-8
 
@@ -64,5 +66,3 @@ highlight link dhallMultilineComment Comment
 highlight link dhallHash Keyword
 
 let b:current_syntax = 'dhall'
-
-endif

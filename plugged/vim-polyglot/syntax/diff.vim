@@ -1,10 +1,12 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'diff') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'diff', 'syntax/diff.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Diff (context or unified)
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
 "               Translations by Jakson Alves de Aquino.
-" Last Change:	2016 Apr 02
+" Last Change:	2020 Dec 30
 
 " Quit when a (custom) syntax file was already loaded
 if exists("b:current_syntax")
@@ -348,11 +350,18 @@ syn match diffLine	"^---$"
 syn match diffLine	"^\d\+\(,\d\+\)\=[cda]\d\+\>.*"
 
 syn match diffFile	"^diff\>.*"
-syn match diffFile	"^+++ .*"
 syn match diffFile	"^Index: .*"
 syn match diffFile	"^==== .*"
-syn match diffOldFile	"^\*\*\* .*"
-syn match diffNewFile	"^--- .*"
+
+if search('^@@ -\S\+ +\S\+ @@', 'nw', '', 100)
+  " unified
+  syn match diffOldFile	"^--- .*"
+  syn match diffNewFile	"^+++ .*"
+else
+  " context / old style
+  syn match diffOldFile	"^\*\*\* .*"
+  syn match diffNewFile	"^--- .*"
+endif
 
 " Used by git
 syn match diffIndexLine	"^index \x\x\x\x.*"
@@ -382,5 +391,3 @@ hi def link diffComment		Comment
 let b:current_syntax = "diff"
 
 " vim: ts=8 sw=2
-
-endif

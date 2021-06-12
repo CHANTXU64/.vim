@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ld') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ld', 'indent/ld.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             ld(1) script
@@ -84,5 +86,3 @@ function GetLDIndent()
 
   return ind
 endfunction
-
-endif

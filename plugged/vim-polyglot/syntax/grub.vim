@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'grub') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'grub', 'syntax/grub.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             grub(8) configuration file
@@ -93,5 +95,3 @@ let b:current_syntax = "grub"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

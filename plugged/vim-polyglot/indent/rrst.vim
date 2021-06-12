@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rrst') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rrst', 'indent/rrst.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Rrst
@@ -47,5 +49,3 @@ function GetRrstIndent()
 endfunction
 
 " vim: sw=2
-
-endif

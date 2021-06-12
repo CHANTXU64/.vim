@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'calendar') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'calendar', 'syntax/calendar.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             calendar(1) input file
@@ -110,5 +112,3 @@ let b:current_syntax = "calendar"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mf', 'indent/mf.vim')
+  finish
+endif
 
 " METAFONT indent file
 " Language:    METAFONT
@@ -6,5 +8,3 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mf') == -1
 " Last Change: 2016 Oct 1
 
 runtime! indent/mp.vim
-
-endif

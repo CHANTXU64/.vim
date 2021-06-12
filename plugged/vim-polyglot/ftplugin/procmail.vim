@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'procmail') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'procmail', 'ftplugin/procmail.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             procmail(1) configuration file
@@ -21,5 +23,3 @@ let &l:include = '^\s*INCLUDERC\>'
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

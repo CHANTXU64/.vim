@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'msql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'msql', 'syntax/msql.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	msql
@@ -83,5 +85,3 @@ if main_syntax == 'msql'
 endif
 
 " vim: ts=8
-
-endif

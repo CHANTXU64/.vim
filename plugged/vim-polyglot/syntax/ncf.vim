@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ncf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ncf', 'syntax/ncf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Novell "NCF" Batch File
@@ -247,5 +249,3 @@ hi def link ncfSetCommandsBindCon   ncfSetCommands
 
 
 let b:current_syntax = "ncf"
-
-endif

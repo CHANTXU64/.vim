@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'neomuttrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'neomuttrc', 'ftplugin/neomuttrc.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             NeoMutt RC File
@@ -23,5 +25,3 @@ let &l:include = '^\s*source\>'
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

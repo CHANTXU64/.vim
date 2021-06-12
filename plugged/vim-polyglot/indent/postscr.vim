@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'postscr') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'postscr', 'indent/postscr.vim')
+  finish
+endif
 
 " PostScript indent file
 " Language:    PostScript
@@ -68,5 +70,3 @@ function! PostscrIndentGet(lnum)
 endfunction
 
 " vim:sw=2
-
-endif

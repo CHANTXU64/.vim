@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gdmo') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gdmo', 'syntax/gdmo.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	GDMO
@@ -83,5 +85,3 @@ hi def link gdmoType	      Type
 let b:current_syntax = "gdmo"
 
 " vim: ts=8
-
-endif

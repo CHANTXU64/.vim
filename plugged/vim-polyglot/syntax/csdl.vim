@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'csdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'csdl', 'syntax/csdl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Curated Stream Definition Language (CSDL)
@@ -536,5 +538,3 @@ highlight link csdlTarget Constant
 highlight link csdlComment Comment
 "
 let b:current_syntax = "csdl"
-
-endif

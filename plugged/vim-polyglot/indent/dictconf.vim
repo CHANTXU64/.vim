@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dictconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dictconf', 'indent/dictconf.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             dict(1) configuration file
@@ -13,5 +15,3 @@ let b:did_indent = 1
 setlocal indentkeys=0{,0},!^F,o,O cinwords= autoindent smartindent
 setlocal nosmartindent
 inoremap <buffer> # X#
-
-endif

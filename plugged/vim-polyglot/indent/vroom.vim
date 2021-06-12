@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vroom') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vroom', 'indent/vroom.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Vroom (vim testing and executable documentation)
@@ -21,5 +23,3 @@ setlocal autoindent
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'kix') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'kix', 'syntax/kix.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	KixTart 95, Kix2001 Windows script language http://kixtart.org/
@@ -170,5 +172,3 @@ hi def link kixForEachOK		Conditional
 let b:current_syntax = "kix"
 
 " vim: ts=8 sw=2
-
-endif

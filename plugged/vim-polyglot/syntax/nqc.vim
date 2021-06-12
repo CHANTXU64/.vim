@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nqc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nqc', 'syntax/nqc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	NQC - Not Quite C, for LEGO mindstorms
@@ -365,5 +367,3 @@ hi def link nqcCppOut		Comment
 let b:current_syntax = "nqc"
 
 " vim: ts=8
-
-endif

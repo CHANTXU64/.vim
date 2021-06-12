@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'focexec') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'focexec', 'syntax/focexec.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Focus Executable
@@ -88,5 +90,3 @@ hi def link focexecFuse		Function
 let b:current_syntax = "focexec"
 
 " vim: ts=8
-
-endif

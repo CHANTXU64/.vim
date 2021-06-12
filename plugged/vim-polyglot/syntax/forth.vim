@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'forth') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'forth', 'syntax/forth.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    FORTH
@@ -262,5 +264,3 @@ let b:current_syntax = "forth"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim:ts=8:sw=4:nocindent:smartindent:
-
-endif

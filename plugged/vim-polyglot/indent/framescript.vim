@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'framescript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'framescript', 'indent/framescript.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             FrameScript
@@ -41,5 +43,3 @@ function GetFrameScriptIndent()
 
   return ind
 endfunction
-
-endif

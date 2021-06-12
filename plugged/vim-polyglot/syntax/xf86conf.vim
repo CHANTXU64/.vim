@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xf86conf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xf86conf', 'syntax/xf86conf.vim')
+  finish
+endif
 
 " Vim syntax file
 " This is a GENERATED FILE. Please always refer to source file at the URI below.
@@ -205,5 +207,3 @@ hi def link xf86confString String
 hi def link xf86confValue Constant
 
 let b:current_syntax = "xf86conf"
-
-endif

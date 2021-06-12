@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rc', 'syntax/rc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	M$ Resource files (*.rc)
@@ -190,5 +192,3 @@ hi def rcCommonAttribute	ctermfg=Brown guifg=Brown
 let b:current_syntax = "rc"
 
 " vim: ts=8
-
-endif

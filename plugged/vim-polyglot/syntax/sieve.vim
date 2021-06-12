@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sieve') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sieve', 'syntax/sieve.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             Sieve filtering language input file
@@ -55,5 +57,3 @@ let b:current_syntax = "sieve"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

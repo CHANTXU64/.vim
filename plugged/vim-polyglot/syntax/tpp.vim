@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tpp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tpp', 'syntax/tpp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: tpp - Text Presentation Program
@@ -83,5 +85,3 @@ hi def link tppTimeOption			Error
 let b:current_syntax = 'tpp'
 
 " vim: ts=8 sw=2
-
-endif

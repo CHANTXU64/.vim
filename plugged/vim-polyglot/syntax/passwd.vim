@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'passwd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'passwd', 'syntax/passwd.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             passwd(5) password file
@@ -71,5 +73,3 @@ let b:current_syntax = "passwd"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'crystal') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'crystal', 'indent/crystal.vim')
+  finish
+endif
 
 " Initialization {{{1
 " ==============
@@ -9,6 +11,16 @@ if exists('b:did_indent')
 endif
 
 let b:did_indent = 1
+
+if !exists('g:crystal_indent_assignment_style')
+  " Possible values: 'variable', 'hanging'
+  let g:crystal_indent_assignment_style = 'hanging'
+endif
+
+if !exists('g:crystal_indent_block_style')
+  " Possible values: 'expression', 'do'
+  let g:crystal_indent_block_style = 'expression'
+endif
 
 setlocal nosmartindent
 
@@ -110,5 +122,3 @@ endfunction
 " }}}1
 
 " vim:sw=2 sts=2 ts=8 fdm=marker et:
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'updatedb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'updatedb', 'syntax/updatedb.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             updatedb.conf(5) configuration file
@@ -41,5 +43,3 @@ let b:current_syntax = "updatedb"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

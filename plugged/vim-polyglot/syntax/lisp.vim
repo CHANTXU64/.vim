@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lisp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lisp', 'syntax/lisp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Lisp
@@ -620,5 +622,3 @@ let b:current_syntax = "lisp"
 
 " ---------------------------------------------------------------------
 " vim: ts=8 nowrap fdm=marker
-
-endif

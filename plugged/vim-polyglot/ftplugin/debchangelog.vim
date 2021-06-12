@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'debchangelog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'debchangelog', 'ftplugin/debchangelog.vim')
+  finish
+endif
 
 " Vim filetype plugin file (GUI menu, folding and completion)
 " Language:     Debian Changelog
@@ -383,5 +385,3 @@ setlocal omnifunc=DebCompleteBugs
 " }}}
 
 " vim: set foldmethod=marker:
-
-endif

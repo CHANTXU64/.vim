@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pyrex') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pyrex', 'indent/pyrex.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Pyrex
@@ -13,5 +15,3 @@ endif
 
 " Use Python formatting rules
 runtime! indent/python.vim
-
-endif

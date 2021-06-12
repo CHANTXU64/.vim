@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'chill') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'chill', 'syntax/chill.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	CHILL
@@ -178,5 +180,3 @@ hi def link chillBracket	Delimiter
 let b:current_syntax = "chill"
 
 " vim: ts=8
-
-endif

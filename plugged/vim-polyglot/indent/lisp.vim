@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lisp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lisp', 'indent/lisp.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Lisp
@@ -15,5 +17,3 @@ let b:did_indent = 1
 setlocal ai nosi
 
 let b:undo_indent = "setl ai< si<"
-
-endif

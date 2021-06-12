@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xinetd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xinetd', 'indent/xinetd.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             xinetd.conf(5) configuration file
@@ -55,5 +57,3 @@ endfunction
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

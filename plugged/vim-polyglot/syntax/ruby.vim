@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ruby') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ruby', 'syntax/ruby.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		Ruby
@@ -595,5 +597,3 @@ unlet! s:cpo_sav
 delc SynFold
 
 " vim: nowrap sw=2 sts=2 ts=8 noet fdm=marker:
-
-endif

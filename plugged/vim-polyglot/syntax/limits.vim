@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'limits') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'limits', 'syntax/limits.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             limits(5) configuration file
@@ -44,5 +46,3 @@ let b:current_syntax = "limits"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

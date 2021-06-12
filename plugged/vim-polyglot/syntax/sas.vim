@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sas') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sas', 'syntax/sas.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     SAS
@@ -265,5 +267,3 @@ let b:current_syntax = "sas"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

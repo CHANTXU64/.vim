@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xsd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xsd', 'autoload/xml/xsd.vim')
+  finish
+endif
 
 " Author: Thomas Barthel
 " Last change: 2007 May 8
@@ -130,5 +132,3 @@ let g:xmldata_xsd = {
 		\ [],
 		\ {'source' : [], 'id' : [], 'xml' : []} ]
 	\ }
-
-endif

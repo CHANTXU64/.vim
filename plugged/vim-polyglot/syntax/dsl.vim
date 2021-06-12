@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dsl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dsl', 'syntax/dsl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	DSSSL
@@ -38,5 +40,3 @@ hi def link dslComment		Comment
 hi def link dslCondDelim	Type
 
 let b:current_syntax = "dsl"
-
-endif

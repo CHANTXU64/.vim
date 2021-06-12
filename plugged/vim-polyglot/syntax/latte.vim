@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'latte') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'latte', 'syntax/latte.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Latte
@@ -81,5 +83,3 @@ hi def link latteError			Error
 
 
 let b:current_syntax = "latte"
-
-endif

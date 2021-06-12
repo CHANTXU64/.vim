@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rexx') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rexx', 'syntax/rexx.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Rexx
@@ -318,5 +320,3 @@ hi def link rexxForward2           rexxForward
 let b:current_syntax = "rexx"
 
 "vim: ts=8
-
-endif

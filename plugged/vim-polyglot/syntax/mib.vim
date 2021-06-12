@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mib') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mib', 'syntax/mib.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:        Vim syntax file for SNMPv1 and SNMPv2 MIB and SMI files
@@ -57,5 +59,3 @@ hi def link mibEpilogue	     SpecialChar
 hi def link mibValue         Structure
 
 let b:current_syntax = "mib"
-
-endif

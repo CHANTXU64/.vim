@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tsalt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tsalt', 'syntax/tsalt.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Telix (Modem Comm Program) SALT Script
@@ -206,5 +208,3 @@ let b:current_syntax = "tsalt"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

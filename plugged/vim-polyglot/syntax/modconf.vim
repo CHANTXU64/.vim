@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'modconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'modconf', 'syntax/modconf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             modules.conf(5) configuration file
@@ -44,5 +46,3 @@ let b:current_syntax = "modconf"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

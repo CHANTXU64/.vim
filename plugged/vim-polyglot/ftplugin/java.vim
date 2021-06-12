@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'java') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'java', 'ftplugin/java.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	Java
@@ -51,5 +53,3 @@ let b:undo_ftplugin = "setlocal suffixes< suffixesadd<" .
 " Restore the saved compatibility options.
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
-endif

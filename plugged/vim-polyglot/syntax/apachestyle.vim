@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'apachestyle') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'apachestyle', 'syntax/apachestyle.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Apache-Style configuration files (proftpd.conf/apache.conf/..)
@@ -54,5 +56,3 @@ hi def link apTagError	Error
 
 let b:current_syntax = "apachestyle"
 " vim: ts=8
-
-endif

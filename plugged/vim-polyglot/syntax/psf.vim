@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'psf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'psf', 'syntax/psf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Software Distributor product specification file
@@ -91,5 +93,3 @@ hi def link psfComment      Comment
 syn sync lines=100
 
 let b:current_syntax = "psf"
-
-endif

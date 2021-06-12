@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nim') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nim', 'indent/nim.vim')
+  finish
+endif
 
 " Only load this indent file when no other was loaded.
 if exists('b:did_indent')
@@ -142,5 +144,3 @@ endfunction
 
 " vim:sw=2
 
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dosini') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dosini', 'syntax/dosini.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:               Configuration File (ini file) for MSDOS/MS Windows
@@ -40,5 +42,3 @@ hi def link dosiniValue    String
 let b:current_syntax = "dosini"
 
 " vim: sts=2 sw=2 et
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'samba') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'samba', 'syntax/samba.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	samba configuration files (smb.conf)
@@ -118,5 +120,3 @@ hi def link sambaBoolean   Constant
 let b:current_syntax = "samba"
 
 " vim: ts=8
-
-endif

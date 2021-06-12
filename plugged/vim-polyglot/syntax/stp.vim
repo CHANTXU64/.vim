@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'stp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'stp', 'syntax/stp.vim')
+  finish
+endif
 
 " Vim syntax file
 "    Language: Stored Procedures (STP)
@@ -154,5 +156,3 @@ hi def link stpRepeat Repeat
 let b:current_syntax = "stp"
 
 " vim ts=8 sw=2
-
-endif

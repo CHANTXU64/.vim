@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pascal') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pascal', 'indent/pascal.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:    Pascal
@@ -228,5 +230,3 @@ function! GetPascalIndent( line_num )
 	return indnt
 endfunction
 
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jess') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jess', 'syntax/jess.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Jess
@@ -144,5 +146,3 @@ hi def link jessVar		Identifier
 let b:current_syntax = "jess"
 
 " vim: ts=18
-
-endif

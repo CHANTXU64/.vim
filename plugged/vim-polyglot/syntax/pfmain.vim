@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pfmain') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pfmain', 'syntax/pfmain.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Postfix main.cf configuration
@@ -1835,5 +1837,3 @@ hi def link pfmainSpecial	Special
 let b:current_syntax = "pfmain"
 
 " vim: ts=8 sw=2
-
-endif

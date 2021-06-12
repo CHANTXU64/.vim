@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jq') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jq', 'syntax/jq.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	jq
@@ -130,5 +132,3 @@ hi link jqConditional            Conditional
 "hi link jqInclude                Include
 "hi link jqDecorator              Define
 hi link jqNumber                 Number
-
-endif

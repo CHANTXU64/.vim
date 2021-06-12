@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'smarty') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'smarty', 'syntax/smarty.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Smarty Templates
@@ -76,5 +78,3 @@ if main_syntax == 'smarty'
 endif
 
 " vim: ts=8
-
-endif

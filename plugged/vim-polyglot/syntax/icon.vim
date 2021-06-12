@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'icon') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'icon', 'syntax/icon.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Icon
@@ -199,5 +201,3 @@ hi def link iconKeyword		Operator
 
 let b:current_syntax = "icon"
 
-
-endif

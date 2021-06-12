@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'srec') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'srec', 'syntax/srec.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Motorola S-Record
@@ -83,5 +85,3 @@ hi def link srecChecksum            DiffChange
 let b:current_syntax = "srec"
 
 " vim: ts=8
-
-endif

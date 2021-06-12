@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jam') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jam', 'syntax/jam.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	JAM
@@ -240,5 +242,3 @@ let b:current_syntax = "jam"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

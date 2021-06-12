@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'aspvbs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'aspvbs', 'syntax/aspvbs.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Microsoft VBScript Web Content (ASP)
@@ -182,5 +184,3 @@ if main_syntax == 'aspvbs'
 endif
 
 " vim: ts=8:sw=2:sts=0:noet
-
-endif

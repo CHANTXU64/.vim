@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'j') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'j', 'indent/j.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	J
@@ -50,5 +52,3 @@ function GetJIndent() abort
   endif
   return l:indent
 endfunction
-
-endif

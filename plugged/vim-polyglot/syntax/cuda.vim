@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cuda') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cuda', 'syntax/cuda.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	CUDA (NVIDIA Compute Unified Device Architecture)
@@ -65,5 +67,3 @@ hi def link cudaConstant	Constant
 let b:current_syntax = "cuda"
 
 " vim: ts=8
-
-endif

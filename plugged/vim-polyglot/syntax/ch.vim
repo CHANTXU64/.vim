@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ch') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ch', 'syntax/ch.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Ch
@@ -38,5 +40,3 @@ hi def link chStructure		Structure
 let b:current_syntax = "ch"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lex') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lex', 'syntax/lex.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Lex and Flex
@@ -124,7 +126,7 @@ if has("folding")
  syn region lexPatComment	fold	start="//"	end="$"		skipnl	contained	contains=cTodo	skipwhite	nextgroup=lexPatComment,lexPat,@Spell
  syn region lexPatComment	fold	start="/\*"	end="\*/"	skipnl	contained	contains=cTodo	skipwhite	nextgroup=lexPatComment,lexPat,@Spell
 else
- syn region lexPatTagZoneStart		matchgroup=lexPatTag		start='{'	end='^}'	skipnl	skipwhitecontained	contains=lexPatTag,lexPatTagZone,lexPatComment,lexPat,lexPatSep,lexPatInclude
+ syn region lexPatTagZoneStart		matchgroup=lexPatTag		start='{'	end='^}'	skipnl	skipwhite	contained	contains=lexPatTag,lexPatTagZone,lexPatComment,lexPat,lexPatSep,lexPatInclude
  syn region lexPatComment		start="//"	end="$"		skipnl	contained	contains=cTodo	skipwhite	nextgroup=lexPatComment,lexPat,@Spell
  syn region lexPatComment		start="/\*"	end="\*/"	skipnl	contained	contains=cTodo	skipwhite	nextgroup=lexPatComment,lexPat,@Spell
 endif
@@ -188,5 +190,3 @@ endif
 let b:current_syntax = "lex"
 
 " vim:ts=8
-
-endif

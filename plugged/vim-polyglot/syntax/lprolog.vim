@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lprolog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lprolog', 'syntax/lprolog.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     LambdaProlog (Teyjus)
@@ -124,5 +126,3 @@ hi def link lprologClause	    Type
 let b:current_syntax = "lprolog"
 
 " vim: ts=8
-
-endif

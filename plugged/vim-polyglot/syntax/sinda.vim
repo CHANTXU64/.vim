@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sinda') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sinda', 'syntax/sinda.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     sinda85, sinda/fluint input file
@@ -129,5 +131,3 @@ hi def link sindaTodo		Todo
 let b:current_syntax = "sinda"
 
 " vim: ts=8 sw=2
-
-endif

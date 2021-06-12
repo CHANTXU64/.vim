@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'swiftgyb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'swiftgyb', 'ftplugin/swiftgyb.vim')
+  finish
+endif
 
 " This source file is part of the Swift.org open source project
 "
@@ -11,5 +13,3 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'swiftgyb') == -
 " Vim maintainer: Emir SARI <bitigchi@me.com>
 
 runtime! ftplugin/swift.vim
-
-endif

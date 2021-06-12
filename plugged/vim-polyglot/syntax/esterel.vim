@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'esterel') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'esterel', 'syntax/esterel.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:			ESTEREL
@@ -78,5 +80,3 @@ hi def link esterelSpecial		Special
 
 
 let b:current_syntax = "esterel"
-
-endif

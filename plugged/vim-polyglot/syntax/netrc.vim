@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'netrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'netrc', 'syntax/netrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             netrc(5) configuration file
@@ -52,5 +54,3 @@ let b:current_syntax = "netrc"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

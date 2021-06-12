@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jovial') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jovial', 'syntax/jovial.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: JOVIAL J73
@@ -110,5 +112,3 @@ hi def link jovialTypedef Typedef
 let b:current_syntax = "jovial"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dosbatch') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dosbatch', 'ftplugin/dosbatch.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:    MS-DOS .bat files
@@ -40,5 +42,3 @@ let b:undo_ftplugin = "setlocal comments< formatoptions< keywordprg<"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

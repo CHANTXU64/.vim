@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'yaml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'yaml', 'ftplugin/yaml.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             YAML (YAML Ain't Markup Language)
@@ -25,5 +27,3 @@ endif
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'logtalk') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'logtalk', 'ftplugin/logtalk.vim')
+  finish
+endif
 
 " Logtalk filetype plugin file
 " Language:         Logtalk
@@ -19,5 +21,3 @@ setlocal fdn=10
 setlocal fdc=2
 setlocal autoindent
 setlocal dict=$VIMRUNTIME/ftplugin/logtalk.dict
-
-endif

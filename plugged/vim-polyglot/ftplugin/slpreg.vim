@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'slpreg') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'slpreg', 'ftplugin/slpreg.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             RFC 2614 - An API for Service Location registration file
@@ -20,5 +22,3 @@ setlocal formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

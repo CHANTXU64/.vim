@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'omnimark') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'omnimark', 'syntax/omnimark.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Omnimark
@@ -106,5 +108,3 @@ let b:current_syntax = "omnimark"
 
 " vim: ts=8
 
-
-endif

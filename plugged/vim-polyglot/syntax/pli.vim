@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pli') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pli', 'syntax/pli.vim')
+  finish
+endif
 
 " Vim syntax file
 " Modified from  http://plnet.org/files/vim/
@@ -266,5 +268,3 @@ hi def link pl1Todo            Todo
 
 
 let b:current_syntax = "pl1"
-
-endif

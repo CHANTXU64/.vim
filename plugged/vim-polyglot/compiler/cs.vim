@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cs', 'compiler/cs.vim')
+  finish
+endif
 
 " Vim compiler file
 " Compiler:               Microsoft Visual Studio C#
@@ -26,5 +28,3 @@ CompilerSet makeprg=csc\ %:S
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

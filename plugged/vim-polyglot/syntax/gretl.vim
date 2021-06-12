@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gretl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gretl', 'syntax/gretl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	gretl (http://gretl.sf.net)
@@ -85,5 +87,3 @@ hi def link gArrow	       Repeat
 let b:current_syntax="gretl"
 
 " vim: ts=8 sw=2
-
-endif

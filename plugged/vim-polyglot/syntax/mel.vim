@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mel') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mel', 'syntax/mel.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	MEL (Maya Extension Language)
@@ -108,5 +110,3 @@ hi def link melCommentError melError
 
 
 let b:current_syntax = "mel"
-
-endif

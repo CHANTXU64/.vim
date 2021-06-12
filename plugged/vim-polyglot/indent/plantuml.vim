@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'plantuml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'plantuml', 'indent/plantuml.vim')
+  finish
+endif
 
 scriptencoding utf-8
 " Vim indent file
@@ -85,5 +87,3 @@ function! s:getIncIndent() abort
         \ '^\s*skinparam\>.*{\s*$\|' .
         \ s:typeKeywordIncPattern()
 endfunction
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hgcommit') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hgcommit', 'ftplugin/hgcommit.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	hg (Mercurial) commit file
@@ -16,5 +18,3 @@ let b:did_ftplugin = 1
 setlocal nomodeline
 
 let b:undo_ftplugin = 'setl modeline<'
-
-endif

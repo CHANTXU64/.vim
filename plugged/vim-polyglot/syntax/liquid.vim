@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'liquid') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'liquid', 'syntax/liquid.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Liquid
@@ -137,6 +139,4 @@ let b:current_syntax = 'liquid'
 
 if exists('main_syntax') && main_syntax == 'liquid'
   unlet main_syntax
-endif
-
 endif

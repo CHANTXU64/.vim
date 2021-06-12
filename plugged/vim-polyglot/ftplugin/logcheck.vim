@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'logcheck') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'logcheck', 'ftplugin/logcheck.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:    Logcheck
@@ -17,5 +19,3 @@ let b:undo_ftplugin = 'setl fo<'
 " Do not hard-wrap non-comment lines since each line is a self-contained
 " regular expression
 setlocal formatoptions-=t
-
-endif

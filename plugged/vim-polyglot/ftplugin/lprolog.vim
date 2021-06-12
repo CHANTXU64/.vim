@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lprolog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lprolog', 'ftplugin/lprolog.vim')
+  finish
+endif
 
 " Vim settings file
 " Language:     LambdaProlog (Teyjus)
@@ -36,6 +38,4 @@ if !exists("no_plugin_maps") && !exists("no_lprolog_maps")
   nnoremap <buffer> <Plug>LUncomOff <ESC>:s/^\/\* \(.*\) \*\//\1/<CR>
   vnoremap <buffer> <Plug>BUncomOn <ESC>:'<,'><CR>`<O<ESC>0i/*<ESC>`>o<ESC>0i*/<ESC>`<
   vnoremap <buffer> <Plug>BUncomOff <ESC>:'<,'><CR>`<dd`>dd`<
-endif
-
 endif

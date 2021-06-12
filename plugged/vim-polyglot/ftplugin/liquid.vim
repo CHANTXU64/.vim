@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'liquid') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'liquid', 'ftplugin/liquid.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:     Liquid
@@ -61,5 +63,3 @@ endif
 setlocal commentstring={%\ comment\ %}%s{%\ endcomment\ %}
 
 let b:undo_ftplugin .= 'setl cms< | unlet! b:browsefilter b:match_words'
-
-endif

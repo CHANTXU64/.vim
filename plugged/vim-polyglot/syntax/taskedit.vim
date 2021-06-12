@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'taskedit') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'taskedit', 'syntax/taskedit.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	support for 'task 42 edit'
@@ -37,5 +39,3 @@ let &cpo = s:keepcpo
 unlet s:keepcpo
 
 " vim:noexpandtab
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'asn') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'asn', 'syntax/asn.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	ASN.1
@@ -73,5 +75,3 @@ unlet s:cpo_save
 let b:current_syntax = "asn"
 
 " vim: ts=8
-
-endif

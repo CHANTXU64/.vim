@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vhdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vhdl', 'indent/vhdl.vim')
+  finish
+endif
 
 " VHDL indent ('93 syntax)
 " Language:    VHDL
@@ -435,5 +437,3 @@ function GetVHDLindent()
   " return leftover filtered indent
   return ind
 endfunction
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'svn') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'svn', 'syntax/svn.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Subversion (svn) commit file
@@ -56,5 +58,3 @@ hi def link svnRenamed     Special
 
 
 let b:current_syntax = "svn"
-
-endif

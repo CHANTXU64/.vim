@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'msidl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'msidl', 'syntax/msidl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     MS IDL (Microsoft dialect of Interface Description Language)
@@ -84,5 +86,3 @@ let b:current_syntax = "msidl"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vi: set ts=8 sw=4:
-
-endif

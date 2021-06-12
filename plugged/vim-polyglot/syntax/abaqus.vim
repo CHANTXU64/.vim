@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'abaqus') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'abaqus', 'syntax/abaqus.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Abaqus finite element input file (www.hks.com)
@@ -35,5 +37,3 @@ hi def link abaqusBadLine    Error
 
 
 let b:current_syntax = "abaqus"
-
-endif

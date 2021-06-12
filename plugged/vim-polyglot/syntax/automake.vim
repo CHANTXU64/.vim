@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'automake') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'automake', 'syntax/automake.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: automake Makefile.am
@@ -77,5 +79,3 @@ hi def link automakeMakeBString makeBString
 let b:current_syntax = 'automake'
 
 " vi: ts=8 sw=4 sts=4
-
-endif

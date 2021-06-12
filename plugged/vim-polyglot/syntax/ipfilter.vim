@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ipfilter') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ipfilter', 'syntax/ipfilter.vim')
+  finish
+endif
 
 " ipfilter syntax file
 " Language: ipfilter configuration file
@@ -54,5 +56,3 @@ hi def link IPFNetmask	String
 hi def link IPFAny		Statement
 hi def link IPFProto	Identifier
 
-
-endif

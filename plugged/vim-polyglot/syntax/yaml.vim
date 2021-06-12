@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'yaml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'yaml', 'syntax/yaml.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:         YAML (YAML Ain't Markup Language) 1.2
@@ -243,5 +245,3 @@ delfunction s:SimplifyToAssumeAllPrintable
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

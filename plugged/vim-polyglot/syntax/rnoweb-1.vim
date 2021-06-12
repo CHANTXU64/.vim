@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'r-lang') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'r-lang', 'syntax/rnoweb.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    R noweb Files
@@ -56,5 +58,3 @@ hi def link rnowebChunkReference Delimiter
 
 let   b:current_syntax = "rnoweb"
 " vim: foldmethod=marker:
-
-endif

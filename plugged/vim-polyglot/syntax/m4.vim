@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'm4') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'm4', 'syntax/m4.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		M4
@@ -60,5 +62,3 @@ if main_syntax == 'm4'
 endif
 
 " vim: ts=4
-
-endif

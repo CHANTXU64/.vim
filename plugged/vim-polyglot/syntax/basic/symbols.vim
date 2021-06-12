@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'typescript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'typescript', 'syntax/basic/symbols.vim')
+  finish
+endif
 
 " + - ^ ~
 syntax match typescriptUnaryOp /[+\-~!]/
@@ -40,5 +42,3 @@ syntax match   typescriptBinaryOp contained /-\(-\|=\)\?/ nextgroup=@typescriptV
 syntax match typescriptBinaryOp contained /\*\*=\?/ nextgroup=@typescriptValue
 
 syntax cluster typescriptSymbols               contains=typescriptBinaryOp,typescriptKeywordOp,typescriptTernary,typescriptAssign,typescriptCastKeyword
-
-endif

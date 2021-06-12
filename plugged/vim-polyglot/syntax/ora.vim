@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ora') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ora', 'syntax/ora.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Oracle config files (.ora) (Oracle 8i, ver. 8.1.5)
@@ -464,5 +466,3 @@ if main_syntax == 'ora'
 endif
 
 " vim: ts=8
-
-endif

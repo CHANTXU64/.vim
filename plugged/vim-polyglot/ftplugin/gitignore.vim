@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gitignore') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gitignore', 'ftplugin/gitignore.vim')
+  finish
+endif
 
 scriptencoding utf-8
 
@@ -16,5 +18,3 @@ setlocal commentstring=#\ %s
 let b:undo_ftplugin = 'setlocal commentstring<'
 
 " vim: ts=2 et sw=2
-
-endif

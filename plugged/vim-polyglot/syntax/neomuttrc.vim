@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'neomuttrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'neomuttrc', 'syntax/neomuttrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	NeoMutt setup files
@@ -861,5 +863,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8 noet tw=100 sw=8 sts=0 ft=vim isk+=-
-
-endif

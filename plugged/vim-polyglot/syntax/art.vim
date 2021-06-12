@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'art') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'art', 'syntax/art.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:      ART-IM and ART*Enterprise
@@ -50,5 +52,3 @@ let b:current_syntax = "art"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

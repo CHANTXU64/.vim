@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'haste') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'haste', 'syntax/haste.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	HASTE - a language for VLSI IC programming
@@ -142,5 +144,3 @@ hi def link hasteInclude	Include
 let b:current_syntax = "haste"
 
 " vim: ts=8
-
-endif

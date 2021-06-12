@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'fan') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'fan', 'syntax/fan.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Fantom
@@ -132,5 +134,3 @@ hi def link fanSpaceError		Error
 let b:current_syntax = "fan"
 
 " vim: ts=8
-
-endif

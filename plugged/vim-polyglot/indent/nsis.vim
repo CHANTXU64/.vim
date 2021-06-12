@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nsis') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nsis', 'indent/nsis.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:		NSIS script
@@ -91,5 +93,3 @@ function! GetNsisIndent(lnum)
 endfunction
 
 " vim: ts=8 sw=2 sts=2
-
-endif

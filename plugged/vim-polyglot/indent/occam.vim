@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'occam') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'occam', 'indent/occam.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	occam
@@ -187,5 +189,3 @@ endfunction
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

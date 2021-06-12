@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'template') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'template', 'syntax/template.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Generic template
@@ -15,5 +17,3 @@ endif
 " If you know how to recognize a more specific type for *.tmpl suggest a
 " change to runtime/scripts.vim.
 runtime! syntax/html.vim
-
-endif

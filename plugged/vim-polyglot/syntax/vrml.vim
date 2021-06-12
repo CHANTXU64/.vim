@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vrml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vrml', 'syntax/vrml.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	   VRML97
@@ -222,5 +224,3 @@ hi def link VRMLTypes      Identifier
 let b:current_syntax = "vrml"
 
 " vim: ts=8
-
-endif

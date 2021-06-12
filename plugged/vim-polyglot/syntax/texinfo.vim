@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'texinfo') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'texinfo', 'syntax/texinfo.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Texinfo (macro package for TeX)
@@ -396,5 +398,3 @@ if main_syntax == 'texinfo'
 endif
 
 " vim: ts=8
-
-endif

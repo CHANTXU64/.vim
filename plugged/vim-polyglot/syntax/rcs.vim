@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rcs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rcs', 'syntax/rcs.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     RCS file
@@ -63,5 +65,3 @@ hi def link rcsEOFError    Error
 
 
 let b:current_syntax = "rcs"
-
-endif

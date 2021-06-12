@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || (index(g:polyglot_disabled, 'javascript') == -1 && index(g:polyglot_disabled, 'jsx') == -1)
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jsx', 'after/ftplugin/jsx.vim')
+  finish
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim ftplugin file
@@ -13,7 +15,7 @@ if !exists('g:polyglot_disabled') || (index(g:polyglot_disabled, 'javascript') =
 if exists("loaded_matchit")
   let b:match_ignorecase = 0
   let b:match_words = '(:),\[:\],{:},<:>,' .
-        \ '<\@<=\([^/][^ \t>]*\)[^>]*\%(>\|$\):<\@<=/\1>'
+        \ '<\@<=\([A-z0-9.]\+\):\(</\)\@<=\1'
 endif
 
 " For andymass/vim-matchup plugin
@@ -31,5 +33,3 @@ augroup jsx_comment
 augroup end
 
 setlocal suffixesadd+=.jsx
-
-endif

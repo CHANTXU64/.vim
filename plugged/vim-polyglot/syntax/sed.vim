@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sed') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sed', 'syntax/sed.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	sed
@@ -110,5 +112,3 @@ unlet __sed_i __sed_last __sed_delimiter __sed_metacharacters
 let b:current_syntax = "sed"
 
 " vim: sts=4 sw=4 ts=8
-
-endif

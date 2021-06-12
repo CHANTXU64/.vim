@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'papp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'papp', 'syntax/papp.vim')
+  finish
+endif
 
 " Vim syntax file for the "papp" file format (_p_erl _app_lication)
 "
@@ -76,5 +78,3 @@ hi def link papp_prep		preCondit
 hi def link papp_gettext	String
 
 let b:current_syntax = "papp"
-
-endif

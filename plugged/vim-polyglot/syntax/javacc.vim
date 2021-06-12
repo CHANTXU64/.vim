@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'javacc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'javacc', 'syntax/javacc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	JavaCC, a Java Compiler Compiler written by JavaSoft
@@ -65,5 +67,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8
-
-endif

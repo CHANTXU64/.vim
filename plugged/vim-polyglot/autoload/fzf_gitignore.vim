@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gitignore') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gitignore', 'autoload/fzf_gitignore.vim')
+  finish
+endif
 
 scriptencoding utf-8
 
@@ -37,5 +39,3 @@ function! fzf_gitignore#run() abort
 endfunction
 
 " vim: ts=2 et sw=2
-
-endif

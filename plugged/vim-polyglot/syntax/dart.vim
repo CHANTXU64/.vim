@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dart') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dart', 'syntax/dart.vim')
+  finish
+endif
 
 " Vim syntax file " Language: Dart
 " Copyright (c) 2012, the Dart project authors.  Please see the AUTHORS file
@@ -51,7 +53,7 @@ syntax match   dartLibrary       "^\(library\|part of\|part\)\>"
 syntax match   dartMetadata      "@\([_$a-zA-Z][_$a-zA-Z0-9]*\.\)*[_$a-zA-Z][_$a-zA-Z0-9]*\>"
 
 " Numbers
-syntax match   dartNumber        "\<\d\+\(\.\d\+\)\=\>"
+syntax match   dartNumber        "\<0[xX]\x\+\>\|\<\d\+\(\.\d\+\)\=\([eE][+-]\=\d\+\)\=\>"
 
 " User Types
 syntax match   dartUserType      "\<[_$]*\u[a-zA-Z0-9_$]*\>"
@@ -141,6 +143,4 @@ let b:spell_options = 'contained'
 
 if g:main_syntax is# 'dart'
   unlet g:main_syntax
-endif
-
 endif

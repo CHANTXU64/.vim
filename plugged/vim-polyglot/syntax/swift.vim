@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'swift') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'swift', 'syntax/swift.vim')
+  finish
+endif
 
 " File: swift.vim
 " Author: Keith Smiley
@@ -104,9 +106,12 @@ syntax keyword swiftAvailabilityArg renamed unavailable introduced deprecated ob
 
 " Keywords {{{
 syntax keyword swiftKeywords
+      \ actor
       \ associatedtype
       \ associativity
+      \ async
       \ atexit
+      \ await
       \ break
       \ case
       \ catch
@@ -186,7 +191,6 @@ syntax region swiftEscapedReservedWord start="`" end="`" oneline
 
 syntax keyword swiftAttributes
       \ @_exported
-      \ @_functionBuilder
       \ @_implementationOnly
       \ @_silgen_name
       \ @assignment
@@ -202,6 +206,8 @@ syntax keyword swiftAttributes
       \ @IBInspectable
       \ @IBOutlet
       \ @inlinable
+      \ @main
+      \ @MainActor
       \ @noescape
       \ @nonobjc
       \ @noreturn
@@ -210,6 +216,8 @@ syntax keyword swiftAttributes
       \ @NSManaged
       \ @objc
       \ @propertyWrapper
+      \ @resultBuilder
+      \ @Sendable
       \ @testable
       \ @UIApplicationMain
       \ @usableFromInline
@@ -305,5 +313,3 @@ highlight default link swiftLineDirective PreProc
 syn sync minlines=100
 
 let b:current_syntax = "swift"
-
-endif

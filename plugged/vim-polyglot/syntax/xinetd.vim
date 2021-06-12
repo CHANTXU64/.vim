@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xinetd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xinetd', 'syntax/xinetd.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             xinetd.conf(5) configuration file
@@ -347,5 +349,3 @@ let b:current_syntax = "xinetd"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

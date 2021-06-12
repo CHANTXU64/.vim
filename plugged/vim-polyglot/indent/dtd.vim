@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dtd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dtd', 'indent/dtd.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:    	    DTD (Document Type Definition for XML)
@@ -325,5 +327,3 @@ endfunction
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

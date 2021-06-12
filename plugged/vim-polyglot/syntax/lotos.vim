@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lotos') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lotos', 'syntax/lotos.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	LOTOS (Language Of Temporal Ordering Specifications, IS8807)
@@ -69,5 +71,3 @@ hi def link lotosDelimiter		String
 let b:current_syntax = "lotos"
 
 " vim: ts=8
-
-endif

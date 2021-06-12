@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'atlas') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'atlas', 'syntax/atlas.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	ATLAS
@@ -85,5 +87,3 @@ hi def link atlasSpecial		Special
 let b:current_syntax = "atlas"
 
 " vim: ts=8
-
-endif

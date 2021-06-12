@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'aspperl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'aspperl', 'syntax/aspperl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Active State's PerlScript (ASP)
@@ -25,5 +27,3 @@ syn region  AspPerlScriptInsideHtmlTags keepend matchgroup=Delimiter start=+<%=\
 syn region  AspPerlScriptInsideHtmlTags keepend matchgroup=Delimiter start=+<script\s\+language="\=perlscript"\=[^>]*>+ end=+</script>+ contains=@AspPerlScript
 
 let b:current_syntax = "aspperl"
-
-endif

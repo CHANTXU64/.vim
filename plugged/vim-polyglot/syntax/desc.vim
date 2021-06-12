@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'desc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'desc', 'syntax/desc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	T2 / ROCK Linux .desc
@@ -88,5 +90,3 @@ hi def link descText		Comment
 
 
 let b:current_syntax = "desc"
-
-endif

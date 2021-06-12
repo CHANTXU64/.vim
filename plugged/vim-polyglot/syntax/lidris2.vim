@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'idris2') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'idris2', 'syntax/lidris2.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Literate Idris 2
@@ -22,5 +24,3 @@ syntax match  lidrisBirdTrack "^>" contained
 hi def link   lidrisBirdTrack Comment
 
 let b:current_syntax = "lidris2"
-
-endif

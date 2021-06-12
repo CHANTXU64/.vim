@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ppwiz') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ppwiz', 'syntax/ppwiz.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     PPWizard (preprocessor by Dennis Bareis)
@@ -84,5 +86,3 @@ let b:current_syntax = "ppwiz"
 
 " vim: ts=4
 
-
-endif

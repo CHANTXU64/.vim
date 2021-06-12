@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'less') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'less', 'indent/less.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	less
@@ -13,5 +15,3 @@ endif
 runtime! indent/css.vim
 
 " vim:set sw=2:
-
-endif

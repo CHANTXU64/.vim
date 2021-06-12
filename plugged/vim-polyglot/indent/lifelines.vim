@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lifelines') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lifelines', 'indent/lifelines.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	LifeLines
@@ -24,5 +26,3 @@ setlocal cinoptions+=*500
 
 let b:undo_indent = "setl cin< cino< cinw<"
 " vim: ts=8 sw=4
-
-endif

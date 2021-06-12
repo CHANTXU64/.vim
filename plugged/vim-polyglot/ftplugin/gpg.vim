@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gpg') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gpg', 'ftplugin/gpg.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             gpg(1) configuration file
@@ -19,5 +21,3 @@ setlocal comments=:# commentstring=#\ %s formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

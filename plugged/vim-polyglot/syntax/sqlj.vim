@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sqlj') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sqlj', 'syntax/sqlj.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	sqlj
@@ -91,5 +93,3 @@ hi def link sqljPre	PreProc
 
 let b:current_syntax = "sqlj"
 
-
-endif

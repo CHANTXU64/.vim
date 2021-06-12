@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xslt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xslt', 'indent/xslt.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:    XSLT .xslt files
@@ -13,5 +15,3 @@ endif
 " Use XML formatting rules
 runtime! indent/xml.vim
 
-
-endif

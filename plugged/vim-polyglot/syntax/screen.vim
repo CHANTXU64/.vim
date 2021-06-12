@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'screen') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'screen', 'syntax/screen.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             screen(1) configuration file
@@ -260,5 +262,3 @@ let b:current_syntax = "screen"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

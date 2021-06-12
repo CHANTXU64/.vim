@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hgcommit') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hgcommit', 'syntax/hgcommit.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	hg (Mercurial) commit file
@@ -27,5 +29,3 @@ hi def link hgcommitChanged Special
 hi def link hgcommitRemoved Constant
 
 let b:current_syntax = "hgcommit"
-
-endif

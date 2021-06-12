@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || (index(g:polyglot_disabled, 'javascript') == -1 && index(g:polyglot_disabled, 'jsx') == -1)
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jsx', 'after/syntax/jsx_pretty.vim')
+  finish
+endif
 
 let s:highlight_close_tag = get(g:, 'vim_jsx_pretty_highlight_close_tag', 0)
 
@@ -138,7 +140,7 @@ exe 'syntax match jsxTagName
 " and
 " <tag id='sample'>
 "         ~~~~~~~~
-syntax region jsxString start=+\z(["']\)+  skip=+\\\\\|\\\z1\|\\\n+  end=+\z1+ contained contains=@Spell
+syntax region jsxString start=+\z(["']\)+  skip=+\\\\\|\\\z1\|\\\n+  end=+\z1+ extend contained contains=@Spell
 
 let s:tags = get(g:, 'vim_jsx_pretty_template_tags', ['html', 'jsx'])
 let s:enable_tagged_jsx = !empty(s:tags)
@@ -220,6 +222,4 @@ if s:vim_jsx_pretty_colorful_config == 1
   highlight def link jsObjectKey Label
   highlight def link jsArrowFuncArgs Type
   highlight def link jsFuncArgs Type
-endif
-
 endif

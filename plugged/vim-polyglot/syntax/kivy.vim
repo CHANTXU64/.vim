@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'kivy') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'kivy', 'syntax/kivy.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Kivy
@@ -36,5 +38,3 @@ hi def link kivyAttribute Label
 let b:current_syntax = "kivy"
 
 " vim: ts=8
-
-endif

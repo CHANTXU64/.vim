@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mgp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mgp', 'syntax/mgp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     mgp - MaGic Point
@@ -69,5 +71,3 @@ hi def link mgpDefine	Define
 
 
 let b:current_syntax = "mgp"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lilo') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lilo', 'syntax/lilo.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: lilo configuration (lilo.conf)
@@ -174,5 +176,3 @@ hi def link liloDisk               Preproc
 
 
 let b:current_syntax = "lilo"
-
-endif

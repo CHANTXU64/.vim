@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'voscm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'voscm', 'syntax/voscm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	VOS CM macro
@@ -94,5 +96,3 @@ hi def link voscmError         	Error
 let b:current_syntax = "voscm"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'verilog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'verilog', 'ftplugin/verilog.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	Verilog HDL
@@ -66,5 +68,3 @@ endif
 " Reset 'cpoptions' back to the user's setting
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

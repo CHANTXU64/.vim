@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'protocols') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'protocols', 'ftplugin/protocols.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             protocols(5) - Internet protocols definition file
@@ -19,5 +21,3 @@ setlocal comments=:# commentstring=#\ %s formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

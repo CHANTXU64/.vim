@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mp', 'syntax/mp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:           MetaPost
@@ -769,5 +771,3 @@ let &cpo = s:cpo_sav
 unlet! s:cpo_sav
 
 " vim:sw=2
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mmp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mmp', 'syntax/mmp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Symbian meta-makefile definition (MMP)
@@ -49,5 +51,3 @@ endif
 let b:current_syntax = "mmp"
 
 " vim: ts=8
-
-endif

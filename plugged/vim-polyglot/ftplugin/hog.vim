@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hog', 'ftplugin/hog.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:     hog (snort.conf)
@@ -39,5 +41,3 @@ endif
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

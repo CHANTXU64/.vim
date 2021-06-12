@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'config') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'config', 'syntax/config.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		configure.in script: M4 with sh
@@ -54,5 +56,3 @@ hi def link configmsg       String
 let b:current_syntax = "config"
 
 " vim: ts=4
-
-endif

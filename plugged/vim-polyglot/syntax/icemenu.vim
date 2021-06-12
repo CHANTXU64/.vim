@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'icemenu') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'icemenu', 'syntax/icemenu.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Icewm Menu
@@ -34,5 +36,3 @@ highlight link _ids Type
 highlight link _icon Special
 
 let b:current_syntax = "IceMenu"
-
-endif

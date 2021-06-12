@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'alsaconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'alsaconf', 'syntax/alsaconf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             alsaconf(8) configuration file
@@ -49,5 +51,3 @@ let b:current_syntax = "alsaconf"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

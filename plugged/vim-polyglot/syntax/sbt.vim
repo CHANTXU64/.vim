@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sbt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sbt', 'syntax/sbt.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    sbt
@@ -32,5 +34,3 @@ hi link sbtComment Comment
 hi link sbtLineComment Comment
 hi link sbtDocComment Comment
 
-
-endif

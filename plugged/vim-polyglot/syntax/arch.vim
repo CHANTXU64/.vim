@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'arch') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'arch', 'syntax/arch.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             GNU Arch inventory file
@@ -41,5 +43,3 @@ let b:current_syntax = "arch"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

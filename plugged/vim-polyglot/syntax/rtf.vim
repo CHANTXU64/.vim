@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rtf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rtf', 'syntax/rtf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Rich Text Format
@@ -75,5 +77,3 @@ hi def link rtfBlue	rtfBlue
 let b:current_syntax = "rtf"
 
 " vim:ts=8
-
-endif

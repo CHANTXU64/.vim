@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'debcopyright') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'debcopyright', 'syntax/debcopyright.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Debian copyright file
@@ -33,5 +35,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8 sw=2
-
-endif

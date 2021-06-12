@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xpm2') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xpm2', 'syntax/xpm2.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	X Pixmap v2
@@ -153,5 +155,3 @@ let b:current_syntax = "xpm2"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8:sw=2:noet:
-
-endif

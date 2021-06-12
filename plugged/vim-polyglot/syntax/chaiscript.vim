@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'chaiscript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'chaiscript', 'syntax/chaiscript.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	ChaiScript
@@ -94,5 +96,3 @@ hi def link chaiscriptEval	        Special
 let b:current_syntax = "chaiscript"
 
 " vim: nowrap sw=2 sts=2 ts=8 noet
-
-endif

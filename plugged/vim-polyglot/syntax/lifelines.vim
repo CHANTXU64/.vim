@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lifelines') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lifelines', 'syntax/lifelines.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	LifeLines (v 3.0.62) <http://lifelines.sourceforge.net>
@@ -154,5 +156,3 @@ hi def link lifelinesDecl		PreProc
 let b:current_syntax = "lifelines"
 
 " vim: ts=8 sw=4
-
-endif

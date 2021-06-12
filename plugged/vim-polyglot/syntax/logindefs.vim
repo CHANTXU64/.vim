@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'logindefs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'logindefs', 'syntax/logindefs.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             login.defs(5) configuration file
@@ -174,5 +176,3 @@ let b:current_syntax = "logindefs"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

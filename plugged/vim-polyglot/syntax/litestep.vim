@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'litestep') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'litestep', 'syntax/litestep.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             LiteStep RC file
@@ -269,5 +271,3 @@ let b:current_syntax = "litestep"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dart') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dart', 'autoload/dart.vim')
+  finish
+endif
 
 
 function! s:error(text) abort
@@ -183,5 +185,3 @@ function! dart#setModifiable() abort
     setlocal nomodifiable
   endif
 endfunction
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'liquid') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'liquid', 'indent/liquid.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:     Liquid
@@ -63,5 +65,3 @@ function! GetLiquidIndent(...)
   let ind -= sw * s:count(cline,'{%\s*end\w*$')
   return ind
 endfunction
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'services') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'services', 'syntax/services.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             services(5) - Internet network services list
@@ -54,5 +56,3 @@ let b:current_syntax = "services"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sysctl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sysctl', 'syntax/sysctl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             sysctl.conf(5) configuration file
@@ -39,5 +41,3 @@ let b:current_syntax = "sysctl"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

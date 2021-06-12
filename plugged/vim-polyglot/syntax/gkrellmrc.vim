@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gkrellmrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gkrellmrc', 'syntax/gkrellmrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " This is a GENERATED FILE. Please always refer to source file at the URI below.
@@ -75,5 +77,3 @@ hi def link gkrellmrcStyleCmd Statement
 
 
 let b:current_syntax = "gkrellmrc"
-
-endif

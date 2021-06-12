@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'indent') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'indent', 'syntax/indent.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             indent(1) configuration file
@@ -152,5 +154,3 @@ let b:current_syntax = "indent"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

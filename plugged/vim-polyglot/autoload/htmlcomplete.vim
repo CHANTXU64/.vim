@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'html5') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'html5', 'autoload/htmlcomplete.vim')
+  finish
+endif
 
 " Vim completion script
 " Language:     HTML and XHTML
@@ -841,5 +843,3 @@ function! htmlcomplete#CheckDoctype() " {{{
 endfunction
 " }}}
 " vim:set foldmethod=marker:
-
-endif

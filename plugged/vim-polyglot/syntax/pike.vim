@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pike') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pike', 'syntax/pike.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		Pike
@@ -386,5 +388,3 @@ let b:current_syntax = "pike"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

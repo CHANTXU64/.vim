@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'terraform') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'terraform', 'syntax/terraform.vim')
+  finish
+endif
 
 " Forked from Larry Gilbert's syntax file
 " github.com/L2G/vim-syntax-terraform
@@ -7,8 +9,8 @@ if exists('b:current_syntax')
   finish
 endif
 
-let s:cpo_save = &cpo
-set cpo&vim
+let s:cpo_save = &cpoptions
+set cpoptions&vim
 
 " Identifiers are made up of alphanumeric characters, underscores, and
 " hyphens.
@@ -37,7 +39,7 @@ syn match terraBraces        "[\[\]]"
 
 """ skip \" and \\ in strings.
 syn region terraValueString   start=/"/ skip=/\\\\\|\\"/ end=/"/ contains=terraStringInterp
-syn region terraStringInterp  matchgroup=terraBraces start=/\${/ end=/}/ contained contains=ALL
+syn region terraStringInterp  matchgroup=terraBraces start=/\(^\|[^$]\)\$\zs{/ end=/}/ contained contains=ALL
 syn region terraHereDocText   start=/<<-\?\z([a-z0-9A-Z]\+\)/ end=/^\s*\z1/ contains=terraStringInterp
 
 "" Functions.
@@ -69,7 +71,5 @@ hi def link terraValueNull         Constant
 
 let b:current_syntax = 'terraform'
 
-let &cpo = s:cpo_save
+let &cpoptions = s:cpo_save
 unlet s:cpo_save
-
-endif

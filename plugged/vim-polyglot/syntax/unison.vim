@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'unison') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'unison', 'syntax/unison.vim')
+  finish
+endif
 
 " Vim syntax file, adapted from Haskell file by John Williams <jrw@pobox.com>
 "
@@ -154,5 +156,3 @@ endif
 let b:current_syntax = "unison"
 
 " Options for vi: ts=8 sw=2 sts=2 nowrap noexpandtab ft=vim
-
-endif

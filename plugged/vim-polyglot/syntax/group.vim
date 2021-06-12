@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'group') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'group', 'syntax/group.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             group(5) user group file
@@ -52,5 +54,3 @@ let b:current_syntax = "group"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

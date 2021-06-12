@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'smcl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'smcl', 'syntax/smcl.vim')
+  finish
+endif
 
 " smcl.vim -- Vim syntax file for smcl files.
 " Language:	SMCL -- Stata Markup and Control Language
@@ -307,5 +309,3 @@ hi def link smclString		String
 let b:current_syntax = "smcl"
 
 " vim: ts=8
-
-endif

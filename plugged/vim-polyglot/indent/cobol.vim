@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cobol') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cobol', 'indent/cobol.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	cobol
@@ -223,5 +225,3 @@ function! GetCobolIndent(lnum) abort
     endif
     return ind < bshft ? bshft : ind
 endfunction
-
-endif

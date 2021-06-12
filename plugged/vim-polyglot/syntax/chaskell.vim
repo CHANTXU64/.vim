@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'chaskell') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'chaskell', 'syntax/chaskell.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Haskell supporting c2hs binding hooks
@@ -14,5 +16,3 @@ let b:hs_chs=1
 runtime! syntax/haskell.vim
 
 " vim: ts=8
-
-endif

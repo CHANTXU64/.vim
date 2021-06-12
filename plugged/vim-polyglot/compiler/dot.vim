@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dot') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dot', 'compiler/dot.vim')
+  finish
+endif
 
 " Vim compiler file
 " Compiler:     ATT dot
@@ -15,5 +17,3 @@ if exists(":CompilerSet") != 2		" older Vim always used :setlocal
 endif
 
 CompilerSet makeprg=dot\ -T$*\ \"%:p\"\ -o\ \"%:p:r.$*\"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'chordpro') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'chordpro', 'syntax/chordpro.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     ChordPro (v. 3.6.2)
@@ -67,5 +69,3 @@ let b:current_syntax = "chordpro"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

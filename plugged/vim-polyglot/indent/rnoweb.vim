@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rnoweb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rnoweb', 'indent/rnoweb.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Rnoweb
@@ -47,5 +49,3 @@ function GetRnowebIndent()
 endfunction
 
 " vim: sw=2
-
-endif

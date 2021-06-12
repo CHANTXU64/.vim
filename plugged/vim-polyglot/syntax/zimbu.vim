@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'zimbu') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'zimbu', 'syntax/zimbu.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Zimbu
@@ -160,5 +162,3 @@ hi def link zimbuError		Error
 let b:current_syntax = "zimbu"
 
 " vim: ts=8
-
-endif

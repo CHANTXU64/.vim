@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sql', 'indent/sql.vim')
+  finish
+endif
 
 " Vim indent file loader
 " Language:    SQL
@@ -39,5 +41,3 @@ exec 'runtime indent/'.filename.'.vim'
 
 
 " vim:sw=4:
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'wml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'wml', 'syntax/wml.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     WML - Website MetaLanguage
@@ -150,5 +152,3 @@ hi def link wmlSharpBang	PreProc
 
 
 let b:current_syntax = "wml"
-
-endif

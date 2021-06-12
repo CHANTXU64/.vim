@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'git') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'git', 'syntax/gitcommit.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	git commit file
@@ -24,7 +26,10 @@ syn match   gitcommitSummary	"^.*\%<51v." contained containedin=gitcommitFirstLi
 syn match   gitcommitOverflow	".*" contained contains=@Spell
 syn match   gitcommitBlank	"^[^#].*" contained contains=@Spell
 
-if get(g:, "gitcommit_cleanup") is# "scissors"
+syn match   gitcommitTrailers	"\n\@<=\n\%([[:alnum:]-]\+\s*:.*\|(cherry picked from commit .*\)\%(\n\s.*\|\n[[:alnum:]-]\+\s*:.*\|\n(cherry picked from commit .*\)*\%(\n\n*#\|\n*\%$\)\@="
+syn match   gitcommitTrailerToken "^[[:alnum:]-]\+\s*:" contained containedin=gitcommitTrailers
+
+if get(b:, "gitcommit_cleanup", get(g:, "gitcommit_cleanup", "")) is# "scissors"
   syn match gitcommitFirstLine	"\%^.*" nextgroup=gitcommitBlank skipnl
   syn region gitcommitComment start=/^# -\+ >8 -\+$/ end=/\%$/ contains=gitcommitDiff
 else
@@ -65,6 +70,7 @@ syn match   gitcommitWarning		"^[^#].*: needs merge$" nextgroup=gitcommitWarning
 syn match   gitcommitWarning		"^\%(no changes added to commit\|nothing \%(added \)\=to commit\)\>.*\%$"
 
 hi def link gitcommitSummary		Keyword
+hi def link gitcommitTrailerToken	Label
 hi def link gitcommitComment		Comment
 hi def link gitcommitUntracked		gitcommitComment
 hi def link gitcommitDiscarded		gitcommitComment
@@ -93,5 +99,3 @@ hi def link gitcommitArrow		gitcommitComment
 hi def link gitcommitBlank		Error
 
 let b:current_syntax = "gitcommit"
-
-endif

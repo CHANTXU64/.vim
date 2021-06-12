@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sas') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sas', 'indent/sas.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:     SAS
@@ -138,5 +140,3 @@ endfunction
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'debcontrol') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'debcontrol', 'ftplugin/debcontrol.vim')
+  finish
+endif
 
 " Vim filetype plugin file (GUI menu and folding)
 " Language:     Debian control files
@@ -70,5 +72,3 @@ function! DebControlFold(l)
 endfunction
 
 " }}}1
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, '8th') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), '8th', 'ftplugin/8th.vim')
+  finish
+endif
 
 " Vim ftplugin file
 " Language:	8th
@@ -25,5 +27,3 @@ setlocal fo=tcrqol
 setlocal matchpairs+=\::;
 setlocal iskeyword=!,@,33-35,%,$,38-64,A-Z,91-96,a-z,123-126,128-255
 setlocal suffixesadd=.8th
-
-endif

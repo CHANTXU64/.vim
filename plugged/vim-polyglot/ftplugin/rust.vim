@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rust') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rust', 'ftplugin/rust.vim')
+  finish
+endif
 
 " Language:     Rust
 " Description:  Vim ftplugin for Rust
@@ -49,7 +51,7 @@ setlocal smartindent nocindent
 
 if get(g:, 'rust_recommended_style', 1)
     let b:rust_set_style = 1
-    setlocal tabstop=8 shiftwidth=4 softtabstop=4 expandtab
+    setlocal shiftwidth=4 softtabstop=4 expandtab
     setlocal textwidth=99
 endif
 
@@ -200,5 +202,3 @@ unlet s:save_cpo
 " vint: +ProhibitAbbreviationOption
 
 " vim: set et sw=4 sts=4 ts=8:
-
-endif

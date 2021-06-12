@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dockerfile') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dockerfile', 'syntax/dockerfile.vim')
+  finish
+endif
 
 " dockerfile.vim - Syntax highlighting for Dockerfiles
 " Maintainer:   Honza Pokorny <https://honza.ca>
@@ -45,5 +47,3 @@ hi def link dockerfileComment Comment
 hi def link dockerfileOption Special
 
 let b:current_syntax = "dockerfile"
-
-endif

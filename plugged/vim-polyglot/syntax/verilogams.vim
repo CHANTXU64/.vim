@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'verilogams') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'verilogams', 'syntax/verilogams.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Verilog-AMS
@@ -132,5 +134,3 @@ hi def link verilogamsSystask      Function
 let b:current_syntax = "verilogams"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'yacc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'yacc', 'syntax/yacc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Yacc
@@ -120,5 +122,3 @@ let b:current_syntax = "yacc"
 " ---------------------------------------------------------------------
 "  Modelines: {{{1
 " vim: ts=15 fdm=marker
-
-endif

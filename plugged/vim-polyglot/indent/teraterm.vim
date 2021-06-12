@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'teraterm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'teraterm', 'indent/teraterm.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Tera Term Language (TTL)
@@ -55,5 +57,3 @@ function! GetTeraTermIndent(lnum)
 endfunction
 
 " vim: ts=8 sw=2 sts=2
-
-endif

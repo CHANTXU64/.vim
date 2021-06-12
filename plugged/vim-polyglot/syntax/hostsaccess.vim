@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hostsaccess') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hostsaccess', 'syntax/hostsaccess.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	hosts.deny, hosts.allow configuration files
@@ -23,5 +25,3 @@ unlet b:current_syntax
 
 let b:current_syntax = "hostsaccess"
 " vim: ts=8 sw=2
-
-endif

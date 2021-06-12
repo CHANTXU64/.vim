@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'a2ps') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'a2ps', 'syntax/a2ps.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             a2ps(1) configuration file
@@ -71,5 +73,3 @@ let b:current_syntax = "a2ps"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

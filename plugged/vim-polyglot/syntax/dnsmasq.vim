@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dnsmasq') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dnsmasq', 'syntax/dnsmasq.vim')
+  finish
+endif
 
 " Vim syntax file
 " Maintainer:	Thilo Six
@@ -242,5 +244,3 @@ let b:current_syntax = "dnsmasq"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 
-
-endif

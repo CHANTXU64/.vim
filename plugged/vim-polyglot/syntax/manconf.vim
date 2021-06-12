@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'manconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'manconf', 'syntax/manconf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             man.conf(5) - man configuration file
@@ -117,5 +119,3 @@ let b:current_syntax = "manconf"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

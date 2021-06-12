@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jproperties') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jproperties', 'ftplugin/jproperties.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:	Java properties file
@@ -15,5 +17,3 @@ setlocal comments=:#,:!
 setlocal commentstring=#\ %s
 
 let b:undo_ftplugin = "setl cms< com< fo<"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sdl', 'syntax/sdl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	SDL
@@ -153,5 +155,3 @@ delcommand Hi
 let b:current_syntax = "sdl"
 
 " vim: ts=8
-
-endif

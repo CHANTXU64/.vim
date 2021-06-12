@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'logtalk') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'logtalk', 'indent/logtalk.vim')
+  finish
+endif
 
 "  Maintainer:	Paulo Moura <pmoura@logtalk.org>
 "  Revised on:	2018.08.04
@@ -64,5 +66,3 @@ function! GetLogtalkIndent()
 	endif
 	return ind
 endfunction
-
-endif

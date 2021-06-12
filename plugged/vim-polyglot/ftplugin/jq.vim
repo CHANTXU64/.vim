@@ -1,5 +1,5 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jq') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jq', 'ftplugin/jq.vim')
+  finish
+endif
 
 setlocal commentstring=#%s
-
-endif

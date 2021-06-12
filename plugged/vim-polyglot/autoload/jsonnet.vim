@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jsonnet') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jsonnet', 'autoload/jsonnet.vim')
+  finish
+endif
 
 
 
@@ -125,5 +127,3 @@ function! jsonnet#Format()
 endfunction
 
 
-
-endif

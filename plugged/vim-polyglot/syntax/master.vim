@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'master') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'master', 'syntax/master.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Focus Master File
@@ -37,5 +39,3 @@ hi def link masterString  String
 let b:current_syntax = "master"
 
 " vim: ts=8
-
-endif

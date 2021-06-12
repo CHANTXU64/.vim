@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mf', 'syntax/mf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:           METAFONT
@@ -295,5 +297,3 @@ hi def link mfTodoComment  Todo
 let b:current_syntax = "mf"
 
 " vim:sw=2
-
-endif

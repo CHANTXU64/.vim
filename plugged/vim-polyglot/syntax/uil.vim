@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'uil') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'uil', 'syntax/uil.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Motif UIL (User Interface Language)
@@ -75,5 +77,3 @@ hi def link uilTodo		Todo
 let b:current_syntax = "uil"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'awk') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'awk', 'indent/awk.vim')
+  finish
+endif
 
 "  vim: set sw=3 sts=3:
 
@@ -232,5 +234,3 @@ function! s:Safe_indent( base, wordlen, this_line )
    endif
    return indent + a:wordlen
 endfunction
-
-endif

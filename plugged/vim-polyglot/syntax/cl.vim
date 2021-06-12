@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cl', 'syntax/cl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		CL
@@ -98,5 +100,3 @@ hi def link clStatement	Statement
 let b:current_syntax = "cl"
 
 " vim: ts=8 sw=8
-
-endif

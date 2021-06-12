@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'coco') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'coco', 'syntax/coco.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Coco/R
@@ -32,5 +34,3 @@ hi def link cocoOperator         Operator
 hi def link cocoProductionCode   Statement
 hi def link cocoPragma           Special
 
-
-endif

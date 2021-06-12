@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'b') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'b', 'syntax/b.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	B (A Formal Method with refinement and mathematical proof)
@@ -114,5 +116,3 @@ hi def link bTodo		Todo
 let b:current_syntax = "b"
 
 " vim: ts=8
-
-endif

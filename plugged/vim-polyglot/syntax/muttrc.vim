@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'muttrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'muttrc', 'syntax/muttrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Mutt setup files
@@ -821,5 +823,3 @@ let b:current_syntax = "muttrc"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 "EOF	vim: ts=8 noet tw=100 sw=8 sts=0 ft=vim
-
-endif

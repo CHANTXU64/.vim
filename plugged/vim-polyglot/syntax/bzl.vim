@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bzl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bzl', 'syntax/bzl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Bazel (http://bazel.io)
@@ -16,5 +18,3 @@ let b:current_syntax = 'bzl'
 
 syn region bzlRule start='^\w\+($' end='^)\n*' transparent fold
 syn region bzlList start='\[' end='\]' transparent fold
-
-endif

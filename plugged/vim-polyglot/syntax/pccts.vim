@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pccts') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pccts', 'syntax/pccts.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	PCCTS
@@ -89,5 +91,3 @@ hi def link pcctsSpecialChar	SpecialChar
 let b:current_syntax = "pccts"
 
 " vim: ts=8
-
-endif

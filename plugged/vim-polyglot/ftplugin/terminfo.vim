@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'terminfo') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'terminfo', 'ftplugin/terminfo.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             terminfo(5) definition
@@ -19,5 +21,3 @@ setlocal comments=:# commentstring=#\ %s formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

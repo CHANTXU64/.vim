@@ -1,5 +1,5 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'handlebars') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'handlebars', 'indent/mustache.vim')
+  finish
+endif
 
 runtime! indent/handlebars.vim
-
-endif

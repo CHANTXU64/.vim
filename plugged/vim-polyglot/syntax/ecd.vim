@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ecd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ecd', 'syntax/ecd.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	ecd (Embedix Component Description) files
@@ -44,5 +46,3 @@ hi def link ecdTagError	Error
 
 let b:current_syntax = "ecd"
 " vim: ts=8
-
-endif

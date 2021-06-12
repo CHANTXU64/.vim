@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'typescript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'typescript', 'syntax/basic/type.vim')
+  finish
+endif
 
 " Types
 syntax match typescriptOptionalMark /?/ contained
@@ -130,7 +132,7 @@ syntax region typescriptGenericFunc matchgroup=typescriptTypeBrackets
   \ contained skipwhite skipnl
 
 syntax region typescriptFuncType matchgroup=typescriptParens
-  \ start=/(/ end=/)\s*=>/me=e-2
+  \ start=/(\(\k\+:\|)\)\@=/ end=/)\s*=>/me=e-2
   \ contains=@typescriptParameterList
   \ nextgroup=typescriptFuncTypeArrow
   \ contained skipwhite skipnl oneline
@@ -139,7 +141,6 @@ syntax match typescriptFuncTypeArrow /=>/
   \ nextgroup=@typescriptType
   \ containedin=typescriptFuncType
   \ contained skipwhite skipnl
-
 
 syntax keyword typescriptConstructorType new
   \ nextgroup=@typescriptFunctionType
@@ -214,5 +215,3 @@ syntax region typescriptAliasDeclaration matchgroup=typescriptUnion
 syntax keyword typescriptReadonlyArrayKeyword readonly
   \ nextgroup=@typescriptPrimaryType
   \ skipwhite
-
-endif

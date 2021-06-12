@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'simula') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'simula', 'syntax/simula.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Simula
@@ -87,5 +89,3 @@ hi def link simulaType			Type
 
 let b:current_syntax = "simula"
 " vim: sts=4 sw=4 ts=8
-
-endif

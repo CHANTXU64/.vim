@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tcl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tcl', 'indent/tcl.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	    	Tcl
@@ -101,5 +103,3 @@ function GetTclIndent()
   
   return ind
 endfunction
-
-endif

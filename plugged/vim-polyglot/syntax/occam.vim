@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'occam') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'occam', 'syntax/occam.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	occam
@@ -116,5 +118,3 @@ hi def link occamParantheses Delimiter
 
 let b:current_syntax = "occam"
 
-
-endif

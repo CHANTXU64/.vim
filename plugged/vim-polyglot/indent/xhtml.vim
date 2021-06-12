@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xhtml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xhtml', 'indent/xhtml.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	XHTML
@@ -12,5 +14,3 @@ endif
 
 " Handled like HTML for now.
 runtime! indent/html.vim
-
-endif

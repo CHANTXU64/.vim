@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lftp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lftp', 'syntax/lftp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             lftp(1) configuration file
@@ -152,5 +154,3 @@ let b:current_syntax = "lftp"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

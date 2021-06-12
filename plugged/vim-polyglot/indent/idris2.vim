@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'idris2') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'idris2', 'indent/idris2.vim')
+  finish
+endif
 
 " indentation for idris (idris-lang.org)
 "
@@ -144,5 +146,3 @@ function! GetIdrisIndent()
 
   return match(prevline, '\S')
 endfunction
-
-endif

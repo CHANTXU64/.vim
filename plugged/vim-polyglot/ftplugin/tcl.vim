@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tcl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tcl', 'ftplugin/tcl.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:         Tcl
@@ -37,5 +39,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: set et ts=4 sw=4 tw=78:
-
-endif

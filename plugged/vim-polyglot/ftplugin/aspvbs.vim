@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'aspvbs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'aspvbs', 'ftplugin/aspvbs.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	aspvbs
@@ -60,5 +62,3 @@ let b:undo_ftplugin = "unlet! b:match_words b:match_ignorecase b:browsefilter | 
 " Restore the saved compatibility options.
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
-endif

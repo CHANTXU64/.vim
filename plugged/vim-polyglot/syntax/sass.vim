@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sass') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sass', 'syntax/sass.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Sass
@@ -105,5 +107,3 @@ hi def link sassClass                   Type
 let b:current_syntax = "sass"
 
 " vim:set sw=2:
-
-endif

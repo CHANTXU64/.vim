@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'usserverlog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'usserverlog', 'syntax/usserverlog.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             Innovation Data Processing usserver.log file
@@ -60,5 +62,3 @@ hi def link usserverlog_Profile	Identifier
 hi def link usserverlog_Target	Identifier
 
 let b:current_syntax = "usserverlog"
-
-endif

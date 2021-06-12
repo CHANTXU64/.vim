@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'resolv') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'resolv', 'syntax/resolv.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: resolver configuration file
@@ -119,5 +121,3 @@ hi def link resolvIPSpecial Special
 let b:current_syntax = "resolv"
 
 " vim: ts=8 ft=vim
-
-endif

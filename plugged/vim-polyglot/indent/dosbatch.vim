@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dosbatch') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dosbatch', 'indent/dosbatch.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	MSDOS batch file (with NT command extensions)
@@ -59,5 +61,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8 sw=2 sts=2
-
-endif

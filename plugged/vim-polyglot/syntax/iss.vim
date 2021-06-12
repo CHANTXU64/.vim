@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'iss') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'iss', 'syntax/iss.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             Inno Setup File (iss file) and My InnoSetup extension
@@ -136,5 +138,3 @@ hi def link issTasksFlags		Keyword
 let b:current_syntax = "iss"
 
 " vim:ts=8
-
-endif

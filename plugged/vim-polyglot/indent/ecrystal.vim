@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'crystal') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'crystal', 'indent/ecrystal.vim')
+  finish
+endif
 
 " Setup {{{1
 " =====
@@ -476,5 +478,3 @@ endfunction
 " }}}
 
 " vim:fdm=marker
-
-endif

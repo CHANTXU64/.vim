@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rust') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rust', 'autoload/rustfmt.vim')
+  finish
+endif
 
 " Author: Stephen Sugden <stephen@stephensugden.com>
 "
@@ -260,5 +262,3 @@ endfunction
 
 
 " vim: set et sw=4 sts=4 ts=8:
-
-endif

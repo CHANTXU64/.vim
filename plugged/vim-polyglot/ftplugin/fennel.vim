@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'fennel') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'fennel', 'ftplugin/fennel.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language: FENNEL
@@ -19,6 +21,8 @@ setlocal iskeyword=!,$,%,#,*,+,-,.,/,:,<,=,>,?,_,a-z,A-Z,48-57,128-247,124,126,3
 " of user-defined def* definitions.
 setlocal define=\\v[(/]def(ault)@!\\S*
 
+setlocal suffixesadd=.fnl
+
 " Remove 't' from 'formatoptions' to avoid auto-wrapping code.
 setlocal formatoptions-=t
 
@@ -26,5 +30,3 @@ setlocal comments=n:;
 setlocal commentstring=;\ %s
 
 let &cpo = s:cpo_save
-
-endif

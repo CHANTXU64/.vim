@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sather') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sather', 'syntax/sather.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Sather/pSather
@@ -92,5 +94,3 @@ hi def link satherExternal		PreCondit
 let b:current_syntax = "sather"
 
 " vim: ts=8
-
-endif

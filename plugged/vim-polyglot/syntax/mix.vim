@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mix') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mix', 'syntax/mix.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	MIX (Donald Knuth's assembly language used in TAOCP)
@@ -84,5 +86,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8
-
-endif

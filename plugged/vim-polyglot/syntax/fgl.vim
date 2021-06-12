@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'fgl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'fgl', 'syntax/fgl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Informix 4GL
@@ -134,5 +136,3 @@ hi def link fglType	Type
 let b:current_syntax = "fgl"
 
 " vim: ts=8
-
-endif

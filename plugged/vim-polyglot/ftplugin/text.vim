@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'text') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'text', 'ftplugin/text.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:		Text
@@ -18,5 +20,3 @@ let b:undo_ftplugin = 'setlocal comments< commentstring<'
 " for Mail quoted text with '>'.
 setlocal comments=fb:-,fb:*,n:>
 setlocal commentstring=
-
-endif

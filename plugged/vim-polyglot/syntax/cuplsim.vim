@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cuplsim') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cuplsim', 'syntax/cuplsim.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	CUPL simulation
@@ -63,5 +65,3 @@ hi def link cuplsimOrderFormat	cuplNumber
 
 let b:current_syntax = "cuplsim"
 " vim:ts=8
-
-endif

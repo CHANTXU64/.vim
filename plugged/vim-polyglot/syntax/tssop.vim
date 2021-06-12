@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tssop') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tssop', 'syntax/tssop.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     TSS (Thermal Synthesizer System) Optics
@@ -74,5 +76,3 @@ hi def link tssopScientific	Float
 let b:current_syntax = "tssop"
 
 " vim: ts=8 sw=2
-
-endif

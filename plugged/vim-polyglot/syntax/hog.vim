@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hog', 'syntax/hog.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: hog (Snort.conf + .rules)
@@ -208,5 +210,3 @@ hi link HogFileTypeOpt HogRuleOption
 hi link NotASemiColn     HogRuleChars
 
 let b:current_syntax = "hog"
-
-endif

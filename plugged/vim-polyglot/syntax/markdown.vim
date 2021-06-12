@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'markdown') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'markdown', 'syntax/markdown.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Markdown
@@ -184,5 +186,3 @@ let b:current_syntax = "mkd"
 
 delcommand HtmlHiLink
 " vim: ts=8
-
-endif

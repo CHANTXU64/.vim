@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'make') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'make', 'syntax/make.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Makefile
@@ -144,5 +146,3 @@ let b:current_syntax = "make"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'idris2') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'idris2', 'after/syntax/idris2.vim')
+  finish
+endif
 
 " This script allows for unicode concealing of certain characters
 " For instance -> goes to →
@@ -78,5 +80,3 @@ hi link idrNiceOperator Operator
 hi! link Conceal Operator
 setlocal conceallevel=2
 
-
-endif

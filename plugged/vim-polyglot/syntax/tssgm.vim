@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tssgm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tssgm', 'syntax/tssgm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     TSS (Thermal Synthesizer System) Geometry
@@ -98,5 +100,3 @@ hi def link tssgmScientific	Float
 let b:current_syntax = "tssgm"
 
 " vim: ts=8 sw=2
-
-endif

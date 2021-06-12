@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'udevperm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'udevperm', 'syntax/udevperm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             udev(8) permissions file
@@ -69,5 +71,3 @@ let b:current_syntax = "udevperm"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

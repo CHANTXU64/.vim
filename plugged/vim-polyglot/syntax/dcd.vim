@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dcd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dcd', 'syntax/dcd.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	WildPackets EtherPeek Decoder (.dcd) file
@@ -51,5 +53,3 @@ hi def link dcdComment		Comment
 
 
 let b:current_syntax = "dcd"
-
-endif

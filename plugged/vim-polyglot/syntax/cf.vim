@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cf', 'syntax/cf.vim')
+  finish
+endif
 
 " Vim syntax file
 "
@@ -1018,5 +1020,3 @@ let b:current_syntax = "cfml"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

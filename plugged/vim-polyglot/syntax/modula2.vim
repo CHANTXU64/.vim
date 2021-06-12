@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'modula2') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'modula2', 'syntax/modula2.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Modula 2
@@ -73,5 +75,3 @@ hi def link modula2Set		String
 let b:current_syntax = "modula2"
 
 " vim: ts=8
-
-endif

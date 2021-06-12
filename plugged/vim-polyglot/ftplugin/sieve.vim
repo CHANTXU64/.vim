@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sieve') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sieve', 'ftplugin/sieve.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             Sieve filtering language input file
@@ -20,5 +22,3 @@ setlocal formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

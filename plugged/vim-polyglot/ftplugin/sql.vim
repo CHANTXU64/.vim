@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sql', 'ftplugin/sql.vim')
+  finish
+endif
 
 " SQL filetype plugin file
 " Language:    SQL (Common for Oracle, Microsoft SQL Server, Sybase)
@@ -548,5 +550,3 @@ let &cpo = s:save_cpo
 unlet s:save_cpo
 
 " vim:sw=4:
-
-endif

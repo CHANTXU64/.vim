@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'plp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'plp', 'syntax/plp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	PLP (Perl in HTML)
@@ -37,5 +39,3 @@ syn region  PLPinclude keepend matchgroup=Delimiter start=+<(+ end=+)>+
 
 let b:current_syntax = "plp"
 
-
-endif

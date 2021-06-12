@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'plsql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'plsql', 'syntax/plsql.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Oracle Procedureal SQL (PL/SQL)
@@ -264,5 +266,3 @@ hi def link plsqlTodo		Todo
 let b:current_syntax = "plsql"
 
 " vim: ts=8 sw=2
-
-endif

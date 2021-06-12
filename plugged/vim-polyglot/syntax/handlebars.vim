@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'handlebars') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'handlebars', 'syntax/handlebars.vim')
+  finish
+endif
 
 " Mustache & Handlebars syntax
 " Language:	Mustache, Handlebars
@@ -106,5 +108,3 @@ syn region mustacheScriptTemplate start=+<script [^>]*type *=[^>]*text/\(mustach
 
 let b:current_syntax = "handlebars"
 delcommand HtmlHiLink
-
-endif

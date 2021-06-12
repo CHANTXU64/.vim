@@ -1,7 +1,9 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'requirements') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'requirements', 'syntax/requirements.vim')
+  finish
+endif
 
 " the Requirements File Format syntax support for Vim
-" Version: 1.5.3
+" Version: 1.6.0
 " Author:  raimon <raimon49@hotmail.com>
 " License: MIT LICENSE
 " The MIT License (MIT)
@@ -53,5 +55,3 @@ hi link requirementsEnvironmentMarkers Macro
 let b:current_syntax = "requirements"
 
 " vim: et sw=4 ts=4 sts=4:
-
-endif

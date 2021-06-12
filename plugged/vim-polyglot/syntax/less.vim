@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'less') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'less', 'syntax/less.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	less
@@ -78,5 +80,3 @@ hi def link lessMedia                   cssMedia
 let b:current_syntax = "less"
 
 " vim:set sw=2:
-
-endif

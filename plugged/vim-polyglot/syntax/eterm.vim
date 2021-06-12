@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'eterm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'eterm', 'syntax/eterm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             eterm(1) configuration file
@@ -429,5 +431,3 @@ let b:current_syntax = "eterm"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

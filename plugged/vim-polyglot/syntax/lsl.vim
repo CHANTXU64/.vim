@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lsl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lsl', 'syntax/lsl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Linden Scripting Language
@@ -277,5 +279,3 @@ let &cpo = s:keepcpo
 unlet s:keepcpo
 
 " vim: ts=8
-
-endif

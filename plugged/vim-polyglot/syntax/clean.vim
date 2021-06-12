@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'clean') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'clean', 'syntax/clean.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		Clean
@@ -90,5 +92,3 @@ let b:current_syntax = "clean"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=4
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'kscript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'kscript', 'syntax/kscript.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	kscript
@@ -57,5 +59,3 @@ hi def link kscriptHardCoded		Statement
 let b:current_syntax = "kscript"
 
 " vim: ts=8
-
-endif

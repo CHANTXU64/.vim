@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cobol') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cobol', 'ftplugin/cobol.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	cobol
@@ -269,5 +271,3 @@ function! s:toend(direction)
         exe "keepjumps ".keep
     endif
 endfunction
-
-endif

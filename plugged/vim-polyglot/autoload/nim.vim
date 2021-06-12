@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nim') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nim', 'autoload/nim.vim')
+  finish
+endif
 
 let g:nim_log = []
 let s:plugin_path = escape(expand('<sfile>:p:h'), '\')
@@ -237,6 +239,4 @@ if exists('g:SyntasticRegistry')
   call g:SyntasticRegistry.CreateAndRegisterChecker({
       \ 'filetype': 'nim',
       \ 'name': 'nim'})
-endif
-
 endif

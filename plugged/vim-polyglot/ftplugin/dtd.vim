@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dtd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dtd', 'ftplugin/dtd.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	dtd
@@ -40,5 +42,3 @@ let b:undo_ftplugin = "setlocal commentstring< comments< formatoptions<" .
 " Restore the saved compatibility options.
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
-endif

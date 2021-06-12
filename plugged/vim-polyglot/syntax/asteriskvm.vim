@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'asteriskvm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'asteriskvm', 'syntax/asteriskvm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Asterisk voicemail config file
@@ -51,5 +53,3 @@ let b:current_syntax = "asteriskvm"
 
 " vim: ts=8 sw=2
 
-
-endif

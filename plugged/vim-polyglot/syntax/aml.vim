@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'aml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'aml', 'syntax/aml.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	AML (ARC/INFO Arc Macro Language)
@@ -144,5 +146,3 @@ hi def link amlTab	amlArcCmd
 
 
 let b:current_syntax = "aml"
-
-endif

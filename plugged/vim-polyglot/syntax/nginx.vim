@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nginx') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nginx', 'syntax/nginx.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: nginx.conf
@@ -2278,7 +2280,6 @@ hi link ngxComment Comment
 hi link ngxVariable Identifier
 hi link ngxVariableBlock Identifier
 hi link ngxVariableString PreProc
-hi link ngxBlock Normal
 hi link ngxString String
 hi link ngxIPaddr Delimiter
 hi link ngxBoolean Boolean
@@ -2308,5 +2309,3 @@ hi link ngxGzipOn Error
 hi link ngxSSLCipherInsecure Error
 
 hi link ngxThirdPartyLuaBlock Function
-
-endif

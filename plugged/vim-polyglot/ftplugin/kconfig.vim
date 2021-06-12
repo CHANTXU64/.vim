@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'kconfig') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'kconfig', 'ftplugin/kconfig.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Vim syntax file
@@ -27,5 +29,3 @@ endif
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

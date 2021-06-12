@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vroom') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vroom', 'ftplugin/vroom.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	Vroom (vim testing and executable documentation)
@@ -35,5 +37,3 @@ setlocal commentstring=
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ibasic') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ibasic', 'syntax/ibasic.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	ibasic
@@ -176,5 +178,3 @@ hi def link ibasicMathOperator		Operator
 let b:current_syntax = "ibasic"
 
 " vim: ts=8
-
-endif

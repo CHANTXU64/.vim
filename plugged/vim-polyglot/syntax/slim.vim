@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'slim') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'slim', 'syntax/slim.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Slim
@@ -111,5 +113,3 @@ hi def link slimInlineTagChar             Delimiter
 hi def link slimFilter                    PreProc
 
 let b:current_syntax = "slim"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sil') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sil', 'syntax/sil.vim')
+  finish
+endif
 
 " This source file is part of the Swift.org open source project
 "
@@ -38,6 +40,7 @@ syn keyword silConventions
       \ c
       \ method
       \ objc_method
+      \ sil_differentiability_witness
       \ thick
       \ thin
       \ witness_method
@@ -178,5 +181,3 @@ let b:current_syntax = "sil"
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

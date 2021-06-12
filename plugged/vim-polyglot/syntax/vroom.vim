@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vroom') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vroom', 'syntax/vroom.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Vroom (vim testing and executable documentation)
@@ -110,5 +112,3 @@ let b:current_syntax = 'vroom'
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

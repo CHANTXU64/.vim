@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nanorc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nanorc', 'syntax/nanorc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             nanorc(5) - GNU nano configuration file
@@ -243,5 +245,3 @@ let b:current_syntax = "nanorc"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

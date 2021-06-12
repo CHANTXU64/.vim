@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pov') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pov', 'syntax/pov.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: PoV-Ray(tm) 3.7 Scene Description Language
@@ -144,5 +146,3 @@ hi def link povCommentError povError
 hi def link povError Error
 
 let b:current_syntax = "pov"
-
-endif

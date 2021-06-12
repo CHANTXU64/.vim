@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ampl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ampl', 'syntax/ampl.vim')
+  finish
+endif
 
 " Language:     ampl (A Mathematical Programming Language)
 " Maintainer:   Krief David <david.krief@etu.enseeiht.fr> or <david_krief@hotmail.com>
@@ -140,5 +142,3 @@ let b:current_syntax = "ampl"
 " vim: ts=8
 
 
-
-endif

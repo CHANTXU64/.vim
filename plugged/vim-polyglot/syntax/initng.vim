@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'initng') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'initng', 'syntax/initng.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	initng .i files
@@ -91,5 +93,3 @@ hi def link	initngSubstMacro		Comment
 hi def link	initngDefine			Macro
 
 let b:current_syntax = "initng"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'radiance') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'radiance', 'syntax/radiance.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Radiance Scene Description
@@ -142,5 +144,3 @@ hi def link radianceTodo		Todo
 let b:current_syntax = "radiance"
 
 " vim: ts=8 sw=2
-
-endif

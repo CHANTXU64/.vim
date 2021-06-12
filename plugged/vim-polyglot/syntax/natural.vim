@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'natural') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'natural', 'syntax/natural.vim')
+  finish
+endif
 
 " Vim syntax file
 "
@@ -201,5 +203,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim:set ts=8 sw=8 noet ft=vim list:
-
-endif

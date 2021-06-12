@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cvsrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cvsrc', 'syntax/cvsrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             cvs(1) RC file
@@ -39,5 +41,3 @@ let b:current_syntax = "cvsrc"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

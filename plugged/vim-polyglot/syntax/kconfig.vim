@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'kconfig') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'kconfig', 'syntax/kconfig.vim')
+  finish
+endif
 
 " Vim syntax file
 " Maintainer:           Christian Brabandt <cb@256bit.org>
@@ -739,5 +741,3 @@ let b:current_syntax = "kconfig"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

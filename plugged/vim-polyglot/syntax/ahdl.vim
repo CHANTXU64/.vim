@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ahdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ahdl', 'syntax/ahdl.vim')
+  finish
+endif
 
 " Vim syn file
 " Language:	Altera AHDL
@@ -81,5 +83,3 @@ hi def link ahdlTodo		Todo
 
 let b:current_syntax = "ahdl"
 " vim:ts=8
-
-endif

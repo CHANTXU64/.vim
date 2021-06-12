@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'treetop') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'treetop', 'syntax/treetop.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             Treetop
@@ -110,5 +112,3 @@ let b:current_syntax = 'treetop'
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

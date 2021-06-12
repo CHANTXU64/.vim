@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'obj') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'obj', 'syntax/obj.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	3D wavefront's obj file
@@ -83,5 +85,3 @@ hi def link objKeywords        Keyword
 let b:current_syntax = "obj"
 
 " vim: ts=8
-
-endif

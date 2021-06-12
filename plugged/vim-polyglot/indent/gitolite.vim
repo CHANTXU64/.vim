@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gitolite') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gitolite', 'indent/gitolite.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	gitolite configuration
@@ -49,5 +51,3 @@ endfunction
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

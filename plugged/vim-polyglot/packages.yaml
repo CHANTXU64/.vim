@@ -376,7 +376,7 @@ filetypes:
   - carp
 ---
 name: clojure
-remote: guns/vim-clojure-static
+remote: clojure-vim/clojure.vim
 filetypes:
 - name: clojure
   linguist: Clojure
@@ -403,6 +403,7 @@ filetypes:
   extra_extensions:
   # 17 results: https://github.com/search?q=extension%3Acoffeekup+html&type=Code
   - coffeekup
+  - cson
   ignored_warnings:
   # Probably mistake
   - '*Cakefile'
@@ -575,7 +576,7 @@ filetypes:
   - ferm.conf
 ---
 name: fish
-remote: georgewitteman/vim-fish
+remote: blankname/vim-fish
 filetypes:
 - name: fish
   linguist: fish
@@ -772,10 +773,19 @@ filetypes:
   - hsig
 ---
 name: haxe
-remote: yaymukund/vim-haxe
+remote: jdonaldson/vaxe
 filetypes:
 - name: haxe
   linguist: Haxe
+- name: hxml
+  linguist: HXML
+- name: hss
+  extensions:
+    - hss
+ignored_dirs:
+  - ftplugin
+  - autoload
+  - compiler
 ---
 name: hcl
 remote: b4b4r07/vim-hcl
@@ -796,19 +806,6 @@ filetypes:
   linguist: HiveQL
   extra_extensions:
   - ql
----
-name: i3
-remote: mboughaba/i3config.vim
-filetypes:
-- name: i3config
-  filenames:
-  - i3.config
-  - i3config
-  - .i3.config
-  - .i3config
-  extensions:
-  - i3.config
-  - i3config
 ---
 name: icalendar
 remote: chutzpah/icalendar.vim
@@ -886,7 +883,7 @@ globs:
 - '**/htmldjango.vim'
 filetypes:
 - name: htmldjango
-  linguist: HTML+Django
+  linguist: Jinja 
   ignore_warnings:
   # handled by mustache plugin
   - mustache
@@ -941,7 +938,9 @@ remote: MaxMEllon/vim-jsx-pretty
 dependencies: javascript
 filetypes:
 - name: javascriptreact
-  linguist: JSX
+  patterns:
+  - pattern: '*.jsx'
+    description: Syntax Extension to JavaScript
 ---
 name: julia
 remote: JuliaEditorSupport/julia-vim
@@ -982,7 +981,7 @@ filetypes:
 name: livescript
 remote: gkz/vim-ls
 filetypes:
-- name: livescript
+- name: ls
   linguist: LiveScript
 ---
 name: llvm
@@ -1235,6 +1234,13 @@ dependencies: php
 filetypes:
 - name: blade
   linguist: Blade
+---
+name: pest
+remote: pest-parser/pest.vim
+filetypes:
+- name: pest
+  extensions:
+  - pest
 ---
 name: plantuml
 remote: aklt/plantuml-syntax
@@ -1548,7 +1554,7 @@ filetypes:
   linguist: SMT
 ---
 name: solidity
-remote: tomlion/vim-solidity
+remote: TovarishFin/vim-solidity
 filetypes:
 - name: solidity
   linguist: Solidity
@@ -1564,7 +1570,7 @@ filetypes:
   - stylus
 ---
 name: svelte
-remote: evanleck/vim-svelte@main
+remote: leafOfTree/vim-svelte-plugin
 filetypes:
 - name: svelte
   linguist: Svelte
@@ -1664,6 +1670,12 @@ filetypes:
   - p
   - tptp
   - ax
+---
+name: tutor
+filetypes:
+- name: tutor
+  extensions:
+  - tutor
 ---
 name: twig
 remote: lumiliet/vim-twig
@@ -1770,10 +1782,12 @@ filetypes:
   - '*/etc/xdg/menus/*.menu'
   - '*fglrxrc'
   ignored_extensions:
+  - rs
   - ts
   - tsx
   # handled by powershell plugin
   - ps1xml
+  - mm
 ---
 name: xsl
 remote: vim-scripts/XSLT-syntax
@@ -1927,7 +1941,7 @@ filetypes:
   - t
 ---
 name: gitignore
-remote: fszymanski/fzf-gitignore
+remote: SirJson/fzf-gitignore 
 filetypes:
 - name: gitignore
   filenames:
@@ -3864,6 +3878,8 @@ remote: vim/vim:runtime
 glob: "**/nroff.vim"
 filetypes:
 - name: nroff
+  linguist: Roff Manpage
+- name: nroff
   patterns:
   - pattern: "*.tr,*.nr,*.roff,*.tmac,*.mom"
     description: Nroff/Troff (*.ms and *.t are checked below)
@@ -4565,7 +4581,7 @@ glob: "**/scheme.vim"
 filetypes:
 - name: scheme
   patterns:
-  - pattern: "*.scm,*.ss,*.rkt"
+  - pattern: "*.scm,*.ss"
     description: Scheme
 ---
 name: screen
@@ -4950,6 +4966,7 @@ filetypes:
 name: tex
 remote: vim/vim:runtime
 glob: "**/tex.vim"
+extract_in_after: true
 filetypes:
 - name: tex
   patterns:
@@ -5488,16 +5505,8 @@ glob: "**/autodoc.vim"
 # Needed by c, cmod, and pike
 filetypes: []
 ---
-name: html
-remote: vim/vim:runtime
-glob: "**/html.vim"
-filetypes:
-- name: html
-  linguist: HTML
----
-# TODO: change after https://github.com/othree/html5.vim/pull/106 is merged
 name: html5
-remote: sheerun/html5.vim
+remote: othree/html5.vim
 dependencies: html
 filetypes: []
 ---
@@ -5508,11 +5517,6 @@ filetypes:
 - name: xf86conf
   patterns:
   - pattern: "XF86Config-4*,XF86Config*,*/xorg.conf.d/*.conf,xorg.conf,xorg.conf-4"
----
-name: man
-filetypes:
-- name: man
-  linguist: Roff Manpage
 ---
 name: xpm
 remote: vim/vim:runtime
@@ -5536,3 +5540,84 @@ filetypes:
   patterns:
   - pattern: '*.mkii,*.mkiv,*.mkvi'
     description: ConTeXt
+---
+name: mint
+remote: IrenejMarc/vim-mint
+filetypes:
+- name: mint
+  patterns:
+  - pattern: '*.mint'
+    description: Mint (https://www.mint-lang.com/)
+---
+name: jsonc
+remote: neoclide/jsonc.vim
+filetypes:
+- name: jsonc
+  patterns:
+  - pattern: '*.cjson,coc-settings.json,*.jsonc,.eslintrc.json,.babelrc,.jshintrc,.jslintrc,.mocharc.json,coffeelint.json,tsconfig.json,jsconfig.json'
+    description: 'JSON with comments (https://komkom.github.io/)'
+---
+name: gleam
+remote: gleam-lang/gleam.vim
+filetypes:
+  - name: gleam
+    extensions:
+    - gleam
+---
+name: hjson
+remote: hjson/vim-hjson
+filetypes:
+- name: hjson
+  patterns:
+  - pattern: '*.hjson'
+    description: Hjson (https://hjson.github.io)
+---
+name: sway
+remote: jamespeapen/swayconfig.vim/tree/i3sway
+filetypes:
+- name: i3config
+  patterns:
+  - pattern: 'i3.config,*.i3config,*.i3.config,*sway/config,*.swayconfig,*.sway.config,sway.config'
+    description: Sway/i3 Configuration
+---
+name: just
+remote: NoahTheDuke/vim-just
+filetypes:
+- name: just
+  patterns:
+  - pattern: 'justfile,*.just'
+    description: 'Just a task runner (https://github.com/casey/just)'
+---
+name: nftables
+remote: nfnty/vim-nftables
+filetypes:
+- name: nftables
+  extensions:
+  - nft
+  patterns:
+  - pattern: '*/nftables.conf'
+    description: nftables configuration
+---
+name: openscad
+remote: sirtaj/vim-openscad
+filetypes:
+- name: openscad
+  patterns:
+  - pattern: '*.scad'
+    description: OpenSCAD 3D modeling language
+---
+name: mermaid
+remote: mracos/mermaid.vim
+filetypes:
+- name: mermaid
+  patterns:
+  - pattern: '*.mermaid,*.mm,*.mmd'
+    description: Mermaid (https://mermaid-js.github.io/)
+---
+name: org
+remote: axvr/org.vim
+filetypes:
+- name: org
+  patterns:
+  - pattern: '*.org'
+    description: GNU Emacs' Org mode

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'monk') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'monk', 'syntax/monk.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Monk (See-Beyond Technologies)
@@ -217,5 +219,3 @@ let b:current_syntax = "monk"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

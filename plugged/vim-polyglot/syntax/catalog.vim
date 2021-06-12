@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'catalog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'catalog', 'syntax/catalog.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	sgml catalog file
@@ -30,5 +32,3 @@ hi def link catalogTodo			     Todo
 hi def link catalogKeyword		     Statement
 
 let b:current_syntax = "catalog"
-
-endif

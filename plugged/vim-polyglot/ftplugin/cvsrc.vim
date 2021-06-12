@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cvsrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cvsrc', 'ftplugin/cvsrc.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             cvs(1) RC file
@@ -19,5 +21,3 @@ setlocal comments= commentstring= formatoptions-=tcroql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

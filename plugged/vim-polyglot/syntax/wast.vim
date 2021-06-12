@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'wast') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'wast', 'syntax/wast.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     WebAssembly
@@ -84,5 +86,3 @@ let b:current_syntax = "wast"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

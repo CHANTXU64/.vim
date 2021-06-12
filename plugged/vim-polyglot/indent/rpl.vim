@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rpl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rpl', 'indent/rpl.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	RPL/2
@@ -63,5 +65,3 @@ function RplGetFreeIndent()
 endfunction
 
 " vim:sw=2 tw=130
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'aptconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'aptconf', 'syntax/aptconf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	APT config file
@@ -574,5 +576,3 @@ let b:current_syntax = "aptconf"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

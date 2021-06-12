@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gsp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gsp', 'syntax/gsp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	GSP - GNU Server Pages (v. 0.86)
@@ -54,5 +56,3 @@ endif
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

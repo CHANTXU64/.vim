@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jsonnet') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jsonnet', 'syntax/jsonnet.vim')
+  finish
+endif
 
 " Copyright 2014 Google Inc. All rights reserved.
 "
@@ -134,5 +136,3 @@ syntax keyword Constant true false null
 syntax keyword Underlined error
 
 
-
-endif

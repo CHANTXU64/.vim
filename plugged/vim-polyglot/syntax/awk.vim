@@ -1,9 +1,12 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'awk') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'awk', 'syntax/awk.vim')
+  finish
+endif
 
 " Vim syntax file
-" Language:	awk, nawk, gawk, mawk
-" Maintainer:	Antonio Colombo <azc100@gmail.com>
-" Last Change:	2020 Aug 18
+" Language:		awk, nawk, gawk, mawk
+" Maintainer:		Doug Kearns <dougkearns@gmail.com>
+" Previous Maintainer:	Antonio Colombo <azc100@gmail.com>
+" Last Change:		2020 Aug 18
 
 " AWK  ref. is: Alfred V. Aho, Brian W. Kernighan, Peter J. Weinberger
 " The AWK Programming Language, Addison-Wesley, 1988
@@ -216,5 +219,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8
-
-endif

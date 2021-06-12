@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'murphi') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'murphi', 'syntax/murphi.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Murphi model checking language
@@ -126,5 +128,3 @@ hi def link murphiError          Error
 hi def link murphiTodo           Todo
 
 let b:current_syntax = "murphi"
-
-endif

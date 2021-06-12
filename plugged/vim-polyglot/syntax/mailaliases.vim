@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mailaliases') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mailaliases', 'syntax/mailaliases.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             aliases(5) local alias database file
@@ -71,5 +73,3 @@ let b:current_syntax = "mailaliases"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

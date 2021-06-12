@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sbt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sbt', 'ftplugin/sbt.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:     sbt
@@ -15,5 +17,3 @@ let b:did_ftplugin = 1
 
 runtime! ftplugin/scala.vim
 
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rib') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rib', 'syntax/rib.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Renderman Interface Bytestream
@@ -62,5 +64,3 @@ hi def link ribFloat		Float
 let b:current_syntax = "rib"
 
 " Options for vi: ts=8 sw=2 sts=2 nowrap noexpandtab ft=vim
-
-endif

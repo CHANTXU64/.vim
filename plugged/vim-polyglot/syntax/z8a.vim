@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'z8a') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'z8a', 'syntax/z8a.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Z80 assembler asz80
@@ -101,5 +103,3 @@ hi def link z8aString		String
 
 let b:current_syntax = "z8a"
 " vim: ts=8
-
-endif

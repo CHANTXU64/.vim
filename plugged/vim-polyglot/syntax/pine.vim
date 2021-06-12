@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pine') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pine', 'syntax/pine.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Pine (email program) run commands
@@ -355,5 +357,3 @@ hi def link pineOption	Macro
 let b:current_syntax = "pine"
 
 " vim: ts=8
-
-endif

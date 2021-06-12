@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'procmail') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'procmail', 'syntax/procmail.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Procmail definition file
@@ -54,5 +56,3 @@ hi def link procmailString String
 let b:current_syntax = "procmail"
 
 " vim: ts=8
-
-endif

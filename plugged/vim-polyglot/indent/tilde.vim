@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tilde') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tilde', 'indent/tilde.vim')
+  finish
+endif
 
 "Description: Indent scheme for the tilde weblanguage
 "Author: Tobias Rundström <tobi@tobi.nu>
@@ -36,5 +38,3 @@ function GetTildeIndent(lnum)
 		return -1
 	endif
 endfunction
-
-endif

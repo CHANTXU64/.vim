@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rng') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rng', 'syntax/rng.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    RELAX NG
@@ -25,5 +27,3 @@ syn keyword rngTagName parentRef ref start text value zeroOrMore contained
 hi def link rngTagName Statement
 
 let b:current_syntax = 'rng'
-
-endif

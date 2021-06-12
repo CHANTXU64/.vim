@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'slrnsc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'slrnsc', 'syntax/slrnsc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Slrn score file (based on slrn 0.9.8.0)
@@ -68,5 +70,3 @@ hi def link slrnscInclude		Keyword
 let b:current_syntax = "slrnsc"
 
 "EOF	vim: ts=8 noet tw=200 sw=8 sts=0
-
-endif

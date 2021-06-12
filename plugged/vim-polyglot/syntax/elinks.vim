@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'elinks') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'elinks', 'syntax/elinks.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             elinks(1) configuration file
@@ -188,5 +190,3 @@ let b:current_syntax = "elinks"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bc', 'syntax/bc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	bc - An arbitrary precision calculator language
@@ -66,5 +68,3 @@ hi def link bcParenError		Error
 
 let b:current_syntax = "bc"
 " vim: ts=8
-
-endif

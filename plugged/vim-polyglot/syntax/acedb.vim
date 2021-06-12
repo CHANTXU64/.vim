@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'acedb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'acedb', 'syntax/acedb.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	AceDB model files
@@ -110,5 +112,3 @@ let b:current_syntax = "acedb"
 " The structure of the model.wrm file is sensitive to mixed tab and space
 " indentation and assumes tabs are 8 so...
 se ts=8
-
-endif

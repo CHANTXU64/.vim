@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rpcgen') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rpcgen', 'syntax/rpcgen.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	rpcgen
@@ -46,5 +48,3 @@ endif
 let b:current_syntax = "rpcgen"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'po') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'po', 'syntax/po.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	po (gettext)
@@ -133,5 +135,3 @@ let &cpo = s:keepcpo
 unlet s:keepcpo
 
 " vim:set ts=8 sts=2 sw=2 noet:
-
-endif

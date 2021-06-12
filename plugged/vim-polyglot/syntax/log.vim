@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'log') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'log', 'syntax/log.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:         Generic log file
@@ -161,5 +163,3 @@ let b:current_syntax = 'log'
 let &cpoptions = s:cpo_save
 unlet s:cpo_save
 
-
-endif

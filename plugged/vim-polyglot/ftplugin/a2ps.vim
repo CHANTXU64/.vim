@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'a2ps') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'a2ps', 'ftplugin/a2ps.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             a2ps(1) configuration file
@@ -20,5 +22,3 @@ setlocal formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

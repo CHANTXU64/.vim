@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pdf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pdf', 'syntax/pdf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	PDF
@@ -73,5 +75,3 @@ hi def link pdfPreProc      PreProc
 hi def link pdfComment      Comment
 
 let b:current_syntax = "pdf"
-
-endif

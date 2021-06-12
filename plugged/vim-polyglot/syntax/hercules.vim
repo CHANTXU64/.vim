@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hercules') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hercules', 'syntax/hercules.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Hercules
@@ -119,5 +121,3 @@ hi def link herculesError      Error
 let b:current_syntax = "hercules"
 
 " vim: ts=8
-
-endif

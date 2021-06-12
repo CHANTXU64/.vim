@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'readline') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'readline', 'indent/readline.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             readline configuration file
@@ -36,5 +38,3 @@ function GetReadlineIndent()
 
   return ind
 endfunction
-
-endif

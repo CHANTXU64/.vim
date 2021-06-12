@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xsd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xsd', 'indent/xsd.vim')
+  finish
+endif
 
 " Vim indent file
 " Language: 	.xsd files (XML Schema)
@@ -13,5 +15,3 @@ endif
 " Use XML formatting rules
 runtime! indent/xml.vim
 
-
-endif

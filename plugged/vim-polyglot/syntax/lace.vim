@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lace') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lace', 'syntax/lace.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		lace
@@ -122,5 +124,3 @@ hi def link laceTodo				Todo
 let b:current_syntax = "lace"
 
 " vim: ts=4
-
-endif

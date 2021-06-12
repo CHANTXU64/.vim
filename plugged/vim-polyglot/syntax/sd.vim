@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sd', 'syntax/sd.vim')
+  finish
+endif
 
 " Language: streaming descriptor file
 " Maintainer: Puria Nafisi Azizi (pna) <pna@netstudent.polito.it>
@@ -71,5 +73,3 @@ let b:current_syntax = "sd"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

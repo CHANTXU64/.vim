@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tags') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tags', 'syntax/tags.vim')
+  finish
+endif
 
 " Language:		tags
 " Maintainer:	Charles E. Campbell <NcampObell@SdrPchip.AorgM-NOSPAM>
@@ -31,5 +33,3 @@ if !exists("skip_drchip_tags_inits")
 endif
 
 let b:current_syntax = "tags"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xquery') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xquery', 'syntax/xquery.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	XQuery
@@ -82,5 +84,3 @@ hi def link xqExist     Operator
 "hi link xmlEndTag   Structure
 
 let b:current_syntax = "xquery"
-
-endif

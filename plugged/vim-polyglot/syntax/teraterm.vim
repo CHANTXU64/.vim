@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'teraterm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'teraterm', 'syntax/teraterm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Tera Term Language (TTL)
@@ -140,5 +142,3 @@ let &cpo = s:save_cpo
 unlet s:save_cpo
 
 " vim: ts=8 sw=2 sts=2
-
-endif

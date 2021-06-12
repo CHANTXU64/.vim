@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'toml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'toml', 'syntax/toml.vim')
+  finish
+endif
 
 " Language:   TOML
 " Maintainer: Caleb Spare <cespare@gmail.com>
@@ -76,5 +78,3 @@ hi def link tomlComment Comment
 syn sync minlines=500
 
 let b:current_syntax = 'toml'
-
-endif

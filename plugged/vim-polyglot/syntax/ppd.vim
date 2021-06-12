@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ppd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ppd', 'syntax/ppd.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	PPD (PostScript printer description) file
@@ -35,5 +37,3 @@ hi def link ppdContraints		Special
 let b:current_syntax = "ppd"
 
 " vim: ts=8
-
-endif

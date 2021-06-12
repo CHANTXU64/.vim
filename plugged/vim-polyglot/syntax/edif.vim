@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'edif') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'edif', 'syntax/edif.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     EDIF (Electronic Design Interchange Format)
@@ -45,5 +47,3 @@ hi def link edifError		Error
 hi def link edifString		String
 
 let b:current_syntax = "edif"
-
-endif

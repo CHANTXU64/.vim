@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jsp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jsp', 'indent/jsp.vim')
+  finish
+endif
 
 " Vim filetype indent file
 " Language:    JSP files
@@ -17,5 +19,3 @@ endif
 runtime! indent/html.vim
 
 
-
-endif

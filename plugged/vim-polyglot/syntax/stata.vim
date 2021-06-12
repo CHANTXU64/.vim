@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'stata') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'stata', 'syntax/stata.vim')
+  finish
+endif
 
 " stata.vim -- Vim syntax file for Stata do, ado, and class files.
 " Language:	Stata and/or Mata
@@ -450,5 +452,3 @@ hi def link stataString		String
 let b:current_syntax = "stata"
 
 " vim: ts=8
-
-endif

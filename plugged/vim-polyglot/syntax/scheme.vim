@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'scheme') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'scheme', 'syntax/scheme.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Scheme (R7RS)
@@ -464,5 +466,3 @@ unlet b:did_scheme_syntax
 let b:current_syntax = 'scheme'
 let &cpo = s:cpo
 unlet s:cpo
-
-endif

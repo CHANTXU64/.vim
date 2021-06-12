@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cvs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cvs', 'syntax/cvs.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	CVS commit file
@@ -29,5 +31,3 @@ hi def link cvsCom		Statement
 
 
 let b:current_syntax = "cvs"
-
-endif

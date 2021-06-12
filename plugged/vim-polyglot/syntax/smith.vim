@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'smith') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'smith', 'syntax/smith.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	SMITH
@@ -39,5 +41,3 @@ hi def link smithNumber	Number
 let b:current_syntax = "smith"
 
 " vim: ts=2
-
-endif

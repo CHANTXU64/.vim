@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bdf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bdf', 'compiler/bdf.vim')
+  finish
+endif
 
 " Vim compiler file
 " Compiler:             BDF to PCF Conversion
@@ -22,5 +24,3 @@ setlocal errorformat=%ABDF\ %trror\ on\ line\ %l:\ %m,
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

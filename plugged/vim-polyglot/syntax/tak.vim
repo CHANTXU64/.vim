@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tak') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tak', 'syntax/tak.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     TAK2, TAK3, TAK2000 thermal modeling input file
@@ -119,5 +121,3 @@ hi def link takTodo		Todo
 let b:current_syntax = "tak"
 
 " vim: ts=8 sw=2
-
-endif

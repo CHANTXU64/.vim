@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bindzone') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bindzone', 'syntax/bindzone.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     BIND zone files (RFC 1035)
@@ -97,5 +99,3 @@ hi def link zoneComment      Comment
 let b:current_syntax = "bindzone"
 
 " vim:sts=2 sw=2
-
-endif

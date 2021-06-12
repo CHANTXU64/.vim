@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'muttrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'muttrc', 'ftplugin/muttrc.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             mutt RC File
@@ -22,5 +24,3 @@ let &l:include = '^\s*source\>'
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mailcap') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mailcap', 'syntax/mailcap.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Mailcap configuration file
@@ -35,5 +37,3 @@ hi def link mailcapString	String
 let b:current_syntax = "mailcap"
 
 " vim: ts=8
-
-endif

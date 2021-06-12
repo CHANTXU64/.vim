@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xmath') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xmath', 'syntax/xmath.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	xmath (a simulation tool)
@@ -225,5 +227,3 @@ endif
 let b:current_syntax = "xmath"
 
 " vim: ts=17
-
-endif

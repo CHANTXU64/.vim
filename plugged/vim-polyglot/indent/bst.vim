@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bst') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bst', 'indent/bst.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	bst
@@ -75,5 +77,3 @@ function! GetBstIndent(lnum) abort
     let ind = ind - shiftwidth() * s:count(fakeline,'}')
     return ind
 endfunction
-
-endif

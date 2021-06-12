@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'systemverilog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'systemverilog', 'indent/systemverilog.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:    SystemVerilog
@@ -230,4 +232,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim:sw=2
-endif

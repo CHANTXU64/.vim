@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'povini') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'povini', 'syntax/povini.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: PoV-Ray(tm) 3.7 configuration/initialization files
@@ -56,5 +58,3 @@ hi def link poviniBool Constant
 hi def link poviniNumber Number
 
 let b:current_syntax = "povini"
-
-endif

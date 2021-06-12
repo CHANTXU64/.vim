@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'uc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'uc', 'syntax/uc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	UnrealScript
@@ -165,5 +167,3 @@ if main_syntax == 'uc'
 endif
 
 " vim: ts=8
-
-endif

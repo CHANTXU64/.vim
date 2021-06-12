@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'config') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'config', 'indent/config.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:             Autoconf configure.{ac,in} file
@@ -82,5 +84,3 @@ function GetConfigIndent()
 
   return ind
 endfunction
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xsd') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xsd', 'syntax/xsd.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	XSD (XML Schema)
@@ -61,5 +63,3 @@ syn match xsdElement '\%(xsd:\)\@<=unique'
 hi def link xsdElement Statement
 
 " vim: ts=8
-
-endif

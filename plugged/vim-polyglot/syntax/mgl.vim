@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mgl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mgl', 'syntax/mgl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	MGL
@@ -117,5 +119,3 @@ hi def link mglType		Type
 let b:current_syntax = "mgl"
 
 " vim: ts=8 sw=2
-
-endif

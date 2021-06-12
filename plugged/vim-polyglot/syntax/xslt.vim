@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xslt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xslt', 'syntax/xslt.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	XSLT
@@ -71,5 +73,3 @@ syn match xslElement '\%(xsl:\)\@<=with-param'
 hi def link xslElement Statement
 
 " vim: ts=8
-
-endif

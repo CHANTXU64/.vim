@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rrst') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rrst', 'syntax/rrst.vim')
+  finish
+endif
 
 " reStructured Text with R statements
 " Language: reST with R code chunks
@@ -43,5 +45,3 @@ hi def link rrstInlineDelim Special
 let b:current_syntax = "rrst"
 
 " vim: ts=8 sw=2
-
-endif

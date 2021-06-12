@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cfg') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cfg', 'syntax/cfg.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Good old CFG files
@@ -48,5 +50,3 @@ hi def link UncPath      Directory
 
 let b:current_syntax = "cfg"
 " vim:ts=8
-
-endif

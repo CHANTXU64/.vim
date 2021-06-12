@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'fetchmail') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'fetchmail', 'syntax/fetchmail.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             fetchmail(1) RC File
@@ -75,5 +77,3 @@ let b:current_syntax = "fetchmail"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

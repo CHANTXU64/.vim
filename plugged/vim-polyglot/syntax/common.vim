@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'typescript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'typescript', 'syntax/common.vim')
+  finish
+endif
 
 " Define the default highlighting.
 " For version 5.8 and later: only when an item doesn't have highlighting yet
@@ -171,6 +173,4 @@ if exists("did_typescript_hilink")
 
   delcommand HiLink
   unlet did_typescript_hilink
-endif
-
 endif

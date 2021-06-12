@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'racket') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'racket', 'ftplugin/racket.vim')
+  finish
+endif
 
 " Language:     Racket
 " Maintainer:   Will Langstroth <will@langstroth.com>
@@ -32,7 +34,7 @@ setl lispwords+=match-letrec,match-define,match-define-values
 setl lisp
 
 " Enable auto begin new comment line when continuing from an old comment line
-setl comments+=:;
+setl comments=:;;;;,:;;;,:;;,:;
 setl formatoptions+=r
 
 setl makeprg=raco\ make\ --\ %
@@ -76,5 +78,3 @@ let b:undo_ftplugin =
       \. "| setl makeprg< commentstring<"
       \. "| nunmap <buffer> K"
       \. "| vunmap <buffer> K"
-
-endif

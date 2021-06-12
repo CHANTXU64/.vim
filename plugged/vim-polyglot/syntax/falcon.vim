@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'falcon') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'falcon', 'syntax/falcon.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Falcon
@@ -197,5 +199,3 @@ let b:current_syntax = "falcon"
 
 " vim: set sw=4 sts=4 et tw=80 :
 
-
-endif

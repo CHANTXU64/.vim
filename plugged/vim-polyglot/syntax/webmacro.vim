@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'webmacro') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'webmacro', 'syntax/webmacro.vim')
+  finish
+endif
 
 " WebMacro syntax file
 " Language:     WebMacro
@@ -66,6 +68,4 @@ let b:current_syntax = "webmacro"
 
 if main_syntax == 'webmacro'
   unlet main_syntax
-endif
-
 endif

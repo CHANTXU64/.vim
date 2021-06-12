@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || (index(g:polyglot_disabled, 'javascript') == -1 && index(g:polyglot_disabled, 'jsx') == -1)
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jsx', 'after/syntax/jsx.vim')
+  finish
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim syntax file
@@ -55,5 +57,3 @@ let b:current_syntax = 'javascript.jsx'
 
 let &cpo = s:jsx_cpo
 unlet s:jsx_cpo
-
-endif

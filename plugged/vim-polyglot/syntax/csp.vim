@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'csp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'csp', 'syntax/csp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	CSP (Communication Sequential Processes, using FDR input syntax)
@@ -182,5 +184,3 @@ hi def link cspReservedIdentifier	Error
 let b:current_syntax = "csp"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'crontab') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'crontab', 'syntax/crontab.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: crontab
@@ -67,5 +69,3 @@ hi def link crontabCmnt		Comment
 let b:current_syntax = "crontab"
 
 " vim: ts=8
-
-endif

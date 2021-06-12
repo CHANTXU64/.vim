@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cs', 'indent/cs.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:            C#
@@ -73,5 +75,3 @@ let &cpoptions = s:save_cpo
 unlet s:save_cpo
 
 " vim:et:sw=2:sts=2
-
-endif

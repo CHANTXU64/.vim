@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cupl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cupl', 'syntax/cupl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	CUPL
@@ -124,5 +126,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim:ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pyrex') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pyrex', 'syntax/pyrex.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Pyrex
@@ -51,5 +53,3 @@ hi def link pyrexForFrom		Statement
 
 
 let b:current_syntax = "pyrex"
-
-endif

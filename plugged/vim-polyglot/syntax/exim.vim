@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'exim') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'exim', 'syntax/exim.vim')
+  finish
+endif
 
 " Vim syntax file
 " This is a GENERATED FILE. Please always refer to source file at the URI below.
@@ -105,5 +107,3 @@ hi def link eximTransport Identifier
 
 
 let b:current_syntax = "exim"
-
-endif

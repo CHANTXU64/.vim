@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nsis') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nsis', 'syntax/nsis.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		NSIS script, for version of NSIS 3.03 and later
@@ -682,5 +684,3 @@ let b:current_syntax = "nsis"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

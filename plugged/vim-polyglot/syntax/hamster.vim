@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hamster') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hamster', 'syntax/hamster.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Hamster Scripting Language
@@ -370,5 +372,3 @@ hi def link hamsterFunction	Function
 let b:current_syntax = "hamster"
 
 " vim:sw=4
-
-endif

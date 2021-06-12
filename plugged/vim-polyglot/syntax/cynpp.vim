@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cynpp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cynpp', 'syntax/cynpp.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Cyn++
@@ -50,5 +52,3 @@ hi def link cynppMacro  Statement
 
 
 let b:current_syntax = "cynpp"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'aap') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'aap', 'syntax/aap.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	A-A-P recipe
@@ -158,5 +160,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8
-
-endif

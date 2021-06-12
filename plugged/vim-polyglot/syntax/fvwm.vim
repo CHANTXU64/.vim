@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'fvwm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'fvwm', 'syntax/fvwm.vim')
+  finish
+endif
 
 " Vim syntax file for Fvwm-2.5.22
 " Language:		Fvwm{1,2} configuration file
@@ -642,5 +644,3 @@ let b:current_syntax = "fvwm"
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

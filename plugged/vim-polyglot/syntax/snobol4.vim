@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'snobol4') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'snobol4', 'syntax/snobol4.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     SNOBOL4
@@ -113,5 +115,3 @@ endif
 
 let b:current_syntax = "snobol4"
 " vim: ts=8
-
-endif

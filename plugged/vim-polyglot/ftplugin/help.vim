@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'help') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'help', 'ftplugin/help.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             Vim help file
@@ -97,5 +99,3 @@ endif
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'haskell') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'haskell', 'syntax/cabal.vim')
+  finish
+endif
 
 " syntax highlighting for cabal
 "
@@ -23,7 +25,7 @@ syn match cabalDocBulletPoint "^\s\+\*"
 syn match cabalDocHeadline "^\s\+=.*$"
 syn match cabalDocCode "^\s\+>.*$"
 syn match cabalDocNewline "^\s\+\.\s*$"
-syn match cabalSection "^\c\(executable\|library\|flag\|source-repository\|test-suite\|benchmark\)"
+syn match cabalSection "^\c\(executable\|library\|flag\|source-repository\|test-suite\|benchmark\|common\)"
 syn match cabalEntry "^\s*[A-Za-z][a-zA-Z\-]*:" contains=cabalIdentifier,cabalColon
 
 syn region cabalDescription start="^\s*[dD]escription:" end="^\<" keepend
@@ -51,5 +53,3 @@ highlight def link cabalDocNewline Operator
 highlight def link cabalDocCode Macro
 
 let b:current_syntax = "cabal"
-
-endif

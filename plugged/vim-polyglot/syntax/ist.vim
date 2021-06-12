@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ist') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ist', 'syntax/ist.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Makeindex style file, *.ist
@@ -58,5 +60,3 @@ let b:current_syntax = "ist"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8 sw=2
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'java') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'java', 'indent/java.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Java
@@ -150,5 +152,3 @@ let &cpo = s:keepcpo
 unlet s:keepcpo
 
 " vi: sw=2 et
-
-endif

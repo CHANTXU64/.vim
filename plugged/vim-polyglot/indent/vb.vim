@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'visual-basic') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'visual-basic', 'indent/vb.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	VisualBasic (ft=vb) / Basic (ft=basic) / SaxBasic (ft=vb)
@@ -78,5 +80,3 @@ fun! VbGetIndent(lnum)
 endfun
 
 " vim:sw=4
-
-endif

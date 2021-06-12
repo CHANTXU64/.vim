@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'reva') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'reva', 'ftplugin/reva.vim')
+  finish
+endif
 
 " Vim ftplugin file
 " Language:	Reva Forth
@@ -25,5 +27,3 @@ setlocal com=s1:/*,mb:*,ex:*/,:\|,:\\
 setlocal fo=tcrqol
 setlocal matchpairs+=\::;
 setlocal iskeyword=!,@,33-35,%,$,38-64,A-Z,91-96,a-z,123-126,128-255
-
-endif

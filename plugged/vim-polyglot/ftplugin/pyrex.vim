@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pyrex') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pyrex', 'ftplugin/pyrex.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	Pyrex
@@ -27,5 +29,3 @@ endif
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-
-endif

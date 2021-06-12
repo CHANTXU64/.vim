@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bzr') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bzr', 'syntax/bzr.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Bazaar (bzr) commit file
@@ -50,5 +52,3 @@ hi def link bzrUnknown    Special
 
 
 let b:current_syntax = "bzr"
-
-endif

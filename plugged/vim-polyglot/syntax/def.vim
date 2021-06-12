@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'def') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'def', 'syntax/def.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Microsoft Module-Definition (.def) File
@@ -44,5 +46,3 @@ hi def link defOrdinal	Operator
 let b:current_syntax = "def"
 
 " vim: ts=8
-
-endif

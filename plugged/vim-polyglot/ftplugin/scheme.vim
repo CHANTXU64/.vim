@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'scheme') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'scheme', 'ftplugin/scheme.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language: Scheme (R7RS)
@@ -57,5 +59,3 @@ unlet b:did_scheme_ftplugin
 let b:did_ftplugin = 1
 let &cpo = s:cpo
 unlet s:cpo
-
-endif

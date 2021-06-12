@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vgrindefs') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vgrindefs', 'syntax/vgrindefs.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Vgrindefs
@@ -45,5 +47,3 @@ hi def link vgrindefsComment	Comment
 let b:current_syntax = "vgrindefs"
 
 " vim: ts=8
-
-endif

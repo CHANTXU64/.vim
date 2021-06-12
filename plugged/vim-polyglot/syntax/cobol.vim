@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cobol') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cobol', 'syntax/cobol.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     COBOL
@@ -260,5 +262,3 @@ hi def link cobolStart          Comment
 let b:current_syntax = "cobol"
 
 " vim: ts=6 nowrap
-
-endif

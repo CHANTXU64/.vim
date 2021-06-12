@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mallard') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mallard', 'syntax/mallard.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Mallard
@@ -37,5 +39,3 @@ hi def link mallardTitle    Title
 hi def mallardEmphasis term=italic cterm=italic gui=italic
 
 let b:current_syntax = "mallard"
-
-endif

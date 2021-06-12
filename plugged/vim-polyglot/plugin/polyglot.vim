@@ -1,3 +1,5 @@
+call polyglot#init#init()
+
 " Turn on filetype plugins (:help filetype-plugin).
 if has('autocmd') && !(exists("did_load_filetypes") && exists("did_indent_on"))
   filetype plugin indent on
@@ -17,12 +19,11 @@ endif
 " and (mostly comments) from https://github.com/sheerun/vimrc
 "
 " Only settings that matter for proper editing are left
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sensible')
-  " Autoindent when starting new line, or using `o` or `O`.
-  set autoindent
-
+if !has_key(g:polyglot_is_disabled, 'sensible')
   " Allow backspace in insert mode.
-  set backspace=indent,eol,start
+  if &backspace == ""
+    set backspace=indent,eol,start
+  endif
 
   " Allow for mappings including `Esc`, while preserving
   " zero timeout after pressing it manually.
@@ -31,12 +32,6 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sensible')
     set ttimeout
     set ttimeoutlen=100
   endif
-
-  " Enable highlighted case-insensitive incremential search.
-  set incsearch
-
-  " Use utf-8 encoding by default
-  set encoding=utf-8
 
   " Set default whitespace characters when using `:set list`
   if &listchars ==# 'eol:$'
@@ -59,9 +54,6 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sensible')
     set shell=/usr/bin/env\ bash
   endif
 
-  " Reload unchanged files automatically.
-  set autoread
-
   " Increase history size to 1000 items.
   if &history < 1000
     set history=1000
@@ -70,6 +62,22 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sensible')
   " Allow for up to 50 opened tabs on Vim start.
   if &tabpagemax < 50
     set tabpagemax=50
+  endif
+
+  " Reduce updatetime from 4000 to 300 to avoid issues with coc.nvim
+  if &updatetime == 4000
+    set updatetime=300
+  endif
+
+  " Automatically reload file if changed somewhere else
+  redir => capture
+  silent autocmd CursorHold
+  redir END
+  if match(capture, 'checktime') == -1
+    augroup polyglot-sensible
+      au!
+      au CursorHold * silent! checktime
+    augroup END
   endif
 
   " Always save upper case variables to viminfo file.

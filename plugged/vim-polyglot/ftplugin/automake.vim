@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'automake') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'automake', 'ftplugin/automake.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             Automake
@@ -16,5 +18,3 @@ runtime! ftplugin/make.vim ftplugin/make_*.vim ftplugin/make/*.vim
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

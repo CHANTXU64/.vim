@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'wvdial') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'wvdial', 'syntax/wvdial.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Configuration file for WvDial
@@ -28,5 +30,3 @@ hi def link wvdialEqual     Statement
 let b:current_syntax = "wvdial"
 
 "EOF vim: tw=78:ft=vim:ts=8
-
-endif

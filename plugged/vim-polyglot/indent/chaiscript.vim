@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'chaiscript') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'chaiscript', 'indent/chaiscript.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:     ChaiScript
@@ -50,5 +52,3 @@ function! GetChaiScriptIndent()
 
   return ind
 endfunction
-
-endif

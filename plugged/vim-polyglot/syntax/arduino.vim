@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'arduino') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'arduino', 'syntax/arduino.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Arduino
@@ -166,5 +168,3 @@ hi def link arduinoType Type
 hi def link arduinoConstant Constant
 hi def link arduinoFunc Function
 hi def link arduinoIdentifier Identifier
-
-endif

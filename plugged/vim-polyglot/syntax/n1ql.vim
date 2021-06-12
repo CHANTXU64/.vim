@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'n1ql') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'n1ql', 'syntax/n1ql.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    N1QL / Couchbase Server
@@ -434,5 +436,3 @@ hi def link n1qlTODO       Todo
 hi def link n1qlType       Type
 
 let b:current_syntax = "n1ql"
-
-endif

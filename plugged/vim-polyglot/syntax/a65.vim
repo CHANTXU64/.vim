@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'a65') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'a65', 'syntax/a65.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	xa 6502 cross assembler
@@ -153,5 +155,3 @@ hi def link a65HiLo	Number
 
 
 let b:current_syntax = "a65"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dircolors') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dircolors', 'syntax/dircolors.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:        dircolors(1) input file
@@ -222,5 +224,3 @@ let b:current_syntax = "dircolors"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'autodoc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'autodoc', 'syntax/autodoc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Autodoc
@@ -101,5 +103,3 @@ let b:current_syntax = "autodoc"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

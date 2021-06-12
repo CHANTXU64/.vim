@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'crystal') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'crystal', 'ftplugin/crystal.vim')
+  finish
+endif
 
 if exists('b:did_ftplugin')
   finish
@@ -83,5 +85,3 @@ if exists('g:AutoPairsLoaded')
 endif
 
 " vim: sw=2 sts=2 et:
-
-endif

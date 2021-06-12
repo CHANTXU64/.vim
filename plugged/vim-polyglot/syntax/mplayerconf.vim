@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mplayerconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mplayerconf', 'syntax/mplayerconf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             mplayer(1) configuration file
@@ -128,5 +130,3 @@ let b:current_syntax = "mplayerconf"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

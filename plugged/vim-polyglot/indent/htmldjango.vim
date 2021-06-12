@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'htmldjango') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'htmldjango', 'indent/htmldjango.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Django HTML template
@@ -12,5 +14,3 @@ endif
 
 " Use HTML formatting rules.
 runtime! indent/html.vim
-
-endif

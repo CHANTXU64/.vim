@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'css') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'css', 'syntax/css.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Cascading Style Sheets
@@ -653,5 +655,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8
-
-endif

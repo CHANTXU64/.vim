@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'maple') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'maple', 'syntax/maple.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Maple V (based on release 4)
@@ -622,5 +624,3 @@ endif
 " Current Syntax: {{{1
 let b:current_syntax = "maple"
 " vim: ts=20 fdm=marker
-
-endif

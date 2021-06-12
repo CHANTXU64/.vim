@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dylanintr') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dylanintr', 'syntax/dylanintr.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Dylan
@@ -39,5 +41,3 @@ hi def link dylanintrInclude	Include
 let b:current_syntax = "dylanintr"
 
 " vim:ts=8
-
-endif

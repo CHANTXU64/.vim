@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'nim') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'nim', 'compiler/nim.vim')
+  finish
+endif
 
 if exists('current_compiler')
   finish
@@ -25,5 +27,3 @@ unlet s:cpo_save
 
 let g:syntastic_nim_checkers = ['nim']
 
-
-endif

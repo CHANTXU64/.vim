@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'slice') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'slice', 'syntax/slice.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Slice (ZeroC's Specification Language for Ice)
@@ -78,5 +80,3 @@ hi def link sliceNumberError Special
 let b:current_syntax = "slice"
 
 " vim: ts=8
-
-endif

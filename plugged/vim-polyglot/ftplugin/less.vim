@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'less') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'less', 'ftplugin/less.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:	less
@@ -20,5 +22,3 @@ setlocal comments=:// commentstring=//\ %s
 
 setlocal omnifunc=csscomplete#CompleteCSS
 setlocal suffixesadd=.less
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gdb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gdb', 'syntax/gdb.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	GDB command files
@@ -103,5 +105,3 @@ let b:current_syntax = "gdb"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

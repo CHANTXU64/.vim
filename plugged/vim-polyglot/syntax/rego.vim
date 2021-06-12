@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rego') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rego', 'syntax/rego.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: rego policy language
@@ -89,5 +91,3 @@ hi def link     regoComment           Comment
 hi def link     regoTodo              Todo
 
 let b:current_syntax = 'rego'
-
-endif

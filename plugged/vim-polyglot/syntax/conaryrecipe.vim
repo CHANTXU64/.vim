@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'conaryrecipe') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'conaryrecipe', 'syntax/conaryrecipe.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Conary Recipe
@@ -137,5 +139,3 @@ hi def link conaryUseFlag		Typedef
 
 let b:current_syntax = "conaryrecipe"
 
-
-endif

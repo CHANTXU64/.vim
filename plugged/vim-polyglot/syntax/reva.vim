@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'reva') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'reva', 'syntax/reva.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Reva Forth
@@ -191,5 +193,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: ts=8:sw=4:nocindent:smartindent:
-
-endif

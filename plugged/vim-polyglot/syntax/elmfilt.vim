@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'elmfilt') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'elmfilt', 'syntax/elmfilt.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Elm Filter rules
@@ -58,5 +60,3 @@ endif
 
 let b:current_syntax = "elmfilt"
 " vim: ts=9
-
-endif

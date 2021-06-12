@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ada') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ada', 'indent/ada.vim')
+  finish
+endif
 
 "------------------------------------------------------------------------------
 "  Description: Vim Ada indent file
@@ -308,5 +310,3 @@ finish " 1}}}
 "------------------------------------------------------------------------------
 " vim: textwidth=78 wrap tabstop=8 shiftwidth=3 softtabstop=3 noexpandtab
 " vim: foldmethod=marker
-
-endif

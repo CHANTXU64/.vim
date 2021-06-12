@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tf', 'syntax/tf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	tf
@@ -196,5 +198,3 @@ if main_syntax == 'tf'
 endif
 
 " vim: ts=8
-
-endif

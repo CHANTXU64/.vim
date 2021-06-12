@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vhdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vhdl', 'ftplugin/vhdl.vim')
+  finish
+endif
 
 " VHDL filetype plugin
 " Language:    VHDL
@@ -88,5 +90,3 @@ vnoremap <buffer><silent>][ :<C-u>cal <SID>CountWrapper('][')<CR>
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

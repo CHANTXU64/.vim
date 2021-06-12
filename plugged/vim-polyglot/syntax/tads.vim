@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'tads') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'tads', 'syntax/tads.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	TADS
@@ -171,5 +173,3 @@ let b:current_syntax = "tads"
 " 10/22/99 Misspelled Moolenaar (sorry!), c_minlines to tads_minlines
 "
 " vim: ts=8
-
-endif

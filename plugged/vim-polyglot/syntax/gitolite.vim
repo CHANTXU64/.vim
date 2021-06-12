@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gitolite') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gitolite', 'syntax/gitolite.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	gitolite configuration
@@ -94,5 +96,3 @@ let b:current_syntax = "gitolite"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

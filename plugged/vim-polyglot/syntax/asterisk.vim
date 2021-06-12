@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'asterisk') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'asterisk', 'syntax/asterisk.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Asterisk config file
@@ -88,5 +90,3 @@ hi def link        asteriskError           Error
 let b:current_syntax = "asterisk" 
 " vim: ts=8 sw=2
 
-
-endif

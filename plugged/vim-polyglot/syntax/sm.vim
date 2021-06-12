@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sm') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sm', 'syntax/sm.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	sendmail
@@ -80,5 +82,3 @@ hi def link smVar		String
 let b:current_syntax = "sm"
 
 " vim: ts=18
-
-endif

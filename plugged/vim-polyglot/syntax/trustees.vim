@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'trustees') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'trustees', 'syntax/trustees.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     trustees
@@ -42,5 +44,3 @@ syntax match tfsRuleWho ~\(\*\|[+]\{0,1\}[a-zA-Z0-9/]\+\)~ contained contains=tf
 highlight link tfsRuleWho Identifier
 syntax match tfsRuleWhat ~[RWEBXODCU!]\+~ contained contains=tfsSpecialChar
 highlight link tfsRuleWhat Structure
-
-endif

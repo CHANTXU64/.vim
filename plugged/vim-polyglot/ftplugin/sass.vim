@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sass') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sass', 'ftplugin/sass.vim')
+  finish
+endif
 
 " Vim filetype plugin
 " Language:	Sass
@@ -37,5 +39,3 @@ function! SassIncludeExpr(file) abort
 endfunction
 
 " vim:set sw=2:
-
-endif

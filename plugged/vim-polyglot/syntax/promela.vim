@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'promela') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'promela', 'syntax/promela.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:			ProMeLa
@@ -53,5 +55,3 @@ hi def link promelaString		String
 hi def link promelaTodo	        Todo
 
 let b:current_syntax = "promela"
-
-endif

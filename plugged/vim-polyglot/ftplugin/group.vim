@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'group') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'group', 'ftplugin/group.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             group(5) user group file
@@ -19,5 +21,3 @@ setlocal comments= commentstring= formatoptions-=tcroq formatoptions+=l
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

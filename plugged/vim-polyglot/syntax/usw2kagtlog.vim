@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'usw2kagtlog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'usw2kagtlog', 'syntax/usw2kagtlog.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             Innovation Data Processing USW2KAgt.log file
@@ -54,5 +56,3 @@ hi def link usw2kagtlog_Target		Identifier
 hi def link usw2kagtlog_Agentword	Special
 
 let b:current_syntax = "usw2kagentlog"
-
-endif

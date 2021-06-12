@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'upstreaminstalllog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'upstreaminstalllog', 'syntax/upstreaminstalllog.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             Innovation Data Processing UPSTREAMInstall.log file
@@ -27,5 +29,3 @@ hi def link upstreaminstalllog_MsgW	Constant
 hi def link upstreaminstalllog_IPaddr	Identifier
 
 let b:current_syntax = "upstreaminstalllog"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lout') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lout', 'syntax/lout.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:    Lout
@@ -135,5 +137,3 @@ let &cpo=s:cpo_save
 unlet s:cpo_save
 
 " vim:ts=8:sw=4:nocindent:smartindent:
-
-endif

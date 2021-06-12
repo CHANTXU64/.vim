@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'quake') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'quake', 'syntax/quake.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             Quake[1-3] configuration file
@@ -170,5 +172,3 @@ let b:current_syntax = "quake"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

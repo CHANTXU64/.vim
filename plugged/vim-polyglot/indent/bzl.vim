@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bzl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bzl', 'indent/bzl.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Bazel (http://bazel.io)
@@ -94,5 +96,3 @@ endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'inform') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'inform', 'syntax/inform.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     Inform
@@ -392,5 +394,3 @@ hi def link informBadStrUnicode	informError
 let b:current_syntax = "inform"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'winbatch') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'winbatch', 'syntax/winbatch.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	WinBatch/Webbatch (*.wbt, *.web)
@@ -174,5 +176,3 @@ hi def link winbatchConstant	StorageClass
 let b:current_syntax = "winbatch"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xdefaults') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xdefaults', 'syntax/xdefaults.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	X resources files like ~/.Xdefaults (xrdb)
@@ -132,5 +134,3 @@ hi def link xdefaultsTodo		Todo
 let b:current_syntax = "xdefaults"
 
 " vim:ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'openroad') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'openroad', 'syntax/openroad.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		CA-OpenROAD
@@ -252,5 +254,3 @@ hi def link openroadTodo		Todo
 
 
 let b:current_syntax = "openroad"
-
-endif

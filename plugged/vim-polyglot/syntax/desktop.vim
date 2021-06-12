@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'desktop') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'desktop', 'syntax/desktop.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: XDG desktop entry
@@ -267,5 +269,3 @@ let b:current_syntax = "desktop"
 let &cpo = s:cpo_save
 
 " vim:ts=8:sw=2:fdm=marker
-
-endif

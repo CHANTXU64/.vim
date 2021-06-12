@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'v') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'v', 'syntax/vlang.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	V
@@ -76,7 +78,7 @@ hi def link     vShebang            Include
 syn keyword     vStatement          defer go goto return break continue
 hi def link     vStatement          Statement
 
-syn keyword     vConditional        if else match or
+syn keyword     vConditional        if else match or select
 hi def link     vConditional        Conditional
 
 syn keyword     vRepeat             for in
@@ -90,6 +92,7 @@ hi def link     vCodeGen            Identifier
 
 " Predefined types
 syn keyword     vType               chan map bool string error voidptr
+syn match       vOptionalType       "\%(\<?\)\@<=\(chan\|map\|bool\|string\|error\|voidptr\)"
 syn keyword     vSignedInts         int i8 i16 i64 rune intptr
 syn keyword     vUnsignedInts       byte u16 u32 u64 byteptr
 syn keyword     vFloats             f32 f64 floatptr
@@ -97,6 +100,7 @@ syn keyword     vFloats             f32 f64 floatptr
 " syn keyword    	vComplexes          complex64 complex128
 
 hi def link     vType               Type
+hi def link     vOptionalType       Type
 hi def link     vSignedInts         Type
 hi def link     vUnsignedInts       Type
 hi def link     vFloats             Type
@@ -266,5 +270,3 @@ syn sync minlines=500
 let b:current_syntax = 'vlang'
 
 " vim: sw=2 sts=2 et
-
-endif

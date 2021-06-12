@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bsdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bsdl', 'syntax/bsdl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Boundary Scan Description Language (BSDL)
@@ -17,5 +19,3 @@ unlet b:current_syntax
 let b:current_syntax = "bsdl"
 
 " vim: ts=8
-
-endif

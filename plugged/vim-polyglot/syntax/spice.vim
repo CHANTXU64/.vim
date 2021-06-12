@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'spice') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'spice', 'syntax/spice.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Spice circuit simulator input netlist
@@ -75,5 +77,3 @@ let b:current_syntax = "spice"
 "   so <sfile>:p:h/spice.vim
 
 " vim: ts=8
-
-endif

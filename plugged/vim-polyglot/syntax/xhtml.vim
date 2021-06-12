@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xhtml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xhtml', 'syntax/xhtml.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	XHTML
@@ -11,5 +13,3 @@ runtime! syntax/html.vim
 let b:current_syntax = "xhtml"
 
 " vim: ts=8
-
-endif

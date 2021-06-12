@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dylan') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dylan', 'indent/dylan.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:	Dylan
@@ -90,5 +92,3 @@ function DylanGetIndent()
 endfunction
 
 " vim:sw=2 tw=130
-
-endif

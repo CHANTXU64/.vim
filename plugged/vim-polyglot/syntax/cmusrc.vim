@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cmusrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cmusrc', 'syntax/cmusrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Previous Maintainer:  Nikolai Weibull <now@bitwi.se>
@@ -309,5 +311,3 @@ let b:current_syntax = "cmusrc"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

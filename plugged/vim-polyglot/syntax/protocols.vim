@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'protocols') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'protocols', 'syntax/protocols.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             protocols(5) - Internet protocols definition file
@@ -44,5 +46,3 @@ let b:current_syntax = "protocols"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

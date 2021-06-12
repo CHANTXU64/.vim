@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lss') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lss', 'syntax/lss.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Lynx 2.7.1 style file
@@ -123,5 +125,3 @@ hi def lssWhiteBg		ctermbg=white ctermfg=black
 let b:current_syntax = "lss"
 
 " vim: ts=8
-
-endif

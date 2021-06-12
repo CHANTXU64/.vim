@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'slang') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'slang', 'syntax/slang.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	S-Lang
@@ -89,5 +91,3 @@ hi def link slangDelim		Delimiter
 let b:current_syntax = "slang"
 
 " vim: ts=8
-
-endif

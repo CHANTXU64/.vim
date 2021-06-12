@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'vera') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'vera', 'syntax/vera.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Vera
@@ -348,5 +350,3 @@ hi def link veraCppOut		Comment
 let b:current_syntax = "vera"
 
 " vim: ts=8
-
-endif

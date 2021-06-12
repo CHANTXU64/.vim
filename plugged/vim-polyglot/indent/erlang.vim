@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'erlang') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'erlang', 'indent/erlang.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:     Erlang (http://www.erlang.org)
@@ -1483,5 +1485,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: sw=2 et fdm=marker
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'taskdata') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'taskdata', 'syntax/taskdata.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	task data
@@ -45,5 +47,3 @@ let &cpo = s:keepcpo
 unlet s:keepcpo
 
 " vim:noexpandtab
-
-endif

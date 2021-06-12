@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'elixir') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'elixir', 'autoload/elixir/indent.vim')
+  finish
+endif
 
 if !exists("g:elixir_indent_max_lookbehind")
   let g:elixir_indent_max_lookbehind = 30
@@ -371,5 +373,3 @@ function! elixir#indent#handle_inside_generic_block(context)
     return -1
   endif
 endfunction
-
-endif

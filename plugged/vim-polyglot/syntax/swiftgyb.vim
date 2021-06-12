@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'swiftgyb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'swiftgyb', 'syntax/swiftgyb.vim')
+  finish
+endif
 
 " This source file is part of the Swift.org open source project
 "
@@ -24,5 +26,3 @@ hi def link gybPythonCode CursorLineNr
 
 let b:current_syntax = "swiftgyb"
 
-
-endif

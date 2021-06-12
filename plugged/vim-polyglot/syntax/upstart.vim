@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'upstart') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'upstart', 'syntax/upstart.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Upstart job files
@@ -111,5 +113,3 @@ hi def link upstartOption    Type
 hi def link upstartEvent     Define
 
 let b:current_syntax = "upstart"
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mail') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mail', 'ftplugin/mail.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	Mail
@@ -37,6 +39,4 @@ if !exists("no_plugin_maps") && !exists("no_mail_maps")
   endif
   vnoremap <buffer> <Plug>MailQuote :s/^/> /<CR>:noh<CR>``
   nnoremap <buffer> <Plug>MailQuote :.,$s/^/> /<CR>:noh<CR>``
-endif
-
 endif

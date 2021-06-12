@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'slrnrc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'slrnrc', 'syntax/slrnrc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Slrn setup file (based on slrn 0.9.8.1)
@@ -181,5 +183,3 @@ hi def link slrnrcUnsetkey		slrnrcSetkey
 let b:current_syntax = "slrnrc"
 
 "EOF	vim: ts=8 noet tw=120 sw=8 sts=0
-
-endif

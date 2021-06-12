@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'slpreg') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'slpreg', 'syntax/slpreg.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             RFC 2614 - An API for Service Location registration file
@@ -122,5 +124,3 @@ let b:current_syntax = "slpreg"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

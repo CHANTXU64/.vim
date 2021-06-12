@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'csc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'csc', 'syntax/csc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Essbase script
@@ -191,5 +193,3 @@ let b:current_syntax = "csc"
 let &cpo = s:cpo_save
 unlet s:cpo_save
 " vim: ts=8
-
-endif

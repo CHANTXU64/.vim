@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dhall') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dhall', 'ftplugin/dhall.vim')
+  finish
+endif
 
 if exists('b:dhall_ftplugin')
 	finish
@@ -31,7 +33,7 @@ endif
 function! DhallFormat()
     let cursor = getpos('.')
     exec 'normal! gg'
-    exec 'silent !dhall format --inplace ' . expand('%')
+    exec 'silent !dhall format ' . expand('%')
     exec 'e'
     call setpos('.', cursor)
 endfunction
@@ -43,5 +45,3 @@ if exists('g:dhall_format')
 endif
 
 au BufNewFile,BufRead *.dhall setl shiftwidth=2
-
-endif

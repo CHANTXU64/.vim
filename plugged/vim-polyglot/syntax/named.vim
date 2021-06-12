@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'named') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'named', 'syntax/named.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	BIND configuration file
@@ -229,5 +231,3 @@ unlet s:save_cpo
 let b:current_syntax = "named"
 
 " vim: ts=17
-
-endif

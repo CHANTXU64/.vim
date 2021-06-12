@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pamconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pamconf', 'syntax/pamconf.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             pam(8) configuration file
@@ -131,5 +133,3 @@ let b:current_syntax = "pamconf"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

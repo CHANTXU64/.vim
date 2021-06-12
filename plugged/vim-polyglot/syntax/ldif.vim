@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ldif') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ldif', 'syntax/ldif.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	LDAP LDIF
@@ -33,5 +35,3 @@ hi def link ldifComment		Comment
 
 
 let b:current_syntax = "ldif"
-
-endif

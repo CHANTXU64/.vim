@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hog') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hog', 'indent/hog.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:     hog (Snort.conf)
@@ -77,5 +79,3 @@ endfunction
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

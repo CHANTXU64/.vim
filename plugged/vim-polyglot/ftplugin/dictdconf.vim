@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dictdconf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'dictdconf', 'ftplugin/dictdconf.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             dictd(8) configuration file
@@ -19,5 +21,3 @@ setlocal comments=:# commentstring=#\ %s formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

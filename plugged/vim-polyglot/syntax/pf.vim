@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pf') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pf', 'syntax/pf.vim')
+  finish
+endif
 
 " pf syntax file
 " Language:        OpenBSD packet filter configuration (pf.conf)
@@ -333,5 +335,3 @@ syn keyword	pfService	zabbix-agent
 syn keyword	pfService	zabbix-trapper
 syn keyword	pfService	zebra
 syn keyword	pfService	zebrasrv
-
-endif

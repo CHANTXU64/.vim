@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'expect') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'expect', 'syntax/expect.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Expect
@@ -103,5 +105,3 @@ hi def link expectTodo		Todo
 let b:current_syntax = "expect"
 
 " vim: ts=8
-
-endif

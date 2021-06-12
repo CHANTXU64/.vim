@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mush') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mush', 'syntax/mush.vim')
+  finish
+endif
 
 " MUSHcode syntax file
 " Maintainer: Rick Bird <nveid@nveid.com>
@@ -215,5 +217,3 @@ hi def link mushCommentString mushString
 let b:current_syntax = "mush"
 
 " mush: ts=17
-
-endif

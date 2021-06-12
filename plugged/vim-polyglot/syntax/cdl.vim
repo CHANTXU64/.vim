@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'cdl') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'cdl', 'syntax/cdl.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Comshare Dimension Definition Language
@@ -78,5 +80,3 @@ hi def link cdlConditional	Conditional
 let b:current_syntax = "cdl"
 
 " vim: ts=8
-
-endif

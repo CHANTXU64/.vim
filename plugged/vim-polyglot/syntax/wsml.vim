@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'wsml') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'wsml', 'syntax/wsml.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     WSML
@@ -113,5 +115,3 @@ hi def link wsmlCommentStar		wsmlComment
 let b:current_syntax = "wsml"
 let b:spell_options="contained"
 
-
-endif

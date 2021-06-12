@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ave') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'ave', 'syntax/ave.vim')
+  finish
+endif
 
 " Vim syntax file
 " Copyright by Jan-Oliver Wagner
@@ -79,5 +81,3 @@ hi def link aveTypos		Error
 
 
 let b:current_syntax = "ave"
-
-endif

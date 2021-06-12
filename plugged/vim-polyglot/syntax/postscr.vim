@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'postscr') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'postscr', 'syntax/postscr.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     PostScript - all Levels, selectable
@@ -780,5 +782,3 @@ endif
 let b:current_syntax = "postscr"
 
 " vim: ts=8
-
-endif

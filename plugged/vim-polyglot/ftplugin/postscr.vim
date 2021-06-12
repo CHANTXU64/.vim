@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'postscr') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'postscr', 'ftplugin/postscr.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	PostScript
@@ -38,5 +40,3 @@ let b:undo_ftplugin = "setlocal comments< formatoptions<"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

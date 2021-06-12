@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'diff') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'diff', 'ftplugin/diff.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	Diff
@@ -18,5 +20,3 @@ setlocal nomodeline
 
 " If there are comments they start with #
 let &commentstring = "# %s"
-
-endif

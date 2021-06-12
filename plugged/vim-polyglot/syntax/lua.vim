@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'lua') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'lua', 'syntax/lua.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language: Lua
@@ -260,6 +262,4 @@ end
 let b:current_syntax = "lua"
 if main_syntax == 'lua'
   unlet main_syntax
-endif
-
 endif

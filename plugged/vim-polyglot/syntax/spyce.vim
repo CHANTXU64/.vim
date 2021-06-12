@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'spyce') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'spyce', 'syntax/spyce.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	   SPYCE
@@ -104,5 +106,3 @@ if main_syntax == 'spyce'
   unlet main_syntax
 endif
 
-
-endif

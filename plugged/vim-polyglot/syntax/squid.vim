@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'squid') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'squid', 'syntax/squid.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Squid config file
@@ -140,5 +142,3 @@ hi def link squidRegexOpt	Special
 let b:current_syntax = "squid"
 
 " vim: ts=8
-
-endif

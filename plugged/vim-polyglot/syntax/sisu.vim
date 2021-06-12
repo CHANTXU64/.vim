@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'sisu') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'sisu', 'syntax/sisu.vim')
+  finish
+endif
 
 " SiSU Vim syntax file
 " SiSU Maintainer: Ralph Amissah <ralph.amissah@gmail.com>
@@ -275,5 +277,3 @@ hi def link sisu_error                 Error
 let b:current_syntax = "sisu"
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

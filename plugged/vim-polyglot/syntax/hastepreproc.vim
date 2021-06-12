@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'hastepreproc') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'hastepreproc', 'syntax/hastepreproc.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Haste preprocessor files 
@@ -38,5 +40,3 @@ hi def link hastepreprocError	Error
 let b:current_syntax = "hastepreproc"
 
 " vim: ts=8
-
-endif

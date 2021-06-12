@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'spec') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'spec', 'syntax/spec.vim')
+  finish
+endif
 
 " Filename:    spec.vim
 " Purpose:     Vim syntax file
@@ -226,5 +228,3 @@ hi def link specListedFilesShare		Statement
 let b:current_syntax = "spec"
 
 " vim: ts=8
-
-endif

@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'config') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'config', 'ftplugin/config.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:	config
@@ -42,5 +44,3 @@ let b:undo_ftplugin = "unlet! b:browsefilter | " . b:undo_ftplugin
 " Restore the saved compatibility options.
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
-endif

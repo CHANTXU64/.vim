@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xmodmap') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xmodmap', 'syntax/xmodmap.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:             xmodmap(1) definition file
@@ -677,5 +679,3 @@ let b:current_syntax = "xmodmap"
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

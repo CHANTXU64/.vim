@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jgraph') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'jgraph', 'syntax/jgraph.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	jgraph (graph plotting utility)
@@ -45,5 +47,3 @@ hi def link jgraphNumber	Number
 
 
 let b:current_syntax = "jgraph"
-
-endif

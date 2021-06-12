@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'skill') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'skill', 'syntax/skill.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:		SKILL
@@ -549,5 +551,3 @@ hi def link skillCommentError	Error
 let b:current_syntax = "skill"
 
 " vim: ts=4
-
-endif

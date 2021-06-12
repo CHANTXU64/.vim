@@ -1,10 +1,12 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'rnoweb') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'rnoweb', 'ftplugin/rnoweb.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language: Rnoweb
 " Maintainer: Jakson Alves de Aquino <jalvesaq@gmail.com>
 " Homepage: https://github.com/jalvesaq/R-Vim-runtime
-" Last Change:	Tue Apr 07, 2015  04:37PM
+" Last Change:	Sat Aug 15, 2020  12:02PM
 
 " Only do this when not yet done for this buffer
 if exists("b:did_ftplugin")
@@ -26,7 +28,7 @@ setlocal iskeyword=@,48-57,_,.
 setlocal suffixesadd=.bib,.tex
 setlocal comments=b:%,b:#,b:##,b:###,b:#'
 
-if has("gui_win32") && !exists("b:browsefilter")
+if (has("gui_win32") || has("gui_gtk")) && !exists("b:browsefilter")
   let b:browsefilter = "R Source Files (*.R *.Rnw *.Rd *.Rmd *.Rrst)\t*.R;*.Rnw;*.Rd;*.Rmd;*.Rrst\n" .
         \ "All Files (*.*)\t*.*\n"
 endif
@@ -41,5 +43,3 @@ let &cpo = s:cpo_save
 unlet s:cpo_save
 
 " vim: sw=2
-
-endif

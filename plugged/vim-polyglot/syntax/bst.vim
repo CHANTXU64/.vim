@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'bst') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'bst', 'syntax/bst.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:     BibTeX Bibliography Style
@@ -70,5 +72,3 @@ hi def link bstError             Error
 let b:current_syntax = "bst"
 
 " vim:set ft=vim sts=4 sw=4:
-
-endif

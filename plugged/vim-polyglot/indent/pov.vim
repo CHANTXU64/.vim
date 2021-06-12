@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'pov') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'pov', 'indent/pov.vim')
+  finish
+endif
 
 " Vim indent file
 " Language: PoV-Ray Scene Description Language
@@ -84,5 +86,3 @@ function GetPoVRayIndent()
 
   return final < 0 ? 0 : final
 endfunction
-
-endif

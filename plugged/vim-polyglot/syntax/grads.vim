@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'grads') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'grads', 'syntax/grads.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	grads (GrADS scripts)
@@ -73,5 +75,3 @@ hi def link gradsTypos		Error
 
 
 let b:current_syntax = "grads"
-
-endif

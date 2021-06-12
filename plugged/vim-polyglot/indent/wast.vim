@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'wast') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'wast', 'indent/wast.vim')
+  finish
+endif
 
 " Vim indent file
 " Language:     WebAssembly
@@ -17,5 +19,3 @@ setlocal indentexpr=lispindent('.')
 setlocal noautoindent nosmartindent
 
 let b:undo_indent = "setl lisp< indentexpr<"
-
-endif

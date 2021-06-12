@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'xdefaults') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'xdefaults', 'ftplugin/xdefaults.vim')
+  finish
+endif
 
 " Vim filetype plugin file
 " Language:             X resources files like ~/.Xdefaults (xrdb)
@@ -20,5 +22,3 @@ setlocal formatoptions-=t formatoptions+=croql
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
-
-endif

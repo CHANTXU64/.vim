@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'gedcom') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'gedcom', 'syntax/gedcom.vim')
+  finish
+endif
 
 " Vim syntax file
 " Language:	Gedcom
@@ -53,5 +55,3 @@ hi def link gedcom_date Constant
 
 
 let b:current_syntax = "gedcom"
-
-endif

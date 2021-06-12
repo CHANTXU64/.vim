@@ -1,4 +1,6 @@
-if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'mp') == -1
+if polyglot#init#is_disabled(expand('<sfile>:p'), 'mp', 'indent/mp.vim')
+  finish
+endif
 
 " MetaPost indent file
 " Language:           MetaPost
@@ -360,5 +362,3 @@ let &cpo = s:keepcpo
 unlet s:keepcpo
 
 " vim:sw=2:fdm=marker
-
-endif
