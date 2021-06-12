@@ -27,3 +27,4 @@ plugged/LeaderF/autoload/leaderf/fuzzyMatch_C/build/**/*.o
 plugged/LeaderF/autoload/leaderf/python/*.so
 log.*
 vimrc_
+plugged/**/.gitignore
