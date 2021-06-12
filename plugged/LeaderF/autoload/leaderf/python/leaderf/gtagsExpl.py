@@ -45,6 +45,7 @@ class GtagsExplorer(Explorer):
         self._content = []
         self._with_gutentags = lfEval("get(g:, 'Lf_GtagsGutentags', 0)") != '0'
         self._is_debug = False
+        self._cmd = ''
 
         self._task_queue = Queue.Queue()
         self._worker_thread = threading.Thread(target=self._processTask)
@@ -179,8 +180,10 @@ class GtagsExplorer(Explorer):
                             self._gtagslabel, pattern_option, path_style, self._result_format)
 
             if not self._isDBModified(os.path.join(dbpath, 'GTAGS')) and self._content \
-                    and self._last_result_format == self._result_format:
+                    and self._cmd == cmd:
                 return self._content
+
+            self._cmd = cmd
 
             executor = AsyncExecutor()
             self._executor.append(executor)
@@ -1216,7 +1219,7 @@ class GtagsExplManager(Manager):
             file = os.path.normpath(lfEncode(file))
 
         if lfEval("bufloaded('%s')" % escQuote(file)) == '1':
-            source = int(lfEval("bufadd('%s')" % escQuote(line)))
+            source = int(lfEval("bufadd('%s')" % escQuote(file)))
         else:
             source = file
         self._createPopupPreview("", source, line_num)

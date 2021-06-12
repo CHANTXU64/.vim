@@ -373,7 +373,7 @@ class Manager(object):
             self._cli.buildPopupPrompt()
 
         if lfEval("get(g:, 'Lf_PreviewInPopup', 0)") == '1' and \
-                int(lfEval("win_id2win(%d)" % self._preview_winid)) != vim.current.window.number:
+                self._orig_line != self._getInstance().currentLine:
             self._closePreviewPopup()
 
         if not self._needPreview(preview):
@@ -393,7 +393,8 @@ class Manager(object):
         vim.options['eventignore'] = 'BufLeave,WinEnter,BufEnter'
         try:
             vim.current.tabpage, vim.current.window = orig_pos[:2]
-            self._acceptSelection(line, preview=True)
+            line_nr = self._getInstance().window.cursor[0]
+            self._acceptSelection(line, self._getInstance().buffer, line_nr, preview=True)
             lfCmd("augroup Lf_Cursorline")
             lfCmd("autocmd! BufwinEnter <buffer> setlocal cursorline<")
             lfCmd("augroup END")
@@ -518,6 +519,7 @@ class Manager(object):
             lfCmd("call nvim_win_set_option(%d, 'number', v:true)" % self._preview_winid)
             lfCmd("call nvim_win_set_option(%d, 'relativenumber', v:false)" % self._preview_winid)
             lfCmd("call nvim_win_set_option(%d, 'cursorline', v:true)" % self._preview_winid)
+            lfCmd("call nvim_win_set_option(%d, 'foldmethod', 'manual')" % self._preview_winid)
             if lfEval("exists('+cursorlineopt')") == '1':
                 lfCmd("call nvim_win_set_option(%d, 'cursorlineopt', 'both')" % self._preview_winid)
             lfCmd("call nvim_win_set_option(%d, 'colorcolumn', '')" % self._preview_winid)
@@ -633,6 +635,7 @@ class Manager(object):
             elif line_nr > 0:
                 lfCmd("""call win_execute(%d, "call cursor(%d, 1)")""" % (self._preview_winid, line_nr))
             lfCmd("call win_execute(%d, 'setlocal cursorline number norelativenumber colorcolumn= ')" % self._preview_winid)
+            lfCmd("call win_execute(%d, 'setlocal foldmethod=manual')" % self._preview_winid)
             if lfEval("exists('+cursorlineopt')") == '1':
                 lfCmd("call win_execute(%d, 'setlocal cursorlineopt=both')" % self._preview_winid)
             lfCmd("call win_execute(%d, 'setlocal wincolor=Lf_hl_popup_window')" % self._preview_winid)
@@ -725,6 +728,7 @@ class Manager(object):
             lfCmd("call nvim_win_set_option(%d, 'number', v:true)" % self._preview_winid)
             lfCmd("call nvim_win_set_option(%d, 'relativenumber', v:false)" % self._preview_winid)
             lfCmd("call nvim_win_set_option(%d, 'cursorline', v:true)" % self._preview_winid)
+            lfCmd("call nvim_win_set_option(%d, 'foldmethod', 'manual')" % self._preview_winid)
             if lfEval("exists('+cursorlineopt')") == '1':
                 lfCmd("call nvim_win_set_option(%d, 'cursorlineopt', 'both')" % self._preview_winid)
             lfCmd("call nvim_win_set_option(%d, 'colorcolumn', '')" % self._preview_winid)
@@ -795,6 +799,7 @@ class Manager(object):
             elif line_nr > 0:
                 lfCmd("""call win_execute(%d, "exec 'norm! %dG'")""" % (self._preview_winid, line_nr))
             lfCmd("call win_execute(%d, 'setlocal cursorline number norelativenumber')" % self._preview_winid)
+            lfCmd("call win_execute(%d, 'setlocal foldmethod=manual')" % self._preview_winid)
             if lfEval("exists('+cursorlineopt')") == '1':
                 lfCmd("call win_execute(%d, 'setlocal cursorlineopt=both')" % self._preview_winid)
 
@@ -811,8 +816,10 @@ class Manager(object):
 
         if self._getInstance().isReverseOrder():
             if self._getInstance().window.cursor[0] > len(self._getInstance().buffer) - self._help_length:
+                self._orig_line = self._getInstance().currentLine
                 return False
         elif self._getInstance().window.cursor[0] <= self._help_length:
+            self._orig_line = self._getInstance().currentLine
             return False
 
         if self._getInstance().empty() or (self._getInstance().getWinPos() != 'popup' and
@@ -823,10 +830,11 @@ class Manager(object):
             return True
 
         line = self._getInstance().currentLine
-        if self._orig_line == line and self._getInstance().buffer.options['modifiable']:
+        if self._orig_line == line and (self._getInstance().buffer.options['modifiable']
+                or self._getInstance().getWinPos() in ('popup', 'floatwin')):
             return False
 
-        self._orig_line = line
+        self._orig_line = self._getInstance().currentLine
 
         return True
 
@@ -1068,8 +1076,7 @@ class Manager(object):
         else:
             self._regexSearch(content, is_continue, step)
 
-        if self._getExplorer().getStlCategory() not in ["File"]:
-            self._previewResult(False)
+        self._previewResult(False)
 
     def _filter(self, step, filter_method, content, is_continue,
                 use_fuzzy_engine=False, return_index=False):
@@ -1175,11 +1182,11 @@ class Manager(object):
 
     def _andModeFilter(self, iterable):
         encoding = lfEval("&encoding")
-        use_fuzzy_engine = False
         cur_content = iterable
         weight_lists = []
         highlight_methods = []
         for p in self._cli.pattern:
+            use_fuzzy_engine = False
             if self._fuzzy_engine and isAscii(p) and self._getUnit() == 1: # currently, only BufTag's _getUnit() is 2
                 use_fuzzy_engine = True
                 pattern = fuzzyEngine.initPattern(p)
@@ -1931,7 +1938,8 @@ class Manager(object):
                 instance.window.options["cursorline"] = True
 
                 instance.gotoOriginalWindow()
-                self._accept(instance.buffer[instance.window.cursor[0] - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.window.cursor[0] - 1], "", self._getInstance().buffer, line_nr)
             else:
                 if instance.cursorRow > len(instance.buffer) - instance.helpLength:
                     instance.cursorRow = len(instance.buffer) - instance.helpLength
@@ -1940,7 +1948,8 @@ class Manager(object):
                 else:
                     instance.cursorRow -= 1
 
-                self._accept(instance.buffer[instance.cursorRow - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.cursorRow - 1], "", self._getInstance().buffer, line_nr)
                 lfCmd("echohl WarningMsg | redraw | echo ' (%d of %d)' | echohl NONE"
                         % (len(instance.buffer) - instance.cursorRow - instance.helpLength + 1,
                             len(instance.buffer) - instance.helpLength))
@@ -1955,7 +1964,8 @@ class Manager(object):
                 instance.window.options["cursorline"] = True
 
                 instance.gotoOriginalWindow()
-                self._accept(instance.buffer[instance.window.cursor[0] - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.window.cursor[0] - 1], "", self._getInstance().buffer, line_nr)
             else:
                 if instance.cursorRow <= instance.helpLength:
                     instance.cursorRow = instance.helpLength + 1
@@ -1964,7 +1974,8 @@ class Manager(object):
                 else:
                     instance.cursorRow += 1
 
-                self._accept(instance.buffer[instance.cursorRow - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.cursorRow - 1], "", self._getInstance().buffer, line_nr)
                 lfCmd("echohl WarningMsg | redraw | echo ' (%d of %d)' | echohl NONE" % \
                         (instance.cursorRow - instance.helpLength, len(instance.buffer) - instance.helpLength))
 
@@ -1984,14 +1995,16 @@ class Manager(object):
                 instance.window.options["cursorline"] = True
 
                 instance.gotoOriginalWindow()
-                self._accept(instance.buffer[instance.window.cursor[0] - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.window.cursor[0] - 1], "", self._getInstance().buffer, line_nr)
             else:
                 if instance.cursorRow >= len(instance.buffer) - instance.helpLength:
                     instance.cursorRow = 1
                 else:
                     instance.cursorRow += 1
 
-                self._accept(instance.buffer[instance.cursorRow - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.cursorRow - 1], "", self._getInstance().buffer, line_nr)
                 lfCmd("echohl WarningMsg | redraw | echo ' (%d of %d)' | echohl NONE"
                         % (len(instance.buffer) - instance.cursorRow - instance.helpLength + 1,
                             len(instance.buffer) - instance.helpLength))
@@ -2004,14 +2017,16 @@ class Manager(object):
                 instance.window.options["cursorline"] = True
 
                 instance.gotoOriginalWindow()
-                self._accept(instance.buffer[instance.window.cursor[0] - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.window.cursor[0] - 1], "", self._getInstance().buffer, line_nr)
             else:
                 if instance.cursorRow <= instance.helpLength + 1:
                     instance.cursorRow = len(instance.buffer)
                 else:
                     instance.cursorRow -= 1
 
-                self._accept(instance.buffer[instance.cursorRow - 1], "")
+                line_nr = self._getInstance().window.cursor[0]
+                self._accept(instance.buffer[instance.cursorRow - 1], "", self._getInstance().buffer, line_nr)
                 lfCmd("echohl WarningMsg | redraw | echo ' (%d of %d)' | echohl NONE" % \
                         (instance.cursorRow - instance.helpLength, len(instance.buffer) - instance.helpLength))
 
@@ -2132,10 +2147,15 @@ class Manager(object):
         arguments_dict = kwargs.get("arguments", {})
         if "--recall" in arguments_dict:
             self._arguments["--recall"] = arguments_dict["--recall"]
+        elif "--previous" in arguments_dict:
+            self._arguments["--previous"] = arguments_dict["--previous"]
+        elif "--next" in arguments_dict:
+            self._arguments["--next"] = arguments_dict["--next"]
         else:
             self.setArguments(arguments_dict)
         self._cli.setNameOnlyFeature(self._getExplorer().supportsNameOnly())
         self._cli.setRefineFeature(self._supportsRefine())
+        self._orig_line = ''
 
         if self._getExplorer().getStlCategory() in ["Gtags"]:
             if "--update" in self._arguments or "--remove" in self._arguments:
