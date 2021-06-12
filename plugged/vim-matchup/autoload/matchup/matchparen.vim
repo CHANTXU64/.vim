@@ -136,6 +136,9 @@ function! s:matchparen.clear() abort dict " {{{1
     endfor
     unlet! w:matchup_match_id_list
   endif
+  if exists('s:ns_id')
+    call nvim_buf_clear_namespace(0, s:ns_id, 0, -1)
+  endif
 
   if exists('t:match_popup') && (exists('*win_gettype')
         \ ? win_gettype() !=# 'popup' : &buftype !=# 'terminal')
@@ -374,7 +377,7 @@ function! s:matchparen.highlight(...) abort dict " {{{1
   endif
 
   " prevent problems in visual block mode at the end of a line
-  if get(matchup#pos#get_cursor(), 4, 0) == 2147483647
+  if get(matchup#pos#get_cursor(), 4, 0) == 2147483647 && mode() ==? 'v'
     return
   endif
 
@@ -404,13 +407,16 @@ function! s:matchparen.highlight(...) abort dict " {{{1
         \   'stopline': g:matchup_matchparen_stopline,
         \   'highlighting': 1, })
   call matchup#perf#toc('matchparen.highlight', 'get_current')
-  if empty(l:current)
-    if get(b:, 'matchup_matchparen_deferred',
-          \ g:matchup_matchparen_deferred)
-          \ && get(b:, 'matchup_matchparen_hi_surround_always',
-          \        g:matchup_matchparen_hi_surround_always)
-       call s:highlight_surrounding(l:insertmode)
+
+  if get(b:, 'matchup_matchparen_deferred', g:matchup_matchparen_deferred)
+    let l:hsa = get(b:, 'matchup_matchparen_hi_surround_always',
+          \ g:matchup_matchparen_hi_surround_always)
+    if l:hsa > 0 && empty(l:current) || l:hsa > 1
+      call s:highlight_surrounding(l:insertmode, !empty(l:current))
     endif
+  endif
+
+  if empty(l:current)
     return
   endif
 
@@ -573,6 +579,17 @@ function! s:ensure_match_popup() abort " {{{1
     " in case 'hidden' in popup_create-usage is unimplemented
     call popup_hide(t:match_popup)
   endif
+
+  if exists('*prop_type_add')
+    call prop_type_add('matchup__MatchParen', {
+          \ 'bufnr': winbufnr(t:match_popup),
+          \ 'highlight': 'MatchParen',
+          \})
+    call prop_type_add('matchup__MatchWord', {
+          \ 'bufnr': winbufnr(t:match_popup),
+          \ 'highlight': 'MatchWord',
+          \})
+  endif
 endfunction
 
 " }}}1
@@ -596,7 +613,12 @@ function! s:do_offscreen_popup(offscreen) " {{{1
   " set popup text
   let l:text = ''
   if &number || &relativenumber
-    let l:text = printf('%*S ', wincol()-virtcol('.')-1, l:lnum)
+    if &relativenumber
+      let l:displaynumber = abs(l:lnum - line('.'))
+    else
+      let l:displaynumber = l:lnum
+    endif
+    let l:text = printf('%*S ', wincol()-virtcol('.')-1, l:displaynumber)
   endif
 
   " replace tab indent with spaces
@@ -605,11 +627,25 @@ function! s:do_offscreen_popup(offscreen) " {{{1
   let l:indent = repeat(' ', strdisplaywidth(matchstr(l:linestr, '^\s\+')))
   let l:linestr = substitute(l:linestr, '^\s\+', l:indent, '')
 
+  let l:prop_place = len(l:text) + len(l:indent) + 1
   let l:text .= l:linestr . ' '
   if l:adjust
+    let l:prop_place = strlen(l:text) + 5
     let l:text .= '… ' . a:offscreen.match . ' '
   endif
-  call setbufline(winbufnr(t:match_popup), 1, l:text)
+
+  if exists('*prop_type_add')
+    let l:curhi = s:wordish(a:offscreen) ? 'MatchWord' : 'MatchParen'
+    let l:prop = {
+          \ 'length': len(a:offscreen.match),
+          \ 'col': l:prop_place,
+          \ 'type': 'matchup__' . l:curhi,
+          \}
+    call popup_settext(t:match_popup, [{'text': l:text, 'props': [l:prop]}])
+  else
+    call setbufline(winbufnr(t:match_popup), 1, l:text)
+  endif
+
   call popup_show(t:match_popup)
 endfunction
 
@@ -625,7 +661,7 @@ function! s:do_offscreen_popup_nvim(offscreen) " {{{1
     if l:row == winline() | return | endif
 
     " Set default width and height for now.
-    let s:float_id = nvim_open_win(bufnr('%'), v:false, {
+    let l:win_cfg = {
           \ 'relative': 'win',
           \ 'anchor': l:anchor,
           \ 'row': l:row,
@@ -633,11 +669,26 @@ function! s:do_offscreen_popup_nvim(offscreen) " {{{1
           \ 'width': 42,
           \ 'height': &previewheight,
           \ 'focusable': v:false,
-          \})
+          \}
+    if get(g:matchup_matchparen_offscreen, 'border', 0)
+      let l:win_cfg.border = ['', '═' ,'╗', '║', '╝', '═', '', '']
+      if l:lnum >= line('.')
+        let l:win_cfg.row -= min([2, l:row - winline() - 1])
+      endif
+    endif
+    let s:float_id = nvim_open_win(bufnr('%'), v:false, l:win_cfg)
 
     if has_key(g:matchup_matchparen_offscreen, 'highlight')
       call nvim_win_set_option(s:float_id, 'winhighlight',
-            \ 'Normal:' . g:matchup_matchparen_offscreen.highlight)
+            \ 'Normal:' . g:matchup_matchparen_offscreen.highlight .
+            \ ',LineNr:CursorLineNr')
+    else
+      call nvim_win_set_option(s:float_id,
+            \ 'winhighlight', 'LineNr:CursorLineNr')
+    endif
+
+    if &cursorline
+      call nvim_win_set_option(s:float_id, 'cursorline', v:false)
     endif
 
     if &relativenumber
@@ -646,6 +697,16 @@ function! s:do_offscreen_popup_nvim(offscreen) " {{{1
     endif
 
     call s:populate_floating_win(a:offscreen)
+
+    if exists('##WinScrolled')
+      augroup matchup_matchparen_scroll
+        au!
+        execute 'autocmd WinScrolled * if s:ensure_scroll_timer()'
+              \ . '|call matchup#matchparen#scroll_update('
+              \ . a:offscreen.lnum . ')|endif'
+              \ . '|if s:float_id == 0|au! matchup_matchparen_scroll|endif'
+      augroup END
+    endif
   endif
 endfunction
 
@@ -659,9 +720,20 @@ function! s:populate_floating_win(offscreen) " {{{1
 
   if exists('*nvim_open_win')
     " neovim floating win
-    let width = max(map(copy(l:body), 'strdisplaywidth(v:val)'))
-    let l:width += wincol()-virtcol('.')
+
+    if get(g:matchup_matchparen_offscreen, 'fullwidth', 0)
+      let l:width = winwidth(0) - 1
+    else
+      let l:width = max(map(copy(l:body), 'strdisplaywidth(v:val)'))
+      if empty(a:offscreen.links.close.match)
+            \ && a:offscreen.lnum > line('.')
+        " include the closing hint
+        let l:width += 3 + len(a:offscreen.links.open.match)
+      endif
+      let l:width += wincol()-virtcol('.')
+    endif
     call nvim_win_set_width(s:float_id, l:width + 1)
+
     if &winminheight != 1
       let l:save_wmh = &winminheight
       let &winminheight = 1
@@ -670,8 +742,11 @@ function! s:populate_floating_win(offscreen) " {{{1
     else
       call nvim_win_set_height(s:float_id, l:height)
     endif
-    call nvim_win_set_cursor(s:float_id, [l:lnum, 0])
+
     call nvim_win_set_option(s:float_id, 'wrap', v:false)
+    silent! call nvim_win_set_option(s:float_id, 'scrolloff', 0)
+    call nvim_win_set_cursor(s:float_id, [l:lnum, 0])
+    call nvim_win_set_cursor(s:float_id, [a:offscreen.lnum, 0])
   endif
 endfunction
 
@@ -697,14 +772,15 @@ endfunction
 
 function! matchup#matchparen#highlight_surrounding() abort " {{{1
   call matchup#perf#timeout_start(500)
-  call s:highlight_surrounding()
+  call s:highlight_surrounding(0, 0)
 endfunction
 
 " }}}1
 
-function! s:highlight_surrounding(...) " {{{1
-  let l:opts = { 'local': 0, 'matches': [] }
-  let l:delims = matchup#delim#get_surrounding('delim_all', 1, l:opts)
+function! s:highlight_surrounding(_, current) " {{{1
+  let l:opts = {'local': 0, 'matches': [], 'stopline': 2*winheight(0)}
+  let l:delims = matchup#delim#get_surrounding('delim_all',
+        \ 1 + a:current, l:opts)
   let l:open = l:delims[0]
   if empty(l:open) | return | endif
 
@@ -810,30 +886,35 @@ function! matchup#matchparen#status_str(offscreen, ...) abort " {{{1
   endif
 
   if has_key(l:opts, 'width')
-    " TODO subtract the gutter from above
-    let l:room = l:opts.width
+    " TODO subtract the gutter above more accurately
+    let l:room = l:opts.width - (wincol()-virtcol('.'))
   else
     let l:room = min([300, winwidth(0)]) - (wincol()-virtcol('.'))
   endif
   let l:room -= l:adjust ? 3+strdisplaywidth(a:offscreen.match) : 0
   let l:lasthi = ''
-  for l:c in range(min([l:room, strlen(l:line)]))
+  for l:c in range(strlen(l:line))
     if !l:adjust && a:offscreen.cnum <= l:c+1 && l:c+1 <= a:offscreen.cnum
           \ - 1 + strlen(a:offscreen.match)
-      let l:wordish = a:offscreen.match !~? '^[[:punct:]]\{1,3\}$'
       " TODO: we can't overlap groups, this might not be totally correct
-      let l:curhi = l:wordish ? 'MatchWord' : 'MatchParen'
+      let l:curhi = s:wordish(a:offscreen) ? 'MatchWord' : 'MatchParen'
     elseif char2nr(l:line[l:c]) < 32
       let l:curhi = 'SpecialKey'
     else
-      let l:curhi = synIDattr(synID(l:lnum, l:c+1, 1), 'name')
+      let l:curhi = synIDattr(s:synID(l:lnum, l:c+1, 1), 'name')
       if empty(l:curhi)
         let l:curhi = 'Normal'
       endif
     endif
     let l:sl .= (l:curhi !=# l:lasthi ? '%#'.l:curhi.'#' : '')
-    if l:trimming && l:line[l:c] !~ '\s'
+    if l:trimming && l:line[l:c] !~? '\s'
       let l:trimming = 0
+    endif
+    if !l:trimming
+      let l:room -= 1
+      if l:room <= 0
+        break
+      endif
     endif
     if l:trimming
     elseif l:line[l:c] ==# "\t"
@@ -841,7 +922,7 @@ function! matchup#matchparen#status_str(offscreen, ...) abort " {{{1
             \ - strdisplaywidth(strpart(l:line, 0, l:c)))
     elseif char2nr(l:line[l:c]) < 32
       let l:sl .= strtrans(l:line[l:c])
-    elseif l:line[l:c] == '%'
+    elseif l:line[l:c] ==? '%'
       let l:sl .= '%%'
     else
       let l:sl .= l:line[l:c]
@@ -852,6 +933,12 @@ function! matchup#matchparen#status_str(offscreen, ...) abort " {{{1
   if l:adjust
     let l:sl .= '%#LineNr# … %#Normal#'
           \ . '%#MatchParen#' . a:offscreen.match . '%#Normal#'
+  endif
+  if empty(a:offscreen.links.close.match)
+    let l:hi = s:wordish(a:offscreen.links.open)
+          \ ? 'MatchWord' : 'MatchParen'
+    let l:sl .= ' ◀ ' . '%#' . l:hi . '#'
+          \ . a:offscreen.links.open.match . '%#Normal#'
   endif
 
   return [l:sl, l:lnum]
@@ -904,15 +991,24 @@ function! s:add_matches(corrlist, ...) " {{{1
   endif
 
   for l:corr in a:corrlist
-    let l:wordish = l:corr.match !~? '^[[:punct:]]\{1,3\}$'
-
     if a:0 && l:corr.match_index == a:1.match_index
-      let l:group = l:wordish ? l:mwc : 'MatchParenCur'
+      let l:group = s:wordish(l:corr) ? l:mwc : 'MatchParenCur'
     else
-      let l:group = l:wordish ? 'MatchWord' : 'MatchParen'
+      let l:group = s:wordish(l:corr) ? 'MatchWord' : 'MatchParen'
     endif
 
-    if exists('*matchaddpos')
+    if exists('s:ns_id')
+      if strlen(l:corr.match) == 0
+        call nvim_buf_set_extmark(0, s:ns_id,
+              \ l:corr.lnum - 1, l:corr.cnum - 1, {
+              \   'virt_text': [['◀ ' . a:corrlist[0].match, l:group]],
+              \})
+      else
+        call nvim_buf_add_highlight(0, s:ns_id, l:group,
+              \ l:corr.lnum - 1, l:corr.cnum - 1,
+              \ l:corr.cnum - 1 + strlen(l:corr.match))
+      end
+    elseif exists('*matchaddpos')
       call add(w:matchup_match_id_list, matchaddpos(l:group,
             \ [[l:corr.lnum, l:corr.cnum, strlen(l:corr.match)]], 0))
     else
@@ -921,6 +1017,22 @@ function! s:add_matches(corrlist, ...) " {{{1
             \ . '.\+\%<'.(l:corr.cnum+strlen(l:corr.match)+1).'c', 0))
     endif
   endfor
+endfunction
+
+if has('nvim-0.5.0')
+  let s:ns_id = nvim_create_namespace('vim-matchup')
+
+  function s:synID(lnum, col, trans)
+    return matchup#ts_syntax#synID(a:lnum, a:col, a:trans)
+  endfunction
+else
+  function s:synID(lnum, col, trans)
+    return synID(a:lnum, a:col, a:trans)
+  endfunction
+endif
+
+function! s:wordish(delim)
+  return a:delim.match !~? '^[[:punct:]]\{1,3\}$'
 endfunction
 
 " }}}1
@@ -945,35 +1057,7 @@ function! s:add_background_matches_1(line1, col1, line2, col2) " {{{1
 endfunction
 
 " }}}1
-function! s:add_background_matches_2(line1, col1, line2, col2) " {{{1
-  if a:line1 == a:line2 && a:col1 > a:col2
-    return
-  endif
-
-  let l:priority = -1
-
-  let l:curline = a:line1
-  while l:curline <= a:line2
-    let l:endline = min([l:curline+7, a:line2])
-    let l:list = range(l:curline, l:endline)
-    if l:curline == a:line1
-      let l:list[0] = [a:line1, a:col1,
-            \ l:curline == a:line2 ? (a:col2-a:col1+1)
-            \ : strlen(getline(a:line1))]
-    endif
-    if l:endline == a:line2 && l:curline != a:line2
-      let l:list[-1] = [a:line2, 1, a:col2]
-    endif
-
-    call add(w:matchup_match_id_list,
-          \ matchaddpos('MatchBackground', l:list, l:priority))
-    let l:curline = l:endline+1
-  endwhile
-endfunction
-
-" }}}1
 
 let &cpo = s:save_cpo
 
 " vim: fdm=marker sw=2
-

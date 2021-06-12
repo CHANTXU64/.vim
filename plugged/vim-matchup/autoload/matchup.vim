@@ -7,7 +7,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! matchup#init()
+function! matchup#init() abort
   call matchup#perf#tic('loading')
 
   call s:init_options()
@@ -51,6 +51,7 @@ function! s:init_options()
   call s:init_option('matchup_delim_count_max', 8)
   call s:init_option('matchup_delim_start_plaintext', 1)
   call s:init_option('matchup_delim_noskips', 0)
+  call s:init_option('matchup_delim_nomids', 0)
 
   call s:init_option('matchup_motion_enabled', 1)
   call s:init_option('matchup_motion_cursor_end', 1)
@@ -74,9 +75,8 @@ function! s:init_options()
 endfunction
 
 function! s:init_option(option, default)
-  let l:option = 'g:' . a:option
-  if !exists(l:option)
-    let {l:option} = a:default
+  if !has_key(g:, a:option)
+    let g:[a:option] = a:default
   endif
 endfunction
 
@@ -95,6 +95,7 @@ function! s:init_modules()
   call s:misc_init_module()
   call s:surround_init_module()
   call s:where_init_module()
+  call s:treesitter_init_module()
 endfunction
 
 function! s:init_oldstyle_ops() " {{{1
@@ -292,7 +293,7 @@ function! s:snr()
 endfunction
 let s:sid = printf("\<SNR>%d_", s:snr())
 
-function! matchup#motion_sid()
+function! matchup#motion_sid() abort
   return s:sid
 endfunction
 
@@ -356,6 +357,15 @@ function! s:where_init_module() " {{{1
 endfunction
 
 " }}}1
+function! s:treesitter_init_module() " {{{1
+  if !has('nvim-0.5.0')
+    return
+  endif
+
+  lua require'treesitter-matchup'.init()
+endfunction
+
+"}}}1
 
 let &cpo = s:save_cpo
 

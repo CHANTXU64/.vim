@@ -21,27 +21,41 @@ endfunction
 function! matchup#loader#init_buffer() abort " {{{1
   call matchup#perf#tic('loader_init_buffer')
 
+  let l:has_ts = 0
+  if has('nvim-0.5.0') && matchup#ts_engine#is_enabled(bufnr('%'))
+    let l:has_ts = 1
+  endif
+
   " initialize lists of delimiter pairs and regular expressions
   " this is the data obtained from parsing b:match_words
-  let b:matchup_delim_lists = s:init_delim_lists()
+  let b:matchup_delim_lists = s:init_delim_lists(!l:has_ts)
 
   " this is the combined set of regular expressions used for matching
   " its structure is matchup_delim_re[type][open,close,both,mid,both_all]
   let b:matchup_delim_re = s:init_delim_regexes()
 
-  " process match_skip
+  " process b:match_skip
   let b:matchup_delim_skip = s:init_delim_skip()
 
-  " enable/disable for this buffer
-  let b:matchup_delim_enabled = !empty(b:matchup_delim_lists.all.regex)
-
+  " enable matching engines
   let b:matchup_active_engines = {}
-  if b:matchup_delim_enabled
+
+  if l:has_ts
+    for l:t in ['all', 'delim_all', 'delim_py']
+      let b:matchup_active_engines[l:t]
+            \ = get(b:matchup_active_engines, l:t, []) + ['tree_sitter']
+    endfor
+  endif
+
+  if !empty(b:matchup_delim_lists.all.regex)
     for l:t in ['all', 'delim_all', 'delim_tex']
       let b:matchup_active_engines[l:t]
             \ = get(b:matchup_active_engines, l:t, []) + ['classic']
     endfor
   endif
+
+  " enable/disable for this buffer
+  let b:matchup_delim_enabled = !empty(b:matchup_active_engines)
 
   call matchup#perf#toc('loader_init_buffer', 'done')
 endfunction
@@ -61,6 +75,7 @@ function! matchup#loader#refresh_match_words() abort " {{{1
 
     " protect the cursor from the match_words function
     let l:save_pos = matchup#pos#get_cursor()
+    let l:match_words = ''
     execute 'let l:match_words = ' b:match_words
     if l:save_pos != matchup#pos#get_cursor()
       call matchup#pos#set_cursor(l:save_pos)
@@ -76,7 +91,7 @@ function! matchup#loader#refresh_match_words() abort " {{{1
       call matchup#perf#toc('refresh', 'cache_hit')
     else
       " re-parse match words
-      let b:matchup_delim_lists = s:init_delim_lists()
+      let b:matchup_delim_lists = s:init_delim_lists(1)
       let b:matchup_delim_re = s:init_delim_regexes()
       let s:match_word_cache[l:match_words] = {
             \ 'delim_lists'  : b:matchup_delim_lists,
@@ -91,7 +106,7 @@ let s:match_word_cache = {}
 
 " }}}1
 
-function! s:init_delim_lists(...) abort " {{{1
+function! s:init_delim_lists(use_match_words) abort " {{{1
   let l:lists = {
         \ 'delim_tex': {
         \   'regex': [],
@@ -119,20 +134,9 @@ function! s:init_delim_lists(...) abort " {{{1
   endif
 
   " parse matchpairs and b:match_words
-  let l:match_words = a:0 ? a:1 : get(b:, 'match_words', '')
+  let l:match_words = a:use_match_words ? get(b:, 'match_words', '') : ''
   if !empty(l:match_words) && l:match_words !~# ':'
-    if a:0
-      echohl ErrorMsg
-      echo 'match-up: function b:match_words error'
-      echohl None
-      let l:match_words = ''
-    else
-      execute 'let l:match_words =' b:match_words
-      " echohl ErrorMsg
-      " echo 'match-up: function b:match_words not supported'
-      " echohl None
-      " let l:match_words = ''
-    endif
+    execute 'let l:match_words =' b:match_words
   endif
   let l:simple = empty(l:match_words)
 
@@ -304,9 +308,9 @@ function! s:init_delim_lists(...) abort " {{{1
 
       " mostly a sanity check
       if matchup#util#has_duplicate_str(values(l:group_renumber[l:i]))
-          echohl ErrorMsg
-          echom 'match-up: duplicate bref in set ' l:s ':' l:i
-          echohl None
+        echohl ErrorMsg
+        echom 'match-up: duplicate bref in set ' l:s ':' l:i
+        echohl None
       endif
 
       " compile the augment list for this set of backrefs, going
@@ -419,6 +423,7 @@ function! s:init_delim_lists(...) abort " {{{1
     let l:extra_info.has_zs
           \ = match(l:words_backref, g:matchup#re#zs) >= 0
 
+    " check if hlend is used in any mid
     if !empty(filter(copy(l:extra_list[1:-2]),
           \ 'get(v:val, "hlend")'))
       let l:extra_info.mid_hlend = 1

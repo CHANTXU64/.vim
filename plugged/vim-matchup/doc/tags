@@ -25,6 +25,7 @@ dg%	matchup.txt	/*dg%*
 ds%	matchup.txt	/*ds%*
 g%	matchup.txt	/*g%*
 g:matchup_delim_count_fail	matchup.txt	/*g:matchup_delim_count_fail*
+g:matchup_delim_nomids	matchup.txt	/*g:matchup_delim_nomids*
 g:matchup_delim_noskips	matchup.txt	/*g:matchup_delim_noskips*
 g:matchup_delim_start_plaintext	matchup.txt	/*g:matchup_delim_start_plaintext*
 g:matchup_delim_stopline	matchup.txt	/*g:matchup_delim_stopline*
