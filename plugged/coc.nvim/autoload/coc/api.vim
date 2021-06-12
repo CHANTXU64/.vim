@@ -5,6 +5,7 @@
 " Last Modified:  Nov 11, 2020
 " ============================================================================
 if has('nvim') | finish | endif
+scriptencoding utf-8
 let s:funcs = {}
 let s:prop_offset = get(g:, 'coc_text_prop_offset', 1000)
 let s:namespace_id = 1
@@ -374,7 +375,7 @@ function! s:funcs.buf_set_lines(bufnr, start, end, strict, ...) abort
       if delCount
         let start = startLnum + len(replacement)
         "8.1.0039
-        call deletebufline(a:bufnr, start, start + delCount - 1)
+        silent call deletebufline(a:bufnr, start, start + delCount - 1)
       endif
     endif
   endif

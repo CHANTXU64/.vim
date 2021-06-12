@@ -85,6 +85,8 @@ b:csv_result	ft-csv.txt	/*b:csv_result*
 csv-aggregate-functions	ft-csv.txt	/*csv-aggregate-functions*
 csv-analyze	ft-csv.txt	/*csv-analyze*
 csv-arrange-autocmd	ft-csv.txt	/*csv-arrange-autocmd*
+csv-bind	ft-csv.txt	/*csv-bind*
+csv-bind-B	ft-csv.txt	/*csv-bind-B*
 csv-calculate-column	ft-csv.txt	/*csv-calculate-column*
 csv-changelog	ft-csv.txt	/*csv-changelog*
 csv-column	ft-csv.txt	/*csv-column*
@@ -122,3 +124,4 @@ csv-vertfold	ft-csv.txt	/*csv-vertfold*
 csv_arrange_align	ft-csv.txt	/*csv_arrange_align*
 format_number_csv	ft-csv.txt	/*format_number_csv*
 ft-csv.txt	ft-csv.txt	/*ft-csv.txt*
+g:csv_bind_B	ft-csv.txt	/*g:csv_bind_B*

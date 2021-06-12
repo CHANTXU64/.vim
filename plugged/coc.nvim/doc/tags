@@ -35,6 +35,7 @@ CocErrorHighlight	coc.txt	/*CocErrorHighlight*
 CocErrorLine	coc.txt	/*CocErrorLine*
 CocErrorSign	coc.txt	/*CocErrorSign*
 CocErrorVirtualText	coc.txt	/*CocErrorVirtualText*
+CocFadeOut	coc.txt	/*CocFadeOut*
 CocFloating	coc.txt	/*CocFloating*
 CocHasProvider()	coc.txt	/*CocHasProvider()*
 CocHighlightRead	coc.txt	/*CocHighlightRead*
@@ -69,6 +70,7 @@ CocRegistNotification()	coc.txt	/*CocRegistNotification()*
 CocRequest()	coc.txt	/*CocRequest()*
 CocRequestAsync()	coc.txt	/*CocRequestAsync()*
 CocStatusChange	coc.txt	/*CocStatusChange*
+CocStrikeThrough	coc.txt	/*CocStrikeThrough*
 CocTagFunc()	coc.txt	/*CocTagFunc()*
 CocTerminalOpen	coc.txt	/*CocTerminalOpen*
 CocUnderline	coc.txt	/*CocUnderline*
@@ -94,6 +96,7 @@ coc#expandable()	coc.txt	/*coc#expandable()*
 coc#expandableOrJumpable()	coc.txt	/*coc#expandableOrJumpable()*
 coc#float#close()	coc.txt	/*coc#float#close()*
 coc#float#close_all()	coc.txt	/*coc#float#close_all()*
+coc#float#has_float()	coc.txt	/*coc#float#has_float()*
 coc#float#has_scroll()	coc.txt	/*coc#float#has_scroll()*
 coc#float#scroll()	coc.txt	/*coc#float#scroll()*
 coc#jumpable()	coc.txt	/*coc#jumpable()*
@@ -124,10 +127,12 @@ coc-action-diagnosticInfo	coc.txt	/*coc-action-diagnosticInfo*
 coc-action-diagnosticList	coc.txt	/*coc-action-diagnosticList*
 coc-action-diagnosticPreview	coc.txt	/*coc-action-diagnosticPreview*
 coc-action-diagnosticToggle	coc.txt	/*coc-action-diagnosticToggle*
+coc-action-diagnosticToggleBuffer	coc.txt	/*coc-action-diagnosticToggleBuffer*
 coc-action-doCodeAction	coc.txt	/*coc-action-doCodeAction*
 coc-action-doHover	coc.txt	/*coc-action-doHover*
 coc-action-doQuickfix	coc.txt	/*coc-action-doQuickfix*
 coc-action-documentSymbols	coc.txt	/*coc-action-documentSymbols*
+coc-action-ensureDocument	coc.txt	/*coc-action-ensureDocument*
 coc-action-extensionStats	coc.txt	/*coc-action-extensionStats*
 coc-action-fixAll	coc.txt	/*coc-action-fixAll*
 coc-action-fold	coc.txt	/*coc-action-fold*
@@ -166,6 +171,7 @@ coc-config-codelens	coc.txt	/*coc-config-codelens*
 coc-config-cursors	coc.txt	/*coc-config-cursors*
 coc-config-diagnostic	coc.txt	/*coc-config-diagnostic*
 coc-config-dialog	coc.txt	/*coc-config-dialog*
+coc-config-hover	coc.txt	/*coc-config-hover*
 coc-config-http	coc.txt	/*coc-config-http*
 coc-config-languageserver	coc.txt	/*coc-config-languageserver*
 coc-config-list	coc.txt	/*coc-config-list*
@@ -253,6 +259,7 @@ health#coc#check()	coc.txt	/*health#coc#check()*
 n_coc-classobj-a	coc.txt	/*n_coc-classobj-a*
 n_coc-classobj-i	coc.txt	/*n_coc-classobj-i*
 n_coc-codeaction	coc.txt	/*n_coc-codeaction*
+n_coc-codeaction-cursor	coc.txt	/*n_coc-codeaction-cursor*
 n_coc-codeaction-line	coc.txt	/*n_coc-codeaction-line*
 n_coc-codeaction-selected	coc.txt	/*n_coc-codeaction-selected*
 n_coc-codelens-action	coc.txt	/*n_coc-codelens-action*

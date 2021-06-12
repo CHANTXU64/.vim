@@ -1,3 +1,4 @@
+scriptencoding utf-8
 let s:is_vim = !has('nvim')
 let s:prefix = '[List Preview]'
 " filetype detect could be slow.
@@ -18,7 +19,7 @@ function! coc#list#setlines(bufnr, lines, append)
     silent call appendbufline(a:bufnr, '$', a:lines)
   else
     if exists('*deletebufline')
-      call deletebufline(a:bufnr, len(a:lines) + 1, '$')
+      silent call deletebufline(a:bufnr, len(a:lines) + 1, '$')
     else
       let n = len(a:lines) + 1
       let saved_reg = @"
