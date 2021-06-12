@@ -55,9 +55,9 @@ Plug 'easymotion/vim-easymotion'
 Plug 'Yggdroot/indentLine'
 
 " google code style
-Plug 'google/vim-maktaba', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
-Plug 'google/vim-glaive', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
-Plug 'google/vim-codefmt', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
+" Plug 'google/vim-maktaba', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
+" Plug 'google/vim-glaive', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
+" Plug 'google/vim-codefmt', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
 
 " markdown
 Plug 'iamcco/mathjax-support-for-mkdp', { 'for': 'markdown' }
@@ -67,6 +67,8 @@ Plug 'iamcco/markdown-preview.vim', { 'for': 'markdown' }
 Plug 'andymass/vim-matchup'
 
 Plug 'tpope/vim-repeat'
+
+Plug 'luochen1990/rainbow'
 
 call plug#end()
 

@@ -24,12 +24,15 @@ xnoremap - :
 nnoremap & :&&<CR>
 xnoremap & :&&<CR>
 
-nnoremap H ^
-xnoremap H ^
-onoremap H ^
-nnoremap L $
-xnoremap L $
-onoremap L $
+nnoremap 0 ^
+xnoremap 0 ^
+onoremap 0 ^
+nnoremap ^ 0
+xnoremap ^ 0
+onoremap ^ 0
+nnoremap <C-l> $
+xnoremap <C-l> $
+onoremap <C-l> $
 
 nnoremap gh H
 xnoremap gh H
@@ -209,6 +212,8 @@ cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 cnoremap <C-b> <Left>
 cnoremap <C-f> <Right>
+inoremap <C-b> <Left>
+inoremap <C-f> <Right>
 
 nmap <silent> <leader>,t :tabprevious<CR>
 nmap <silent> <leader>,T :tabfirst<CR>
@@ -244,12 +249,12 @@ endfunction
 
 nmap <C-j> <C-W>j
 nmap <C-k> <C-W>k
-nmap <C-h> <C-W>h
-nmap <C-l> <C-W>l
+nmap H <C-W>h
+nmap L <C-W>l
 xmap <C-j> <C-W>j
 xmap <C-k> <C-W>k
-xmap <C-h> <C-W>h
-xmap <C-l> <C-W>l
+xmap H <C-W>h
+xmap L <C-W>l
 
 set ttimeoutlen=50
 set timeoutlen=1000
