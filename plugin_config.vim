@@ -172,7 +172,7 @@ let g:LargeFile = 100
 
 
 """"""""""""""""""""""""""""""
-" => Lightline
+" => Lightline CocExtension
 """"""""""""""""""""""""""""""
 set laststatus=2
 let g:lightline = {
@@ -181,10 +181,10 @@ let g:lightline = {
       \   'left': [ [ 'mode' ],
       \             [ 'paste', 'spell' ],
       \             [ 'gitbranch', 'readonly', 'filename' ] ],
-      \   'right': [ [ 'error' ],
-      \              [ 'warning' ],
+      \   'right': [ [ 'coc_info', 'coc_hints', 'coc_errors', 'coc_warnings', 'coc_ok' ],
+      \              [ 'coc_status' ],
       \              [ 'lineinfo' ],
-      \              [ 'fileformat', 'fileencoding', 'filetype' ] ],
+      \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
       \ },
       \ 'inactive': {
       \   'left': [ [ 'readonly', 'filename' ] ],
@@ -196,9 +196,7 @@ let g:lightline = {
       \ },
       \ 'component_function': {
       \   'gitbranch': 'FugitiveHead',
-      \   'filename': 'LightlineFilename',
-      \   'warning': 'GetWarning',
-      \   'error': 'GetError',
+      \   'filename': 'LightlineFilename'
       \ },
       \ 'mode_map': {
       \   'n' : 'N',
@@ -219,66 +217,7 @@ function! LightlineFilename()
   let modified = &modified ? ' +' : ''
   return filename . modified
 endfunction
-function! GetWarning()
-  return GetTotalWarningAndErrorInfo().W
-endfunction
-function! GetError()
-  return GetTotalWarningAndErrorInfo().E
-endfunction
-function! GetNeomakeWarningAndErrorInfo()
-  try
-    let neomake_warning_and_error_info = neomake#statusline#LoclistCounts()
-  catch
-    let neomake_warning_and_error_info = {}
-  endtry
-  if (IsEmptyKeys(neomake_warning_and_error_info))
-    return {'W': 0, 'E': 0}
-  else
-    try
-      let l:a = neomake_warning_and_error_info.W
-    catch
-      return {'W': 0, 'E': neomake_warning_and_error_info.E}
-    endtry
-    try
-      let l:a = neomake_warning_and_error_info.E
-    catch
-      return {'W': neomake_warning_and_error_info.W, 'E': 0}
-    endtry
-    return neomake_warning_and_error_info
-  endif
-endfunction
-function! IsEmptyKeys(Keys)
-  for key in keys(a:Keys)
-    return 0
-  endfor
-  return 1
-endfunction
-function! GetCocWarningAndErrorInfo()
-  try
-    let coc_warning_and_error_info = b:coc_diagnostic_info
-  catch
-    return {'W': 0, 'E': 0}
-  endtry
-  return {'W': b:coc_diagnostic_info.warning, 'E': b:coc_diagnostic_info.error}
-endfunction
-function! GetTotalWarningAndErrorInfo()
-  let neomake_info = GetNeomakeWarningAndErrorInfo()
-  let coc_info = GetCocWarningAndErrorInfo()
-  let W_count = neomake_info.W + coc_info.W
-  if W_count
-    let W = 'W:' . W_count
-  else
-    let W = ''
-  endif
-  let E_count = neomake_info.E + coc_info.E
-  if E_count
-    let E = 'E:' . E_count
-  else
-    let E = ''
-  endif
-  " return 'W: '.W_count.' E: '.E_count
-  return {'W': W, 'E': E}
-endfunction
+call lightline#coc#register()
 
 
 """"""""""""""""""""""""""""""

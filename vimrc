@@ -39,6 +39,7 @@ Plug 'sheerun/vim-polyglot'
 
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+Plug 'josa42/vim-lightline-coc'
 
 " debug
 Plug 'puremourning/vimspector'
