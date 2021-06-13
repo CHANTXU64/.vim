@@ -118,14 +118,6 @@ imap <C-h> <Plug>delimitMateBS
 
 
 """"""""""""""""""""""""""""""
-" => easymotion
-""""""""""""""""""""""""""""""
-nmap s <Plug>(easymotion-bd-jk)
-xmap s <Plug>(easymotion-bd-jk)
-omap u <Plug>(easymotion-bd-jk)
-
-
-""""""""""""""""""""""""""""""
 " => fugitive
 """"""""""""""""""""""""""""""
 map <Leader>gw :Gwrite<CR>

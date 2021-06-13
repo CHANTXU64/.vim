@@ -28,3 +28,4 @@ plugged/LeaderF/autoload/leaderf/python/*.so
 log.*
 vimrc_
 plugged/**/.gitignore
+.DS_Store

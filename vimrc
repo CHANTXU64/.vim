@@ -48,14 +48,13 @@ Plug 'mbbill/undotree'
 
 Plug 'Raimondi/delimitMate'
 
-Plug 'easymotion/vim-easymotion'
+" Plug 'easymotion/vim-easymotion'
 
 Plug 'Yggdroot/indentLine'
 
 " markdown
 Plug 'iamcco/markdown-preview.vim', { 'for': 'markdown' }
 
-" runtime macros/matchit.vim
 Plug 'andymass/vim-matchup'
 
 Plug 'tpope/vim-repeat'
