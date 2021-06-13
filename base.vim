@@ -85,11 +85,6 @@ endfunction
 " A buffer becomes hidden when it is abandoned
 set hid
 
-" nmap g: q:
-" vmap g: q:
-" nmap g/ q/
-" vmap g/ q/
-
 " 默认虚拟替换
 nnoremap R gR
 
@@ -99,8 +94,6 @@ map <space> <nop>
 syntax on
 
 set wrap "Wrap lines
-
-" nmap <f2> d:%s///gc<left><left><left>
 
 set showcmd
 
@@ -201,6 +194,8 @@ set ttyfast
 
 map <leader>pp :setlocal paste!<CR>
 
+set dir=~/.tmp
+
 "展开当前文件所在目录
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
@@ -220,10 +215,9 @@ nmap <silent> <leader>,T :tabfirst<CR>
 nmap <silent> <leader>.t :tabnext<CR>
 nmap <silent> <leader>.T :tablast<CR>
 
-nmap <silent> <leader>,b :bprevious<CR>
-nmap <silent> <leader>,B :bfirst<CR>
-nmap <silent> <leader>.b :bnext<CR>
-nmap <silent> <leader>.B :blast<CR>
+" Close all the buffers
+map <leader>ba :bufdo bd<CR>
+
 nmap <silent> <leader>bd :Bclose<CR>:tabclose<CR>gT
 
 " Don't close window, when deleting a buffer
@@ -260,9 +254,6 @@ set ttimeoutlen=50
 set timeoutlen=1000
 set updatetime=200
 
-" Close all the buffers
-map <leader>ba :bufdo bd<CR>
-
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<CR>
 map <leader>to :tabonly<CR>
@@ -279,9 +270,6 @@ map <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-"ctags
-" nnoremap <f5> :!ctags -R --exclude=.git<CR>
 
 map <leader>ss :setlocal spell!<CR>
 

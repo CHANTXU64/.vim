@@ -13,15 +13,13 @@ Plug 'preservim/nerdtree',
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'jistr/vim-nerdtree-tabs'
 
-Plug 'chrisbra/csv.vim'
+Plug 'chrisbra/csv.vim', { 'for': 'csv' }
 
 Plug 'liuchengxu/vista.vim'
 
 Plug 'junegunn/vim-easy-align'
 
-Plug 'Yggdroot/LeaderF'
-
-Plug 'wsdjeg/vim-fetch'
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
 " 注释
 Plug 'tpope/vim-commentary'
@@ -54,13 +52,7 @@ Plug 'easymotion/vim-easymotion'
 
 Plug 'Yggdroot/indentLine'
 
-" google code style
-" Plug 'google/vim-maktaba', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
-" Plug 'google/vim-glaive', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
-" Plug 'google/vim-codefmt', { 'for': [ 'cpp', 'c', 'javascript', 'typescript', 'css', 'html', 'json', 'shell', 'python' ] }
-
 " markdown
-Plug 'iamcco/mathjax-support-for-mkdp', { 'for': 'markdown' }
 Plug 'iamcco/markdown-preview.vim', { 'for': 'markdown' }
 
 " runtime macros/matchit.vim
