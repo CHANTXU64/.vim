@@ -112,7 +112,7 @@ function! clever_f#find_with(map) abort
         endif
 
         " reset and retry if timed out
-        if g:clever_f_timeout_ms > 0 && s:is_timedout()
+        if (g:clever_f_timeout_ms > 0 && s:is_timedout()) || a:map !~ s:previous_map[mode]
             call clever_f#reset()
             return clever_f#find_with(a:map)
         endif
