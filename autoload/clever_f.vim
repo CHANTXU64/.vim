@@ -9,17 +9,9 @@ let s:HAS_TIMER = has('timers')
 " configurations
 let g:clever_f_across_no_line          = get(g:, 'clever_f_across_no_line', 0)
 let g:clever_f_ignore_case             = get(g:, 'clever_f_ignore_case', 0)
-let g:clever_f_use_migemo              = get(g:, 'clever_f_use_migemo', 0)
 let g:clever_f_fix_key_direction       = get(g:, 'clever_f_fix_key_direction', 0)
-let g:clever_f_show_prompt             = get(g:, 'clever_f_show_prompt', 0)
 let g:clever_f_smart_case              = get(g:, 'clever_f_smart_case', 0)
-let g:clever_f_chars_match_any_signs   = get(g:, 'clever_f_chars_match_any_signs', '')
-let g:clever_f_timeout_ms              = get(g:, 'clever_f_timeout_ms', 0)
-let g:clever_f_repeat_last_char_inputs = get(g:, 'clever_f_repeat_last_char_inputs', ["\<CR>"])
-let g:clever_f_highlight_timeout_ms    = get(g:, 'clever_f_highlight_timeout_ms', 0)
-
-" below variable must be set before loading this script
-let g:clever_f_clean_labels_eagerly    = get(g:, 'clever_f_clean_labels_eagerly', 1)
+let g:clever_f_timeout_ms              = get(g:, 'clever_f_timeout_ms', 3000)
 
 augroup plugin-clever-f-finalizer
     autocmd!
@@ -63,47 +55,6 @@ function! s:is_timedout() abort
     return elapsed_ms > g:clever_f_timeout_ms
 endfunction
 
-" highlight characters to which the cursor can be moved directly
-" Note: public function for test
-function! clever_f#_mark_direct(forward, count) abort
-    let line = getline('.')
-    let [_, l, c, _] = getpos('.')
-
-    if (a:forward && c >= len(line)) || (!a:forward && c == 1)
-        " there is no matching characters
-        return []
-    endif
-
-    if g:clever_f_ignore_case
-        let line = tolower(line)
-    endif
-
-    let char_count = {}
-    let matches = []
-    let indices = a:forward ? range(c, len(line) - 1, 1) : range(c - 2, 0, -1)
-    for i in indices
-        let ch = line[i]
-        " only matches to ASCII
-        if ch !~# '^[\x00-\x7F]$' | continue | endif
-        let ch_lower = tolower(ch)
-
-        let char_count[ch] = get(char_count, ch, 0) + 1
-        if g:clever_f_smart_case && ch =~# '\u'
-            " uppercase characters are doubly counted
-            let char_count[ch_lower] = get(char_count, ch_lower, 0) + 1
-        endif
-
-        if char_count[ch] == a:count ||
-            \ (g:clever_f_smart_case && char_count[ch_lower] == a:count)
-            " NOTE: should not use `matchaddpos(group, [...position])`,
-            " because the maximum number of position is 8
-            let m = matchaddpos('CleverFDirect', [[l, i + 1]])
-            call add(matches, m)
-        endif
-    endfor
-    return matches
-endfunction
-
 " Note:
 " \x80\xfd` seems to be sent by a terminal.
 " Below is a workaround for the sequence.
@@ -115,6 +66,8 @@ function! s:getchar() abort
         endif
     endwhile
 endfunction
+
+hi CleverCursor ctermbg=0 ctermfg=231
 
 function! clever_f#find_with(map) abort
     if a:map !~# '^[fFtT]$'
@@ -129,47 +82,28 @@ function! clever_f#find_with(map) abort
 
     let current_pos = getpos('.')[1 : 2]
     let mode = s:mode()
-    let in_macro = clever_f#reg_executing() !=# ''
 
     " When 'f' is run while executing a macro, do not repeat previous
     " character. See #59 for more details
-    if current_pos != get(s:previous_pos, mode, [0, 0]) || in_macro
-        let should_redraw = !in_macro
+    if current_pos != get(s:previous_pos, mode, [0, 0])
         let back = 0
-        " block-NONE does not work on Neovim
+        let cursor_marker = matchadd('CleverCursor', '\%#', 999)
+        redraw
         try
-            if g:clever_f_mark_direct && should_redraw
-                let direct_markers = clever_f#_mark_direct(a:map =~# '\l', v:count1)
-                redraw
-            endif
-            if g:clever_f_show_prompt
-                echon 'clever-f: '
-            endif
             let s:previous_map[mode] = a:map
             let s:first_move[mode] = 1
             let cn = s:getchar()
             if cn == s:ESC_CODE
                 return "\<Esc>"
             endif
-            if index(map(deepcopy(g:clever_f_repeat_last_char_inputs), 'char2nr(v:val)'), cn) == -1
-                let s:previous_char_num[mode] = cn
-            else
-                if has_key(s:previous_char_num, s:last_mode)
-                    let s:previous_char_num[mode] = s:previous_char_num[s:last_mode]
-                else
-                    echohl ErrorMsg | echo 'Previous input not found.' | echohl None
-                    return ''
-                endif
-            endif
+            let s:previous_char_num[mode] = cn
             let s:last_mode = mode
 
             if g:clever_f_timeout_ms > 0
                 let s:timestamp = reltime()
             endif
-
-            if g:clever_f_show_prompt && should_redraw
-                redraw!
-            endif
+        finally
+            call matchdelete(cursor_marker)
         endtry
     else
         " When repeated
@@ -231,27 +165,6 @@ function! s:moves_forward(p, n) abort
 
     return 0
 endfunction
-
-if exists('*xor')
-    function! clever_f#xor(a, b) abort
-        return xor(a:a, a:b)
-    endfunction
-else
-    function! clever_f#xor(a, b) abort
-        return a:a && !a:b || !a:a && a:b
-    endfunction
-endif
-
-if exists('*reg_executing')
-    function! clever_f#reg_executing() abort
-        return reg_executing()
-    endfunction
-else
-    " reg_executing() was introduced at Vim 8.2.0020 and Neovim 0.4.0
-    function! clever_f#reg_executing() abort
-        return ''
-    endfunction
-endif
 
 function! clever_f#find(map, char_num) abort
     let before_pos = getpos('.')[1 : 2]
