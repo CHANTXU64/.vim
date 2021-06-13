@@ -14,6 +14,7 @@ hi MatchParen ctermbg=45
 hi Pmenu ctermfg=232 ctermbg=253
 hi PmenuSel ctermfg=232 ctermbg=248
 hi Search term=standout ctermfg=8 ctermbg=229
+hi CleverCursor ctermbg=0 ctermfg=231
 
 nnoremap ' `
 xnoremap ' `

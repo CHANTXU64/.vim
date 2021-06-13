@@ -67,8 +67,6 @@ function! s:getchar() abort
     endwhile
 endfunction
 
-hi CleverCursor ctermbg=0 ctermfg=231
-
 function! clever_f#find_with(map) abort
     if a:map !~# '^[fFtT]$'
         throw "clever-f: Invalid mapping '" . a:map . "'"

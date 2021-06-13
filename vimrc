@@ -48,6 +48,7 @@ Plug 'mbbill/undotree'
 
 Plug 'Raimondi/delimitMate'
 
+" Plug 'rhysd/clever-f.vim'
 " Plug 'easymotion/vim-easymotion'
 
 Plug 'Yggdroot/indentLine'
