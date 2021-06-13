@@ -29,3 +29,4 @@ log.*
 vimrc_
 plugged/**/.gitignore
 .DS_Store
+*.yml
