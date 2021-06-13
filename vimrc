@@ -21,6 +21,8 @@ Plug 'junegunn/vim-easy-align'
 
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 
+" Plug 'rhysd/accelerated-jk'
+
 " 注释
 Plug 'tpope/vim-commentary'
 
@@ -48,8 +50,8 @@ Plug 'mbbill/undotree'
 
 Plug 'Raimondi/delimitMate'
 
-" Plug 'rhysd/clever-f.vim'
-" Plug 'easymotion/vim-easymotion'
+Plug 'justinmk/vim-sneak'
+" Plug 'rhysd/clever-f.vim' 2021-06-13 658384e0f89fc31dba94e71eae2484cabe1ad7d0
 
 Plug 'Yggdroot/indentLine'
 

@@ -14,7 +14,7 @@ hi MatchParen ctermbg=45
 hi Pmenu ctermfg=232 ctermbg=253
 hi PmenuSel ctermfg=232 ctermbg=248
 hi Search term=standout ctermfg=8 ctermbg=229
-hi CleverCursor ctermbg=0 ctermfg=231
+hi CleverCursor ctermbg=Black ctermfg=White
 
 nnoremap ' `
 xnoremap ' `
@@ -63,6 +63,8 @@ onoremap ; ,
 
 nnoremap Y "+y
 xnoremap Y "+y
+
+nnoremap <silent> # yiw/<C-r>"<CR>
 
 xnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 xnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
@@ -195,7 +197,9 @@ set ttyfast
 
 map <leader>pp :setlocal paste!<CR>
 
-set dir=~/.tmp
+set undofile
+set undodir=~/.vimtmp/undo
+set dir=~/.vimtmp/swap
 
 "展开当前文件所在目录
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
