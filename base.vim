@@ -19,8 +19,8 @@ hi CleverCursor ctermbg=Black ctermfg=White
 nnoremap ' `
 xnoremap ' `
 onoremap ' `
-nnoremap - :
-xnoremap - :
+nnoremap _ :
+xnoremap _ :
 
 nnoremap & :&&<CR>
 xnoremap & :&&<CR>
@@ -215,18 +215,11 @@ cnoremap <C-f> <Right>
 inoremap <C-b> <Left>
 inoremap <C-f> <Right>
 
-nmap <silent> <leader>,t :tabprevious<CR>
-nmap <silent> <leader>,T :tabfirst<CR>
-nmap <silent> <leader>.t :tabnext<CR>
-nmap <silent> <leader>.T :tablast<CR>
-
 " Close all the buffers
 map <leader>ba :bufdo bd<CR>
 
-nmap <silent> <leader>bd :Bclose<CR>:tabclose<CR>gT
-
 " Don't close window, when deleting a buffer
-command! Bclose call <SID>BufcloseCloseIt()
+nmap <silent> <leader>bd :call <SID>BufcloseCloseIt()<CR>:tabclose<CR>gT
 function! <SID>BufcloseCloseIt()
   let l:currentBufNum = bufnr("%")
   let l:alternateBufNum = bufnr("#")
@@ -279,23 +272,35 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 map <leader>ss :setlocal spell!<CR>
 
 " Shortcuts using <leader>
-map <leader>sn ]s
-map <leader>sp [s
 map <leader>sa zg
 map <leader>s? z=
+map -s ]s
 
-nmap [e [l
-nmap [E [L
-nmap ]e ]l
-nmap ]E ]L
+nmap [b :<C-u>bprevious<CR>
+nmap [B :<C-u>bfirst<CR>
+nmap -b :<C-u>bnext<CR>
+nmap -B :<C-u>blast<CR>
+nmap [o :<C-u>lprevious<CR>
+nmap [O :<C-u>lfirst<CR>
+nmap -o :<C-u>lnext<CR>
+nmap -O :<C-u>llast<CR>
+nmap [a :<C-u>cprevious<CR>
+nmap [A :<C-u>cfirst<CR>
+nmap -a :<C-u>cnext<CR>
+nmap -A :<c-u>clast<CR>
+nmap [t :tabprevious<CR>
+nmap [T :tabfirst<CR>
+nmap -t :tabnext<CR>
+nmap -T :tablast<CR>
+
+nmap [<space> O<Esc>j
+nmap -<space> o<Esc>k
 
 map <up> <Nop>
 map <down> <Nop>
 map <left> :vertical resize-3<CR>
 map <right> :vertical resize+3<CR>
 
-nmap <leader>cn :cn<CR>
-nmap <leader>cp :cp<CR>
 nmap <leader>cw :cw 10<CR>
 
 nmap Q :registers<CR>

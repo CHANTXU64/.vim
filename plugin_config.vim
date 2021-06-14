@@ -23,7 +23,7 @@ hi CocInfoFloat ctermbg=253
 hi CocHintSign ctermbg=248
 hi CocHintFloat ctermbg=253
 imap <C-l> <Plug>(coc-snippets-expand)
-nmap ]c <Plug>(coc-diagnostic-next)
+nmap -c <Plug>(coc-diagnostic-next)
 nmap [c <Plug>(coc-diagnostic-prev)
 
 function! FuncCursorHold()
@@ -81,7 +81,6 @@ let NERDTreeMapCloseChildren = 'N'
 let g:NERDTreeMapPreview = 'h'
 let NERDTreeShowBookmarks=1
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
-autocmd bufenter * if (winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree()) | q | endif
 
 
 """"""""""""""""""""""""""""""

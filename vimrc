@@ -9,9 +9,9 @@ Plug 'itchyny/lightline.vim'
 
 Plug 'mhinz/vim-signify'
 
-Plug 'preservim/nerdtree',
-Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'jistr/vim-nerdtree-tabs'
+Plug 'preservim/nerdtree', { 'on': 'NERDTreeTabsOpen' }
+Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeTabsOpen' }
+Plug 'jistr/vim-nerdtree-tabs', { 'on': 'NERDTreeTabsOpen' }
 
 Plug 'chrisbra/csv.vim', { 'for': 'csv' }
 
