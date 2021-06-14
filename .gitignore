@@ -30,4 +30,4 @@ vimrc_
 plugged/**/.gitignore
 .DS_Store
 *.yml
-doc/tags
+tags

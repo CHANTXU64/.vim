@@ -316,4 +316,24 @@ xmap , <Plug>Sneak_;
 hi Sneak ctermbg=lightRed ctermfg=black
 
 
+""""""""""""""""""""""""""""""
+" => accelerated-jk
+""""""""""""""""""""""""""""""
+nmap j <Plug>(accelerated_jk_gj)
+xmap j <Plug>(accelerated_jk_gj)
+nmap k <Plug>(accelerated_jk_gk)
+xmap k <Plug>(accelerated_jk_gk)
+let g:accelerated_jk_acceleration_limit = 100
+let g:accelerated_jk_deceleration_table = [[100, 4], [150, 7], [200, 9], [250, 12], [300, 15]]
+
+
+""""""""""""""""""""""""""""""
+" => smoothie
+""""""""""""""""""""""""""""""
+let g:smoothie_update_interval = 36
+let g:smoothie_speed_constant_factor = 10
+let g:smoothie_speed_linear_factor = 15
+let g:smoothie_speed_exponentiation_factor = 0.8
+
+
 " vim: et ts=2 sts=2 sw=2 tw=80

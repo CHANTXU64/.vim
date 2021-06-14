@@ -21,7 +21,8 @@ Plug 'junegunn/vim-easy-align'
 
 Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' , 'on': [] }
 
-" Plug 'rhysd/accelerated-jk'
+Plug 'rhysd/accelerated-jk'
+Plug 'psliwka/vim-smoothie'
 
 " 注释
 Plug 'tpope/vim-commentary'
