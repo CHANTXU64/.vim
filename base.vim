@@ -22,6 +22,9 @@ onoremap ' `
 nnoremap _ :
 xnoremap _ :
 
+nnoremap q_ q:
+xnoremap q_ q:
+
 nnoremap & :&&<CR>
 xnoremap & :&&<CR>
 
@@ -163,7 +166,6 @@ set smartcase
 set hlsearch
 set incsearch
 exec "nohlsearch"
-noremap <Leader>/ :%s///gn<CR>
 
 " Don't redraw while executing macros (good performance config)
 set lazyredraw
@@ -295,6 +297,10 @@ nmap -T :tablast<CR>
 
 nmap [<space> O<Esc>j
 nmap -<space> o<Esc>k
+nmap [<C-h> kdd
+nmap [<BS> kdd
+nmap -<C-h> jddk
+nmap -<BS> jddk
 
 map <up> <Nop>
 map <down> <Nop>
