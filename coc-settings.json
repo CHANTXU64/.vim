@@ -29,5 +29,6 @@
 		".venv",
 		"__pycache__",
 		"venv"
-	]
+	],
+    "git.addGBlameToBufferVar": true
 }

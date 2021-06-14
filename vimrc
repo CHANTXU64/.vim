@@ -5,9 +5,8 @@ set nocompatible
 filetype off
 
 call plug#begin('~/.vim/plugged')
-Plug 'itchyny/lightline.vim'
 
-Plug 'mhinz/vim-signify'
+Plug 'itchyny/lightline.vim'
 
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeTabsOpen' }
 Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeTabsOpen' }
@@ -44,9 +43,6 @@ Plug 'josa42/vim-lightline-coc'
 
 " debug
 Plug 'puremourning/vimspector'
-
-" git
-Plug 'tpope/vim-fugitive'
 
 Plug 'mbbill/undotree'
 
