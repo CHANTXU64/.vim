@@ -76,42 +76,4 @@ augroup END
 
 so ~/.vim/base.vim
 
-""##### auto fcitx  ###########
-"let g:fcitx_auto_toggle_flag = 0
-"function! Toggle_fcitx_auto_toggle_flag()
-"  if g:fcitx_auto_toggle_flag
-"    let g:fcitx_auto_toggle_flag = 0
-"    echo 'Fcitx auto toggle - disabled'
-"  else
-"    let g:fcitx_auto_toggle_flag = 1
-"    echo 'Fcitx auto toggle - enabled'
-"  endif
-"endfunction
-"let g:input_toggle = 0
-"function! Fcitx2en()
-"  if g:fcitx_auto_toggle_flag
-"    let s:input_status = system("fcitx-remote")
-"    if s:input_status == 2
-"      let g:input_toggle = 1
-"      let l:a = system("fcitx-remote -c")
-"    endif
-"  endif
-"endfunction
-"function! Fcitx2zh()
-"  if g:fcitx_auto_toggle_flag
-"    let s:input_status = system("fcitx-remote")
-"    if s:input_status != 2 && g:input_toggle == 1
-"      let l:a = system("fcitx-remote -o")
-"      let g:input_toggle = 0
-"    endif
-"  endif
-"endfunction
-""退出插入模式
-"autocmd InsertLeave * call Fcitx2en()
-""进入插入模式
-"autocmd InsertEnter * call Fcitx2zh()
-"nmap <Leader><Leader>f :call Toggle_fcitx_auto_toggle_flag()<CR>
-"xmap <Leader><Leader>f :call Toggle_fcitx_auto_toggle_flag()<CR>
-""##### auto fcitx end ######
-
 so ~/.vim/plugin_config.vim

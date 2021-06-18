@@ -3,7 +3,8 @@
 """""""""""""""""""""""""""""""
 let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd',
       \'coc-markdownlint', 'coc-snippets', 'coc-css', 'coc-tabnine',
-      \'coc-html', 'coc-cmake', 'coc-pyright', 'coc-jedi', 'coc-git']
+      \'coc-html', 'coc-cmake', 'coc-pyright', 'coc-jedi', 'coc-git',
+      \'coc-translator']
 nnoremap <silent> <leader>h :call CocActionAsync('doHover')<cr>
 nmap gd <Plug>(coc-definition)
 nmap gD <Plug>(coc-implementation)
@@ -23,11 +24,14 @@ hi CocInfoFloat ctermbg=253
 hi CocHintSign ctermbg=248
 hi CocHintFloat ctermbg=253
 imap <C-l> <Plug>(coc-snippets-expand)
-nmap [c <Plug>(coc-diagnostic-prev)
-nmap -c <Plug>(coc-diagnostic-next)
-nmap [g <Plug>(coc-git-prevchunk)
-nmap -g <Plug>(coc-git-nextchunk)
+nmap [e <Plug>(coc-diagnostic-prev)
+nmap -e <Plug>(coc-diagnostic-next)
+nmap [d <Plug>(coc-git-prevchunk)
+nmap -d <Plug>(coc-git-nextchunk)
 nmap <Leader>d <Plug>(coc-git-chunkinfo)
+
+nmap <Leader>n <Plug>(coc-translator-p)
+vmap <Leader>n <Plug>(coc-translator-pv)
 
 function! FuncCursorHold()
 if exists('*CocActionAsync')
@@ -47,7 +51,7 @@ let g:Lf_PreviewResult = {
       \ 'Tag': 1,
       \ 'BufTag': 1,
       \ 'Function': 1,
-      \ 'Rg': 1,
+      \ 'Rg': 0,
       \ 'Gtags': 1
       \}
 let g:Lf_HistoryExclude = {
@@ -77,12 +81,11 @@ let g:Lf_WindowHeight = 0.30
 let g:Lf_FollowLinks = 1
 
 " buffers
-let g:Lf_ShortcutB = ']b'
+nnoremap M :<C-U>LeaderfBuffer<CR>
 " files
 let g:Lf_ShortcutF = ']a'
 " Mru
-nnoremap <leader>m :<C-U>LeaderfMruCwd<CR>
-nnoremap <leader>M :<C-U>LeaderfMru<CR>
+nnoremap U :<C-U>LeaderfMru<CR>
 " bufTag
 nnoremap ]t :<C-U>LeaderfBufTagCword<CR>
 xnoremap ]t :<C-U><C-R>=printf('Leaderf bufTag --input %s', <SID>get_visual_selection())<CR><CR>
@@ -105,7 +108,8 @@ xnoremap q_ :<C-U>LeaderfHistoryCmd<CR>
 nnoremap q/ :<C-U>LeaderfHistorySearch<CR>
 xnoremap q/ :<C-U>LeaderfHistorySearch<CR>
 " rg
-noremap <silent> <Leader>/ :Leaderf rg<CR>
+noremap <silent> <Leader>/ :Leaderf rg --all-buffers<CR>
+noremap <silent> <Leader>? :Leaderf rg<CR>
 noremap <C-B> :<C-U><C-R>=printf('Leaderf! rg --current-buffer -e %s ', expand('<cword>'))<CR><CR>
 noremap ]<C-B> :<C-U><C-R>=printf('Leaderf! rg --all-buffers -e %s ', expand('<cword>'))<CR><CR>
 noremap <C-F> :<C-U><C-R>=printf('Leaderf! rg -e %s ', expand('<cword>'))<CR><CR>
@@ -287,7 +291,10 @@ function! LightlineFilename()
   let modified = &modified ? ' +' : ''
   return filename . modified
 endfunction
-call lightline#coc#register()
+
+if exists("*lightline#coc#register")
+  call lightline#coc#register()
+endif
 
 
 """"""""""""""""""""""""""""""

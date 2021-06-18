@@ -126,6 +126,7 @@ set scrolloff=7
 nmap <Leader>w :w<CR>
 nmap <Leader>q :q<CR>
 nmap q<Leader> <Leader>
+nmap <Leader><Leader>qq :q!<CR>
 
 " :W sudo saves the file
 " (useful for handling the permission-denied error)
@@ -243,12 +244,14 @@ endfunction
 
 nmap <C-j> <C-W>j
 nmap <C-k> <C-W>k
-nmap H <C-W>h
-nmap L <C-W>l
+nmap <C-h> <C-W>h
+nmap <BS> <C-W>h
+nmap <C-l> <C-W>l
 xmap <C-j> <C-W>j
 xmap <C-k> <C-W>k
-xmap H <C-W>h
-xmap L <C-W>l
+xmap <C-H> <C-W>h
+xmap <BS> <C-W>h
+xmap <C-L> <C-W>l
 
 set ttimeoutlen=50
 set timeoutlen=1000
@@ -273,10 +276,12 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 
 map <leader>ss :setlocal spell!<CR>
 
+nmap - <Nop>
+
 " Shortcuts using <leader>
 map <leader>sa zg
 map <leader>s? z=
-map -s ]s
+noremap -s ]s
 
 nmap [b :<C-u>bprevious<CR>
 nmap [B :<C-u>bfirst<CR>
