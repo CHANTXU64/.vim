@@ -1,3 +1,5 @@
+" vim: et ts=2 sts=2 sw=2 tw=80
+
 """""""""""""""""""""""""""""""
 "" => coc
 """""""""""""""""""""""""""""""
@@ -75,8 +77,16 @@ let g:Lf_NormalMap = {
 let g:Lf_CommandMap = {
   \ '<C-P>': ['<C-O>'],
   \ '<C-J>': ['<C-N>'],
-  \ '<C-K>': ['<C-P>']
+  \ '<C-K>': ['<C-P>'],
+  \ '<Home>': ['<C-A>', '<Home>'],
+  \ '<End>': ['<C-E>', '<End>'],
+  \ '<Left>': ['<C-B>', '<Left>'],
+  \ '<Right>': ['<C-F>', '<Right>'],
+  \ '<C-V>': ['<C-\>'],
+  \ '<C-]>': ['<C-V>'],
+  \ '<C-O>': ['<C-I>']
   \}
+let g:Lf_CursorBlink = 0
 let g:Lf_WindowHeight = 0.30
 let g:Lf_FollowLinks = 1
 
@@ -188,14 +198,6 @@ imap <C-h> <Plug>delimitMateBS
 
 
 """"""""""""""""""""""""""""""
-" => fugitive
-""""""""""""""""""""""""""""""
-map <Leader>gw :Gwrite<CR>
-map <Leader>gd :Git difftool<CR>
-map <Leader>ggd :Git difftool -y<CR>
-
-
-""""""""""""""""""""""""""""""
 " => vim-polyglot
 """"""""""""""""""""""""""""""
 "javascript
@@ -207,12 +209,6 @@ let g:javascript_plugin_jsdoc = 1
 """"""""""""""""""""""""""""""
 let g:indentLine_char = '▏'
 let g:indentLine_concealcursor = 0
-
-
-""""""""""""""""""""""""""""""
-" => vim-matchup
-""""""""""""""""""""""""""""""
-" let g:loaded_matchit = 1
 
 
 """"""""""""""""""""""""""""""
@@ -338,9 +334,13 @@ let g:accelerated_jk_deceleration_table = [[100, 4], [150, 7], [200, 9], [250, 1
 " => smoothie
 """"""""""""""""""""""""""""""
 let g:smoothie_update_interval = 36
-let g:smoothie_speed_constant_factor = 10
-let g:smoothie_speed_linear_factor = 15
+let g:smoothie_speed_constant_factor = 9
+let g:smoothie_speed_linear_factor = 13
 let g:smoothie_speed_exponentiation_factor = 0.8
+
+
+" disable netrw
+let loaded_netrwPlugin = 1
 
 
 " vim: et ts=2 sts=2 sw=2 tw=80

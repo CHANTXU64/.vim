@@ -56,8 +56,6 @@ Plug 'Yggdroot/indentLine'
 " markdown
 Plug 'iamcco/markdown-preview.vim', { 'for': 'markdown' }
 
-Plug 'andymass/vim-matchup'
-
 Plug 'tpope/vim-repeat'
 
 Plug 'luochen1990/rainbow'

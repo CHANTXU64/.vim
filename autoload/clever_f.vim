@@ -85,7 +85,7 @@ function! clever_f#find_with(map) abort
     " character. See #59 for more details
     if current_pos != get(s:previous_pos, mode, [0, 0])
         let back = 0
-        let cursor_marker = matchadd('CleverCursor', '\%#', 999)
+        let cursor_marker = matchadd('Cursor', '\%#', 999)
         redraw
         try
             let s:previous_map[mode] = a:map

@@ -14,7 +14,7 @@ hi MatchParen ctermbg=45
 hi Pmenu ctermfg=232 ctermbg=253
 hi PmenuSel ctermfg=232 ctermbg=248
 hi Search term=standout ctermfg=8 ctermbg=229
-hi CleverCursor ctermbg=Black ctermfg=White
+hi Cursor ctermfg=231 ctermbg=black
 
 nnoremap ' `
 xnoremap ' `
@@ -252,17 +252,22 @@ xmap <C-k> <C-W>k
 xmap <C-H> <C-W>h
 xmap <BS> <C-W>h
 xmap <C-L> <C-W>l
+nmap <C-W><C-J> <C-W>J
+nmap <C-W><C-K> <C-W>K
+nmap <C-W><C-H> <C-W>H
+nmap <C-W><BS> <C-W>H
+nmap <C-W><C-L> <C-W>L
 
 set ttimeoutlen=50
 set timeoutlen=1000
 set updatetime=200
 
 " Useful mappings for managing tabs
-map <leader>tn :tabnew<CR>
-map <leader>to :tabonly<CR>
-map <leader>tc :tabclose<CR>
-map <leader>tm :tabmove "
-map <leader>t<leader> :tabnext
+map <C-T> <Nop>
+nmap <C-T>n :tabnew<CR>
+nmap <C-T>o :tabonly<CR>
+nmap <C-T>m :tabmove 
+nmap <C-T><C-T> :tabnext<CR>
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
