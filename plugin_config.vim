@@ -329,7 +329,7 @@ let g:semanticPersistCache = 1
 let g:semanticEnableFileTypes = [
       \ 'javascript', 'python', 'c', 'cpp', 'typescript', 'rust'
       \ ]
-let g:semanticTermColors = [2, 5, 18, 39, 58, 92, 137, 161, 200, 240]
+let g:semanticTermColors = [2, 5, 18, 33, 58, 92, 137, 161, 240]
 
 
 """"""""""""""""""""""""""""""

@@ -43,6 +43,8 @@ Plug 'josa42/vim-lightline-coc'
 " debug
 Plug 'puremourning/vimspector'
 
+Plug 'vim-test/vim-test'
+
 Plug 'mbbill/undotree'
 
 Plug 'Raimondi/delimitMate', { 'on': [] }
