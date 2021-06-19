@@ -159,8 +159,7 @@ set cursorline
 set number
 set relativenumber
 
-" set colorcolumn=81
-set colorcolumn=97
+set colorcolumn=81
 
 set ignorecase
 set smartcase
@@ -277,7 +276,8 @@ map <leader>te :tabedit <C-r>=expand("%:p:h")<CR>/
 map <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " Return to last edit position when opening files (You want this!)
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$")
+            \ | exe "normal! g'\"" | endif
 
 map <leader>ss :setlocal spell!<CR>
 
@@ -320,3 +320,7 @@ map <right> :vertical resize+3<CR>
 nmap <leader>cw :cw 10<CR>
 
 nmap Q :registers<CR>
+
+map <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>
+map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>
+

@@ -1,5 +1,3 @@
-" vim: et ts=2 sts=2 sw=2 tw=80
-
 """""""""""""""""""""""""""""""
 "" => coc
 """""""""""""""""""""""""""""""
@@ -91,11 +89,11 @@ let g:Lf_WindowHeight = 0.30
 let g:Lf_FollowLinks = 1
 
 " buffers
-nnoremap M :<C-U>LeaderfBuffer<CR>
+nnoremap <C-B> :<C-U>LeaderfBuffer<CR>
 " files
 let g:Lf_ShortcutF = ']a'
 " Mru
-nnoremap U :<C-U>LeaderfMru<CR>
+nnoremap <C-M> :<C-U>LeaderfMru<CR>
 " bufTag
 nnoremap ]t :<C-U>LeaderfBufTagCword<CR>
 xnoremap ]t :<C-U><C-R>=printf('Leaderf bufTag --input %s', <SID>get_visual_selection())<CR><CR>
@@ -115,12 +113,15 @@ noremap ]x :<C-U>LeaderfCommand<CR>
 " history
 nnoremap q_ :<C-U>LeaderfHistoryCmd<CR>
 xnoremap q_ :<C-U>LeaderfHistoryCmd<CR>
+nnoremap q: :<C-U>LeaderfHistoryCmd<CR>
+xnoremap q: :<C-U>LeaderfHistoryCmd<CR>
 nnoremap q/ :<C-U>LeaderfHistorySearch<CR>
 xnoremap q/ :<C-U>LeaderfHistorySearch<CR>
 " rg
 noremap <silent> <Leader>/ :Leaderf rg --all-buffers<CR>
 noremap <silent> <Leader>? :Leaderf rg<CR>
-noremap <C-B> :<C-U><C-R>=printf('Leaderf! rg --current-buffer -e %s ', expand('<cword>'))<CR><CR>
+nnoremap # :<C-U><C-R>=printf('Leaderf! rg --current-buffer -e %s ', expand('<cword>'))<CR><CR>
+xnoremap # :<C-U><C-R>=printf('Leaderf! rg --current-buffer -e %s ', leaderf#Rg#visual())<CR><CR>
 noremap ]<C-B> :<C-U><C-R>=printf('Leaderf! rg --all-buffers -e %s ', expand('<cword>'))<CR><CR>
 noremap <C-F> :<C-U><C-R>=printf('Leaderf! rg -e %s ', expand('<cword>'))<CR><CR>
 xnoremap ]# :<C-U><C-R>=printf('Leaderf! rg -F -e %s ', leaderf#Rg#visual())<CR><CR>
@@ -137,7 +138,8 @@ noremap ]rg :<C-U>Leaderf! gtags --recall<CR>
 
 let g:Lf_WildIgnore = {
       \ 'dir': ['.svn','.git','.hg','plugged','vendor','node_modules'],
-      \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','.DS_Store']
+      \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]',
+      \          '.DS_Store']
       \}
 
 function! <SID>get_visual_selection()
@@ -198,10 +200,9 @@ imap <C-h> <Plug>delimitMateBS
 
 
 """"""""""""""""""""""""""""""
-" => vim-polyglot
+" => vim-python-pep8-indent
 """"""""""""""""""""""""""""""
-"javascript
-let g:javascript_plugin_jsdoc = 1
+let g:python_pep8_indent_multiline_string = -2
 
 
 """"""""""""""""""""""""""""""
@@ -322,23 +323,35 @@ hi Sneak ctermbg=lightRed ctermfg=black
 
 
 """"""""""""""""""""""""""""""
-" => accelerated-jk
+" => semantic-highlight
 """"""""""""""""""""""""""""""
-nmap j <Plug>(accelerated_jk_gj)
-nmap k <Plug>(accelerated_jk_gk)
-let g:accelerated_jk_acceleration_limit = 100
-let g:accelerated_jk_deceleration_table = [[100, 4], [150, 7], [200, 9], [250, 12], [300, 15]]
+let g:semanticPersistCache = 1
+let g:semanticEnableFileTypes = [
+      \ 'javascript', 'python', 'c', 'cpp', 'typescript', 'rust'
+      \ ]
+let g:semanticTermColors = [2, 5, 18, 39, 58, 92, 137, 161, 200, 240]
 
 
 """"""""""""""""""""""""""""""
-" => smoothie
+" => smartim
 """"""""""""""""""""""""""""""
-let g:smoothie_update_interval = 36
-let g:smoothie_speed_constant_factor = 9
-let g:smoothie_speed_linear_factor = 13
-let g:smoothie_speed_exponentiation_factor = 0.8
+let g:smartim_default = 'com.apple.keylayout.ABC'
+let g:smartim_disable = 1
+function! SmartimToggle()
+  if has('mac') && get(g:, 'smartim_disable') == 1
+    let g:smartim_disable = 0
+    echo 'Smartim enable'
+  else
+    let g:smartim_disable = 1
+    echo 'Smartim disable'
+  endif
+endfunction
+nnoremap <leader>sf :call SmartimToggle()<CR>
 
 
+""""""""""""""""""""""""""""""
+" => other
+""""""""""""""""""""""""""""""
 " disable netrw
 let loaded_netrwPlugin = 1
 

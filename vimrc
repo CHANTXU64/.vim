@@ -12,16 +12,11 @@ Plug 'preservim/nerdtree', { 'on': 'NERDTreeTabsOpen' }
 Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeTabsOpen' }
 Plug 'jistr/vim-nerdtree-tabs', { 'on': 'NERDTreeTabsOpen' }
 
-Plug 'chrisbra/csv.vim', { 'for': 'csv' }
-
 Plug 'liuchengxu/vista.vim'
 
 Plug 'junegunn/vim-easy-align'
 
-Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' , 'on': [] }
-
-Plug 'rhysd/accelerated-jk'
-Plug 'psliwka/vim-smoothie'
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension', 'on': [] }
 
 " 注释
 Plug 'tpope/vim-commentary'
@@ -34,8 +29,12 @@ Plug 'tpope/vim-abolish'
 Plug 'kana/vim-textobj-user'
 Plug 'kana/vim-textobj-entire'
 
-" 语法高亮
-Plug 'sheerun/vim-polyglot'
+" 语言
+Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
+Plug 'chrisbra/csv.vim', { 'for': 'csv' }
+Plug 'jaxbot/semantic-highlight.vim', {
+            \ 'for': ['python', 'javascript', 'c', 'cpp', 'rust', 'typescript']
+            \ }
 
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
@@ -60,15 +59,17 @@ Plug 'tpope/vim-repeat'
 
 Plug 'luochen1990/rainbow'
 
+Plug 'ybian/smartim'
+
 call plug#end()
 
 augroup load_delimitMate
-  autocmd!
-  autocmd InsertEnter * call plug#load('delimitMate') | autocmd! load_delimitMate
+  au!
+  au InsertEnter * call plug#load('delimitMate') | au! load_delimitMate
 augroup END
-augroup load_LeaderF
-  autocmd!
-  autocmd VimEnter * call plug#load('LeaderF') | auto! load_LeaderF
+augroup lazy_load
+  au!
+  au BufWinEnter * call plug#load(['LeaderF']) | au! lazy_load
 augroup END
 
 
