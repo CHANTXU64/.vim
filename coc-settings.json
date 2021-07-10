@@ -33,5 +33,6 @@
     "git.addGBlameToBufferVar": true,
     "git.enableGutters": true,
     "translator.engines": ["youdao"],
-    "translator.window.enableBorder": false
+    "translator.window.enableBorder": false,
+    "rust-analyzer.server.path": "rust-analyzer"
 }
