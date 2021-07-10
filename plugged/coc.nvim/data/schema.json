@@ -432,7 +432,7 @@
     },
     "suggest.keepCompleteopt": {
       "type": "boolean",
-      "description": "When enabled, completeopt is not overriden, auto completion will be disabled if completeopt doesn't have noinsert and noselect.",
+      "description": "When enabled, completeopt is not overridden, auto completion will be disabled if completeopt doesn't have noinsert and noselect.",
       "default": false
     },
     "suggest.lowPrioritySourceLimit": {
@@ -513,6 +513,16 @@
     "diagnostic.enable": {
       "type": "boolean",
       "description": "Set to false to disable diagnostic display",
+      "default": true
+    },
+    "diagnostic.highlighLimit": {
+      "type": "number",
+      "description": "Limit count for highlighted diagnostics, too many diagnostic highlights could make vim stop responsing",
+      "default": 1000
+    },
+    "diagnostic.autoRefresh": {
+      "type": "boolean",
+      "description": "Enable automatically refresh diagnostics, use diagnosticRefresh action when it's disabled.",
       "default": true
     },
     "diagnostic.level": {
@@ -736,6 +746,11 @@
       "type": "string",
       "description": "Target to show hover information, default is floating window when possible.",
       "enum": ["preview", "echo", "float"]
+    },
+    "hover.previewMaxHeight": {
+      "type": "number",
+      "default": 12,
+      "description": "Max height of preview window for hover."
     },
     "hover.floatMaxWidth": {
       "type": "number",
@@ -1016,15 +1031,10 @@
       "description": "Enable color highlight if language server support it.",
       "default": true
     },
-    "coc.preferences.previewAutoClose": {
+    "coc.preferences.semanticTokensHighlights": {
       "type": "boolean",
-      "description": "Auto close preview window on cursor move.",
+      "description": "Enable semanticTokens highlight if language server support it.",
       "default": true
-    },
-    "coc.preferences.previewMaxHeight": {
-      "type": "number",
-      "default": 12,
-      "description": "Max height of preview window for hover."
     },
     "coc.preferences.currentFunctionSymbolAutoUpdate": {
       "type": "boolean",
@@ -1059,8 +1069,19 @@
     },
     "coc.preferences.jumpCommand": {
       "anyOf": [
-        {"type": "string", "enum": ["edit", "split", "vsplit", "tabe", "drop", "tab drop", "pedit"]},
-        {"type": "string", "minimum": 1}
+        {
+          "type": "string",
+          "enum": [
+            "edit",
+            "split",
+            "vsplit",
+            "tabe",
+            "drop",
+            "tab drop",
+            "pedit"
+          ]
+        },
+        { "type": "string", "minimum": 1 }
       ],
       "description": "Command used for location jump, like goto definition, goto references etc. Can be also a custom command that gives file as an argument.",
       "default": "edit"
@@ -1202,7 +1223,7 @@
     },
     "coc.source.file.triggerCharacters": {
       "type": "array",
-      "default": ["/"],
+      "default": ["/", "\\"],
       "items": {
         "type": "string"
       }

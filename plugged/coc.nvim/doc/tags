@@ -29,6 +29,7 @@ CocActionAsync()	coc.txt	/*CocActionAsync()*
 CocBold	coc.txt	/*CocBold*
 CocCodeLens	coc.txt	/*CocCodeLens*
 CocCursorRange	coc.txt	/*CocCursorRange*
+CocDeprecatedHighlight	coc.txt	/*CocDeprecatedHighlight*
 CocDiagnosticChange	coc.txt	/*CocDiagnosticChange*
 CocErrorFloat	coc.txt	/*CocErrorFloat*
 CocErrorHighlight	coc.txt	/*CocErrorHighlight*
@@ -69,11 +70,13 @@ CocOpenFloat	coc.txt	/*CocOpenFloat*
 CocRegistNotification()	coc.txt	/*CocRegistNotification()*
 CocRequest()	coc.txt	/*CocRequest()*
 CocRequestAsync()	coc.txt	/*CocRequestAsync()*
+CocSem	coc.txt	/*CocSem*
 CocStatusChange	coc.txt	/*CocStatusChange*
 CocStrikeThrough	coc.txt	/*CocStrikeThrough*
 CocTagFunc()	coc.txt	/*CocTagFunc()*
 CocTerminalOpen	coc.txt	/*CocTerminalOpen*
 CocUnderline	coc.txt	/*CocUnderline*
+CocUnusedHighlight	coc.txt	/*CocUnusedHighlight*
 CocWarningFloat	coc.txt	/*CocWarningFloat*
 CocWarningHighlight	coc.txt	/*CocWarningHighlight*
 CocWarningLine	coc.txt	/*CocWarningLine*
@@ -126,6 +129,7 @@ coc-action-deactivateExtension	coc.txt	/*coc-action-deactivateExtension*
 coc-action-diagnosticInfo	coc.txt	/*coc-action-diagnosticInfo*
 coc-action-diagnosticList	coc.txt	/*coc-action-diagnosticList*
 coc-action-diagnosticPreview	coc.txt	/*coc-action-diagnosticPreview*
+coc-action-diagnosticRefresh	coc.txt	/*coc-action-diagnosticRefresh*
 coc-action-diagnosticToggle	coc.txt	/*coc-action-diagnosticToggle*
 coc-action-diagnosticToggleBuffer	coc.txt	/*coc-action-diagnosticToggleBuffer*
 coc-action-doCodeAction	coc.txt	/*coc-action-doCodeAction*
@@ -143,6 +147,7 @@ coc-action-getHover	coc.txt	/*coc-action-getHover*
 coc-action-getWordEdit	coc.txt	/*coc-action-getWordEdit*
 coc-action-getWorkspaceSymbols	coc.txt	/*coc-action-getWorkspaceSymbols*
 coc-action-highlight	coc.txt	/*coc-action-highlight*
+coc-action-incomingCalls	coc.txt	/*coc-action-incomingCalls*
 coc-action-jumpDeclaration	coc.txt	/*coc-action-jumpDeclaration*
 coc-action-jumpDefinition	coc.txt	/*coc-action-jumpDefinition*
 coc-action-jumpImplementation	coc.txt	/*coc-action-jumpImplementation*
@@ -150,11 +155,13 @@ coc-action-jumpReferences	coc.txt	/*coc-action-jumpReferences*
 coc-action-jumpTypeDefinition	coc.txt	/*coc-action-jumpTypeDefinition*
 coc-action-openlink	coc.txt	/*coc-action-openlink*
 coc-action-organizeImport	coc.txt	/*coc-action-organizeImport*
+coc-action-outgoingCalls	coc.txt	/*coc-action-outgoingCalls*
 coc-action-pickColor	coc.txt	/*coc-action-pickColor*
 coc-action-quickfixes	coc.txt	/*coc-action-quickfixes*
 coc-action-refreshSource	coc.txt	/*coc-action-refreshSource*
 coc-action-reloadExtension	coc.txt	/*coc-action-reloadExtension*
 coc-action-rename	coc.txt	/*coc-action-rename*
+coc-action-resolveWorkspaceSymbol	coc.txt	/*coc-action-resolveWorkspaceSymbol*
 coc-action-runCommand	coc.txt	/*coc-action-runCommand*
 coc-action-selectionRanges	coc.txt	/*coc-action-selectionRanges*
 coc-action-services	coc.txt	/*coc-action-services*
@@ -245,6 +252,7 @@ g:coc_process_pid	coc.txt	/*g:coc_process_pid*
 g:coc_prompt_win_width	coc.txt	/*g:coc_prompt_win_width*
 g:coc_quickfix_open_command	coc.txt	/*g:coc_quickfix_open_command*
 g:coc_selectmode_mapping	coc.txt	/*g:coc_selectmode_mapping*
+g:coc_service_initialized	coc.txt	/*g:coc_service_initialized*
 g:coc_snippet_next	coc.txt	/*g:coc_snippet_next*
 g:coc_snippet_prev	coc.txt	/*g:coc_snippet_prev*
 g:coc_sources_disable_map	coc.txt	/*g:coc_sources_disable_map*
@@ -252,10 +260,10 @@ g:coc_start_at_startup	coc.txt	/*g:coc_start_at_startup*
 g:coc_status	coc.txt	/*g:coc_status*
 g:coc_status_error_sign	coc.txt	/*g:coc_status_error_sign*
 g:coc_status_warning_sign	coc.txt	/*g:coc_status_warning_sign*
+g:coc_text_prop_offset	coc.txt	/*g:coc_text_prop_offset*
 g:coc_uri_prefix_replace_patterns	coc.txt	/*g:coc_uri_prefix_replace_patterns*
 g:coc_user_config	coc.txt	/*g:coc_user_config*
 g:node_client_debug	coc.txt	/*g:node_client_debug*
-health#coc#check()	coc.txt	/*health#coc#check()*
 n_coc-classobj-a	coc.txt	/*n_coc-classobj-a*
 n_coc-classobj-i	coc.txt	/*n_coc-classobj-i*
 n_coc-codeaction	coc.txt	/*n_coc-codeaction*

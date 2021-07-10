@@ -39,7 +39,6 @@ endfunction
 call s:checkVersion()
 
 let g:did_coc_loaded = 1
-let g:coc_workspace_initialized = 0
 let g:coc_service_initialized = 0
 let s:is_win = has('win32') || has('win64')
 let s:root = expand('<sfile>:h:h')
@@ -169,6 +168,7 @@ function! s:OpenConfig()
     end
   endif
   execute 'edit '.home.'/coc-settings.json'
+  call coc#rpc#notify('checkJsonExtension', [])
 endfunction
 
 function! s:get_color(item, fallback) abort
@@ -243,21 +243,17 @@ function! s:Disable() abort
 endfunction
 
 function! s:Autocmd(...) abort
-  if !g:coc_workspace_initialized
+  if !g:coc_service_initialized
     return
   endif
   call coc#rpc#notify('CocAutocmd', a:000)
 endfunction
 
 function! s:SyncAutocmd(...)
-  if !g:coc_workspace_initialized
+  if !g:coc_service_initialized
     return
   endif
-  if g:coc_service_initialized
-    call coc#rpc#request('CocAutocmd', a:000)
-  else
-    call coc#rpc#notify('CocAutocmd', a:000)
-  endif
+  call coc#rpc#request('CocAutocmd', a:000)
 endfunction
 
 function! s:Enable(initialize)
@@ -307,7 +303,7 @@ function! s:Enable(initialize)
     autocmd BufWinEnter         * call s:Autocmd('BufWinEnter', +expand('<abuf>'), win_getid())
     autocmd FileType            * call s:Autocmd('FileType', expand('<amatch>'), +expand('<abuf>'))
     autocmd CompleteDone        * call s:Autocmd('CompleteDone', get(v:, 'completed_item', {}))
-    autocmd InsertCharPre       * call s:Autocmd('InsertCharPre', v:char)
+    autocmd InsertCharPre       * call s:Autocmd('InsertCharPre', v:char, bufnr('%'))
     if exists('##TextChangedP')
       autocmd TextChangedP        * call s:Autocmd('TextChangedP', +expand('<abuf>'), {'lnum': line('.'), 'col': col('.'), 'pre': strpart(getline('.'), 0, col('.') - 1), 'changedtick': b:changedtick})
     endif
@@ -369,6 +365,8 @@ function! s:Hi() abort
   hi default link CocWarningHighlight CocUnderline
   hi default link CocInfoHighlight    CocUnderline
   hi default link CocHintHighlight    CocUnderline
+  hi default link CocDeprecatedHighlight CocStrikeThrough
+  hi default link CocUnusedHighlight     CocFadeOut
   hi default link CocListMode ModeMsg
   hi default link CocListPath Comment
   hi default link CocHighlightText  CursorColumn
@@ -397,6 +395,31 @@ function! s:Hi() abort
     endfor
   endif
   call s:AddAnsiGroups()
+
+  if get(g:, 'coc_default_semantic_highlight_groups', 1) == 1
+    hi default link CocSem_namespace Identifier
+    hi default link CocSem_type Type
+    hi default link CocSem_class Structure
+    hi default link CocSem_enum Type
+    hi default link CocSem_interface Type
+    hi default link CocSem_struct Structure
+    hi default link CocSem_typeParameter Type
+    hi default link CocSem_parameter Identifier
+    hi default link CocSem_variable Identifier
+    hi default link CocSem_property Identifier
+    hi default link CocSem_enumMember Constant
+    hi default link CocSem_event Identifier
+    hi default link CocSem_function Function
+    hi default link CocSem_method Function
+    hi default link CocSem_macro Macro
+    hi default link CocSem_keyword Keyword
+    hi default link CocSem_modifier StorageClass
+    hi default link CocSem_comment Comment
+    hi default link CocSem_string String
+    hi default link CocSem_number Number
+    hi default link CocSem_regexp Normal
+    hi default link CocSem_operator Operator
+  endif
 endfunction
 
 function! s:FormatFromSelected(type)
@@ -419,8 +442,8 @@ function! s:ShowInfo()
     else
       let output = trim(system(node . ' --version'))
       let ms = matchlist(output, 'v\(\d\+\).\(\d\+\).\(\d\+\)')
-      if empty(ms) || str2nr(ms[1]) < 10 || (str2nr(ms[1]) == 10 && str2nr(ms[2]) < 12)
-        call add(lines, 'Error: Node version '.output.' < 10.12.0, please upgrade node.js')
+      if empty(ms) || str2nr(ms[1]) < 12 || (str2nr(ms[1]) == 12 && str2nr(ms[2]) < 12)
+        call add(lines, 'Error: Node version '.output.' < 12.12.0, please upgrade node.js')
       endif
     endif
     " check bundle
