@@ -34,9 +34,6 @@ onoremap 0 ^
 nnoremap ^ 0
 xnoremap ^ 0
 onoremap ^ 0
-nnoremap <C-l> $
-xnoremap <C-l> $
-onoremap <C-l> $
 
 nnoremap gh H
 xnoremap gh H
@@ -67,10 +64,10 @@ onoremap ; ,
 nnoremap Y "+y
 xnoremap Y "+y
 
-nnoremap <silent> # yiw/<C-r>"<CR>
+nnoremap <silent> # yiw/<C-R>"<CR>
 
-xnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
-xnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
+xnoremap <silent> * :<C-U>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
+xnoremap <silent> # :<C-U>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 function! VisualSelection(direction, extra_filter) range
   let l:saved_reg = @"
   execute "normal! vgvy"
@@ -174,7 +171,7 @@ set lazyredraw
 set magic
 
 "清屏并暂时关闭查找高亮
-nnoremap <silent> <Leader>l :<C-u>nohlsearch<CR>
+nnoremap <silent> <Leader>l :<C-U>nohlsearch<CR>
 
 " Show matching brackets when text indicator is over them
 set showmatch
@@ -208,14 +205,14 @@ cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 cnoremap <expr> <space><space> getcmdtype() == ':' ? '+' : '  '
 
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
-cnoremap <C-p> <Up>
-cnoremap <C-n> <Down>
-cnoremap <C-b> <Left>
-cnoremap <C-f> <Right>
-inoremap <C-b> <Left>
-inoremap <C-f> <Right>
+cnoremap <C-A> <Home>
+cnoremap <C-E> <End>
+cnoremap <C-P> <Up>
+cnoremap <C-N> <Down>
+cnoremap <C-B> <Left>
+cnoremap <C-F> <Right>
+inoremap <C-B> <Left>
+inoremap <C-F> <Right>
 
 " Close all the buffers
 map <leader>ba :bufdo bd<CR>
@@ -241,13 +238,13 @@ function! <SID>BufcloseCloseIt()
   endif
 endfunction
 
-nmap <C-j> <C-W>j
-nmap <C-k> <C-W>k
-nmap <C-h> <C-W>h
+nmap <C-J> <C-W>j
+nmap <C-K> <C-W>k
+nmap <C-H> <C-W>h
 nmap <BS> <C-W>h
-nmap <C-l> <C-W>l
-xmap <C-j> <C-W>j
-xmap <C-k> <C-W>k
+nmap <C-L> <C-W>l
+xmap <C-J> <C-W>j
+xmap <C-K> <C-W>k
 xmap <C-H> <C-W>h
 xmap <BS> <C-W>h
 xmap <C-L> <C-W>l
@@ -270,7 +267,7 @@ nmap <C-T><C-T> :tabnext<CR>
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
-map <leader>te :tabedit <C-r>=expand("%:p:h")<CR>/
+map <leader>te :tabedit <C-R>=expand("%:p:h")<CR>/
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<CR>:pwd<CR>
@@ -288,18 +285,18 @@ map <leader>sa zg
 map <leader>s? z=
 noremap -s ]s
 
-nmap [b :<C-u>bprevious<CR>
-nmap [B :<C-u>bfirst<CR>
-nmap -b :<C-u>bnext<CR>
-nmap -B :<C-u>blast<CR>
-nmap [o :<C-u>lprevious<CR>
-nmap [O :<C-u>lfirst<CR>
-nmap -o :<C-u>lnext<CR>
-nmap -O :<C-u>llast<CR>
-nmap [a :<C-u>cprevious<CR>
-nmap [A :<C-u>cfirst<CR>
-nmap -a :<C-u>cnext<CR>
-nmap -A :<c-u>clast<CR>
+nmap [b :<C-U>bprevious<CR>
+nmap [B :<C-U>bfirst<CR>
+nmap -b :<C-U>bnext<CR>
+nmap -B :<C-U>blast<CR>
+nmap [o :<C-U>lprevious<CR>
+nmap [O :<C-U>lfirst<CR>
+nmap -o :<C-U>lnext<CR>
+nmap -O :<C-U>llast<CR>
+nmap [a :<C-U>cprevious<CR>
+nmap [A :<C-U>cfirst<CR>
+nmap -a :<C-U>cnext<CR>
+nmap -A :<C-U>clast<CR>
 nmap [t :tabprevious<CR>
 nmap [T :tabfirst<CR>
 nmap -t :tabnext<CR>
@@ -307,9 +304,9 @@ nmap -T :tablast<CR>
 
 nmap [<space> O<Esc>j
 nmap -<space> o<Esc>k
-nmap [<C-h> kdd
+nmap [<C-H> kdd
 nmap [<BS> kdd
-nmap -<C-h> jddk
+nmap -<C-H> jddk
 nmap -<BS> jddk
 
 map <up> <Nop>
@@ -321,6 +318,6 @@ nmap <leader>cw :cw 10<CR>
 
 nmap Q :registers<CR>
 
-map <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>
-map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>
+" map <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>
+" map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>
 

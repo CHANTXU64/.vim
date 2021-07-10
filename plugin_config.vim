@@ -23,7 +23,7 @@ hi CocInfoSign ctermbg=248
 hi CocInfoFloat ctermbg=253
 hi CocHintSign ctermbg=248
 hi CocHintFloat ctermbg=253
-imap <C-l> <Plug>(coc-snippets-expand)
+imap <C-L> <Plug>(coc-snippets-expand)
 nmap [e <Plug>(coc-diagnostic-prev)
 nmap -e <Plug>(coc-diagnostic-next)
 nmap [d <Plug>(coc-git-prevchunk)
@@ -59,8 +59,8 @@ let g:Lf_HistoryExclude = {
       \ 'search': ['^Plug']
       \}
 let g:Lf_NormalMap = {
-    \ "_":       [["<C-j>", "j"],
-    \             ["<C-k>", "k"]],
+    \ "_":       [["<C-J>", "j"],
+    \             ["<C-K>", "k"]],
     \ "File":    [["<ESC>", ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
     \ "Buffer":  [["<ESC>", ':exec g:Lf_py "bufExplManager.quit()"<CR>']],
     \ "Mru":     [["<ESC>", ':exec g:Lf_py "mruExplManager.quit()"<CR>']],
@@ -89,11 +89,11 @@ let g:Lf_WindowHeight = 0.30
 let g:Lf_FollowLinks = 1
 
 " buffers
-nnoremap <C-B> :<C-U>LeaderfBuffer<CR>
+nnoremap <silent> <C-B> :<C-U>LeaderfBuffer<CR>
 " files
 let g:Lf_ShortcutF = ']a'
 " Mru
-nnoremap <C-M> :<C-U>LeaderfMru<CR>
+nnoremap <silent> <C-M> :<C-U>LeaderfMru<CR>
 " bufTag
 nnoremap ]t :<C-U>LeaderfBufTagCword<CR>
 xnoremap ]t :<C-U><C-R>=printf('Leaderf bufTag --input %s', <SID>get_visual_selection())<CR><CR>
@@ -196,7 +196,7 @@ let delimitMate_expand_cr = 2
 let delimitMate_expand_space = 1
 let delimitMate_excluded_regions = 'Comment'
 imap <BS> <Plug>delimitMateBS
-imap <C-h> <Plug>delimitMateBS
+imap <C-H> <Plug>delimitMateBS
 
 
 """"""""""""""""""""""""""""""
@@ -262,7 +262,8 @@ let g:lightline = {
       \   'paste': '%{&paste?"P":""}',
       \ },
       \ 'component_function': {
-      \   'filename': 'LightlineFilename'
+      \   'filename': 'LightlineFilename',
+      \   'git-status': 'LightlineGitStatus'
       \ },
       \ 'mode_map': {
       \   'n' : 'N',
@@ -270,18 +271,16 @@ let g:lightline = {
       \   'R' : 'R',
       \   'v' : 'V',
       \   'V' : 'V-L',
-      \   "\<C-v>": 'V-B',
+      \   "\<C-V>": 'V-B',
       \   'c' : 'C',
       \   's' : 'S',
       \   'S' : 'S-L',
-      \   "\<C-s>": 'S-B',
+      \   "\<C-S>": 'S-B',
       \   't': 'T',
       \ }
       \ }
 function! LightlineGitStatus() abort
-  let status = get(g:, 'coc_git_status', '')
-  " let b_status = get(b:, 'coc_git_status', '')
-  return status
+  return get(g:, 'coc_git_status', '')
 endfunction
 function! LightlineFilename()
   let filename = expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
@@ -289,15 +288,13 @@ function! LightlineFilename()
   return filename . modified
 endfunction
 
-if exists("*lightline#coc#register")
-  call lightline#coc#register()
-endif
+call lightline#coc#register()
 
 
 """"""""""""""""""""""""""""""
 " => vimspector
 """"""""""""""""""""""""""""""
-let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+let g:vimspector_enable_mappings = 'HUMAN'
 
 
 """"""""""""""""""""""""""""""
@@ -347,6 +344,12 @@ function! SmartimToggle()
   endif
 endfunction
 nnoremap <leader>sf :call SmartimToggle()<CR>
+
+
+""""""""""""""""""""""""""""""
+" => test
+""""""""""""""""""""""""""""""
+let test#strategy = 'vimterminal'
 
 
 """"""""""""""""""""""""""""""
