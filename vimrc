@@ -33,9 +33,11 @@ Plug 'kana/vim-textobj-entire'
 " 语言
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
 Plug 'chrisbra/csv.vim', { 'for': 'csv' }
-Plug 'jaxbot/semantic-highlight.vim', {
-            \ 'for': ['python', 'javascript', 'c', 'cpp', 'rust', 'typescript']
-            \ }
+" Plug 'jaxbot/semantic-highlight.vim', {
+"             \ 'for': ['python', 'javascript', 'c', 'cpp', 'rust', 'typescript']
+"             \ }
+
+" Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
@@ -75,7 +77,10 @@ augroup lazy_load
   au BufWinEnter * call plug#load(['LeaderF']) | au! lazy_load
 augroup END
 
-
 so ~/.vim/base.vim
 
 so ~/.vim/plugin_config.vim
+
+if has('nvim')
+  so ~/.vim/nvim.vim
+endif
