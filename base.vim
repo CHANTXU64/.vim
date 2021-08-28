@@ -217,6 +217,8 @@ inoremap <C-F> <Right>
 " Close all the buffers
 map <leader>ba :bufdo bd<CR>
 
+:let g:csv_delim=','
+
 " Don't close window, when deleting a buffer
 nmap <silent> <leader>bd :call <SID>BufcloseCloseIt()<CR>:tabclose<CR>gT
 function! <SID>BufcloseCloseIt()

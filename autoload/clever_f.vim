@@ -196,10 +196,15 @@ function! s:move_cmd_for_visualmode(map, char_num) abort
 endfunction
 
 function! s:search(pat, flag) abort
-    if g:clever_f_across_no_line
-        return search(a:pat, a:flag, line('.'))
+    if a:pat == '\C.'
+        let pat = '\C\.'
     else
-        return search(a:pat, a:flag)
+        let pat = a:pat
+    endif
+    if g:clever_f_across_no_line
+        return search(pat, a:flag, line('.'))
+    else
+        return search(pat, a:flag)
     endif
 endfunction
 
