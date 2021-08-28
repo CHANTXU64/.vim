@@ -198,6 +198,10 @@ endfunction
 function! s:search(pat, flag) abort
     if a:pat == '\C.'
         let pat = '\C\.'
+    elseif a:pat == '\C$'
+        let pat = '\C\$'
+    elseif a:pat == '\C^'
+        let pat = '\C\^'
     else
         let pat = a:pat
     endif
