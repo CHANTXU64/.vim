@@ -54,6 +54,8 @@ function! coc#_complete() abort
   if s:select_api && len(items) && preselect != -1
     noa call complete(startcol, items)
     call nvim_select_popupmenu_item(preselect, v:false, v:false, {})
+    " use <cmd> specific key to preselect item at once
+    call feedkeys("\<Cmd>\<CR>" , 'i')
   else
     call complete(startcol, items)
   endif
@@ -110,10 +112,6 @@ endfunction
 
 function! coc#start(...)
   let opt = coc#util#get_complete_option()
-  let char = s:get_trigger_character()
-  if !empty(char)
-    let opt['triggerCharacter'] = char
-  endif
   call CocActionAsync('startCompletion', extend(opt, get(a:, 1, {})))
   return ''
 endfunction
@@ -195,12 +193,4 @@ function! coc#do_notify(id, method, result)
   if !empty(Fn)
     call Fn(a:result)
   endif
-endfunction
-
-function! s:get_trigger_character()
-  if col('.') <= 1
-    return ''
-  endif
-  let before_cursor = getline('.')[:col('.')-2]
-  return strcharpart(before_cursor, strchars(before_cursor)-1)
 endfunction

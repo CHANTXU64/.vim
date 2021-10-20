@@ -42,6 +42,7 @@ Plug 'chrisbra/csv.vim', { 'for': 'csv' }
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'josa42/vim-lightline-coc'
+Plug 'honza/vim-snippets'
 
 " debug
 Plug 'puremourning/vimspector'
