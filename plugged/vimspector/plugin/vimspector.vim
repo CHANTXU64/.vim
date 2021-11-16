@@ -53,10 +53,7 @@ nnoremap <silent> <Plug>VimspectorPause
 nnoremap <silent> <Plug>VimspectorToggleBreakpoint
       \ :<c-u>call vimspector#ToggleBreakpoint()<CR>
 nnoremap <silent> <Plug>VimspectorToggleConditionalBreakpoint
-      \ :<c-u>call vimspector#ToggleBreakpoint(
-                    \ { 'condition': input( 'Enter condition expression: ' ),
-                    \   'hitCondition': input( 'Enter hit count expression: ' ) }
-                    \ )<CR>
+      \ :<c-u>call vimspector#ToggleAdvancedBreakpoint()<CR>
 nnoremap <silent> <Plug>VimspectorAddFunctionBreakpoint
       \ :<c-u>call vimspector#AddFunctionBreakpoint( expand( '<cexpr>' ) )<CR>
 nnoremap <silent> <Plug>VimspectorStepOver
@@ -136,6 +133,13 @@ command! -bar -nargs=0
       \ VimspectorAbortInstall
       \ call vimspector#AbortInstall()
 
+" Session files
+command! -bar -nargs=? -complete=file
+      \ VimspectorLoadSession
+      \ call vimspector#ReadSessionFile( <f-args> )
+command! -bar -nargs=? -complete=file
+      \ VimspectorMkSession
+      \ call vimspector#WriteSessionFile( <f-args> )
 
 
 " Dummy autocommands so that we can call this whenever
@@ -148,9 +152,14 @@ augroup VimspectorUserAutoCmds
 augroup END
 
 " FIXME: Only register this _while_ debugging is active
+let g:vimspector_resetting = 0
 augroup Vimspector
   autocmd!
   autocmd BufNew * call vimspector#OnBufferCreated( expand( '<afile>' ) )
+  autocmd TabClosed *
+        \   if !g:vimspector_resetting
+        \ |   call vimspector#internal#state#TabClosed( expand( '<afile>' ) )
+        \ | endif
 augroup END
 
 " boilerplate {{{

@@ -35,12 +35,16 @@ DEFAULTS = {
   'terminal_maxheight': 15,
   'terminal_minheight': 5,
 
+  # Session files
+  'session_file_name': '.vimspector.session',
+
   # Signs
   'sign_priority': {
     'vimspectorPC':            200,
     'vimspectorPCBP':          200,
     'vimspectorBP':            9,
     'vimspectorBPCond':        9,
+    'vimspectorBPLog':         9,
     'vimspectorBPDisabled':    9,
     'vimspectorCurrentThread': 200,
     'vimspectorCurrentFrame':  200,

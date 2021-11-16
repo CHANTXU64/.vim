@@ -34,5 +34,10 @@
     "git.enableGutters": true,
     "translator.engines": ["youdao"],
     "translator.window.enableBorder": false,
-    "rust-analyzer.server.path": "rust-analyzer"
+    "rust-analyzer.server.path": "rust-analyzer",
+    "java.configuration.runtimes": [{
+        "name": "JavaSE-11",
+        "path": ""
+
+    }]
 }

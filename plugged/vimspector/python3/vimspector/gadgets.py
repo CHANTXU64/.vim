@@ -30,12 +30,12 @@ GADGETS = {
                                                                 root,
                                                                 gadget ),
     'all': {
-      'version': '0.27.0',
+      'version': '1.6.0',
       "adapters": {
         "vscode-cpptools": {
           "name": "cppdbg",
           "command": [
-            "${gadgetDir}/vscode-cpptools/debugAdapters/OpenDebugAD7"
+            "${gadgetDir}/vscode-cpptools/debugAdapters/bin/OpenDebugAD7"
           ],
           "attach": {
             "pidProperty": "processId",
@@ -53,17 +53,17 @@ GADGETS = {
     'linux': {
       'file_name': 'cpptools-linux.vsix',
       'checksum':
-        '3695202e1e75a03de18049323b66d868165123f26151f8c974a480eaf0205435',
+        'c25299bcfb46b22d41aa3f125df7184e6282a35ff9fb69c47def744cb4778f55',
     },
     'macos': {
       'file_name': 'cpptools-osx.vsix',
       'checksum':
-        'cb061e3acd7559a539e5586f8d3f535101c4ec4e8a48195856d1d39380b5cf3c',
+        'ae21cde361335b350402904991cf9f746fec685449ca9bd5d50227c3dec3719b',
     },
     'windows': {
       'file_name': 'cpptools-win32.vsix',
       'checksum':
-        'aa294368ed16d48c59e49c8000e146eae5a19ad07b654efed5db8ec93b24229e',
+        'ef7ac5831874a3c7dbf0feb826bfda2be579aff9b6d990622fff1d0d4ede00d1',
       "adapters": {
         "vscode-cpptools": {
           "name": "cppdbg",
@@ -323,10 +323,10 @@ GADGETS = {
         '${version}/${file_name}',
     },
     'all': {
-      'version': 'v1.16.1',
-            'file_name': 'php-debug-1.16.1.vsix',
+            'version': 'v1.22.0',
+            'file_name': 'php-debug-1.22.0.vsix',
       'checksum':
-        '2eb6ff1100b6b3d2d160f243858f3524e269078b8154e108d015882e2c0d52c4',
+        '9a908ea87d0fa0c3eae615253f81031bf5f0863d65b471c7ddde5b0d0c99f783',
     },
     'adapters': {
       'vscode-php-debug': {
@@ -356,6 +356,33 @@ GADGETS = {
           'node',
           '${gadgetDir}/vscode-node-debug2/out/src/nodeDebug.js'
         ]
+      },
+    },
+  },
+  'vscode-firefox-debug': {
+    'language': 'firefox',
+    'enabled': False,
+    'download': {
+      'url': 'https://marketplace.visualstudio.com/_apis/public/gallery'
+              '/publishers/firefox-devtools/vsextensions/'
+              'vscode-firefox-debug/${version}/vspackage',
+      'target': 'firefox-devtools.vscode-firefox-debug-2.9.4.vsix.gz',
+      'format': 'zip.gz',
+    },
+    'all': {
+      'version': '2.9.4',
+      'file_name': 'firefox-devtools.vscode-firefox-debug-2.9.4.vsix',
+      'checksum':
+        ''
+    },
+    'adapters': {
+      'firefox': {
+        'name': 'debugger-for-firefox',
+        'type': 'firefox',
+        'command': [
+          'node',
+          '${gadgetDir}/debugger-for-firefox/dist/adapter.bundle.js'
+        ],
       },
     },
   },
@@ -394,12 +421,12 @@ GADGETS = {
              '${version}/${file_name}',
     },
     'all': {
-      'version': 'v1.6.1',
+      'version': 'v1.6.7',
     },
     'macos': {
       'file_name': 'codelldb-x86_64-darwin.vsix',
       'checksum':
-        'b1c998e7421beea9f3ba21aa5706210bb2249eba93c99b809247ee831075262f',
+        'b652fc18f100f93ed1732a131f3dc519cbaf5ae688e9a91decf795203206497d',
       'make_executable': [
         'adapter/codelldb',
         'lldb/bin/debugserver',
@@ -410,7 +437,7 @@ GADGETS = {
     'linux': {
       'file_name': 'codelldb-x86_64-linux.vsix',
       'checksum':
-        'f2a36cb6971fd95a467cf1a7620e160914e8f11bf82929932ee0aa5afbf6ae6a',
+        'ca95479f9f6c9563aefb043e3bbacd7cc641b5915412df480ef9438b224d71ff',
       'make_executable': [
         'adapter/codelldb',
         'lldb/bin/lldb',
@@ -421,7 +448,7 @@ GADGETS = {
     'windows': {
       'file_name': 'codelldb-x86_64-windows.vsix',
       'checksum':
-        'ca6a6525bf7719dc95265dc630b3cc817a8c0393b756fd242b710805ffdfb940',
+        '0ae2559b4de4db592fb0eb44a2300e080cf802d3ea9970fe30835d4a63b5adc9',
       'make_executable': []
     },
     'adapters': {

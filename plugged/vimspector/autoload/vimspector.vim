@@ -51,6 +51,14 @@ function! vimspector#Launch( ... ) abort
   py3 _vimspector_session.Start( *vim.eval( 'a:000' ) )
 endfunction
 
+function! vimspector#LaunchWithConfigurations( configurations ) abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.Start(
+        \ adhoc_configurations = vim.eval( 'a:configurations' ) )
+endfunction
+
 function! vimspector#LaunchWithSettings( settings ) abort
   if !s:Enabled()
     return
@@ -82,6 +90,25 @@ function! vimspector#ClearBreakpoints() abort
     return
   endif
   py3 _vimspector_session.ClearBreakpoints()
+endfunction
+
+let s:extended_breakpoint_properties = [
+      \ { 'prop': 'condition', 'msg': 'Enter condition expression' },
+      \ { 'prop': 'hitCondition', 'msg': 'Enter hit count expression' },
+      \ { 'prop': 'logMessage',
+      \   'msg': 'Enter log expression (to make log point)' },
+    \ ]
+
+function! vimspector#ToggleAdvancedBreakpoint() abort
+  let options = {}
+  for spec in s:extended_breakpoint_properties
+    let response = input( spec.msg . ': ' )
+    if response !=# ''
+      let options[ spec.prop ] = response
+    endif
+  endfor
+
+  call vimspector#ToggleBreakpoint( options )
 endfunction
 
 function! vimspector#ToggleBreakpoint( ... ) abort
@@ -538,7 +565,7 @@ function! vimspector#OnBufferCreated( file_name ) abort
     return
   endif
 
-  py3 _vimspector_session.RefreshSigns( vim.eval( 'a:file_name' ) )
+  py3 _vimspector_session.RefreshSigns()
 endfunction
 
 function! vimspector#ShowEvalBalloon( is_visual ) abort
@@ -565,6 +592,21 @@ function! vimspector#PrintDebugInfo() abort
   py3 _vimspector_session.PrintDebugInfo()
 endfunction
 
+function! vimspector#ReadSessionFile( ... ) abort
+  if !s:Enabled()
+    return
+  endif
+
+  py3 _vimspector_session.ReadSessionFile( *vim.eval( 'a:000' ) )
+endfunction
+
+function! vimspector#WriteSessionFile( ... ) abort
+  if !s:Enabled()
+    return
+  endif
+
+  py3 _vimspector_session.WriteSessionFile( *vim.eval( 'a:000' ) )
+endfunction
 
 " Boilerplate {{{
 let &cpoptions=s:save_cpo

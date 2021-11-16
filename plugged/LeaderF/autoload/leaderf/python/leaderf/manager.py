@@ -330,6 +330,8 @@ class Manager(object):
         self._resetHighlights()
         if self._cli.pattern and self._index == 0:
             self._search(self._content)
+            if len(self._getInstance().buffer) < len(self._result_content):
+                self._getInstance().appendBuffer(self._result_content[self._initial_count:])
 
     def _bangReadFinished(self):
         if self._preview_open == False and self._getInstance().getWinPos() in ('popup', 'floatwin'):
@@ -361,20 +363,22 @@ class Manager(object):
         if lfEval("has('nvim')") == '1':
             if self._preview_winid:
                 if int(lfEval("nvim_win_is_valid(%d) == v:true" % self._preview_winid)):
-                    lfCmd("call nvim_win_close(%d, 1)" % self._preview_winid)
+                    lfCmd("noautocmd call nvim_win_close(%d, 1)" % self._preview_winid)
                 self._preview_winid = 0
         else:
             if self._preview_winid:
-                lfCmd("call popup_close(%d)" % self._preview_winid)
+                lfCmd("noautocmd call popup_close(%d)" % self._preview_winid)
                 self._preview_winid = 0
 
     def _previewResult(self, preview):
         if self._getInstance().getWinPos() == 'floatwin':
             self._cli.buildPopupPrompt()
 
-        if lfEval("get(g:, 'Lf_PreviewInPopup', 0)") == '1' and \
-                self._orig_line != self._getInstance().currentLine:
-            self._closePreviewPopup()
+        if lfEval("get(g:, 'Lf_PreviewInPopup', 0)") == '1':
+            if self._orig_line != self._getInstance().currentLine:
+                self._closePreviewPopup()
+            else:
+                return
 
         if not self._needPreview(preview):
             return
@@ -431,6 +435,7 @@ class Manager(object):
 
     #**************************************************************
 
+    @ignoreEvent('BufWinEnter,BufEnter')
     def _createPopupModePreview(self, title, source, line_nr, jump_cmd):
         """
         Args:
@@ -451,7 +456,7 @@ class Manager(object):
                 buffer_len = len(vim.buffers[source])
             else:
                 try:
-                    lfCmd("let content = readfile('%s')" % escQuote(source))
+                    lfCmd("let content = readfile('%s', '', 4096)" % escQuote(source))
                 except vim.error as e:
                     lfPrintError(e)
                     return
@@ -547,7 +552,7 @@ class Manager(object):
                 buffer_len = len(vim.buffers[source])
             else:
                 try:
-                    lfCmd("let content = readfile('%s')" % escQuote(source))
+                    lfCmd("let content = readfile('%s', '', 4096)" % escQuote(source))
                 except vim.error as e:
                     lfPrintError(e)
                     return
@@ -625,7 +630,7 @@ class Manager(object):
                 options["minheight"] = maxheight
 
             if isinstance(source, int):
-                lfCmd("silent! let winid = popup_create(%d, %s)" % (source, json.dumps(options)))
+                lfCmd("noautocmd silent! let winid = popup_create(%d, %s)" % (source, json.dumps(options)))
             else:
                 lfCmd("silent! let winid = popup_create(content, %s)" % json.dumps(options))
                 lfCmd("call win_execute(winid, 'doautocmd filetypedetect BufNewFile %s')" % escQuote(source))
@@ -677,7 +682,7 @@ class Manager(object):
                 buffer_len = len(vim.buffers[source])
             else:
                 try:
-                    lfCmd("let content = readfile('%s')" % escQuote(source))
+                    lfCmd("let content = readfile('%s', '', 4096)" % escQuote(source))
                 except vim.error as e:
                     lfPrintError(e)
                     return
@@ -781,10 +786,10 @@ class Manager(object):
                 options["minheight"] = maxheight
 
             if isinstance(source, int):
-                lfCmd("silent! let winid = popup_create(%d, %s)" % (source, json.dumps(options)))
+                lfCmd("noautocmd silent! let winid = popup_create(%d, %s)" % (source, json.dumps(options)))
             else:
                 try:
-                    lfCmd("let content = readfile('%s')" % escQuote(source))
+                    lfCmd("let content = readfile('%s', '', 4096)" % escQuote(source))
                 except vim.error as e:
                     lfPrintError(e)
                     return
@@ -1070,6 +1075,7 @@ class Manager(object):
                 self._getInstance().setBuffer(content[:self._initial_count])
                 self._getInstance().setStlResultsCount(len(content), True)
                 self._result_content = []
+            self._previewResult(False)
             return
 
         if self._cli.isFuzzy:
@@ -1793,12 +1799,13 @@ class Manager(object):
             if self._getExplorer().getStlCategory() != "Jumps":
                 lfCmd("norm! m'")
 
-            if mode == '':
-                pass
-            elif mode == 'h':
-                lfCmd("split")
-            elif mode == 'v':
-                lfCmd("bel vsplit")
+            if self._getExplorer().getStlCategory() != "Help":
+                if mode == '':
+                    pass
+                elif mode == 'h':
+                    lfCmd("split")
+                elif mode == 'v':
+                    lfCmd("bel vsplit")
 
             kwargs["mode"] = mode
             tabpage_count = len(vim.tabpages)
@@ -2369,7 +2376,7 @@ class Manager(object):
             else:
                 raise self._read_content_exception[1]
 
-        if bang == False and self._preview_open == False and self._getInstance().getWinPos() in ('popup', 'floatwin') \
+        if bang == False and self._preview_open == False and lfEval("get(g:, 'Lf_PreviewInPopup', 0)") == '1' \
                 and not self._getInstance().empty():
             self._previewResult(False)
             self._preview_open = True

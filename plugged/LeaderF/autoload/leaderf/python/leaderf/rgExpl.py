@@ -1143,7 +1143,8 @@ class RgExplManager(Manager):
                     lfPrintTraceback(file)
 
             if lfEval("exists('g:Lf_rg_apply_changes_and_save')") == '1':
-                lfCmd("bufdo call leaderf#Rg#SaveCurrentBuffer(%s)" % str(self._buf_number_dict))
+                for buf_number in self._buf_number_dict:
+                    lfCmd("%dbufdo update" % buf_number)
         except KeyboardInterrupt: # <C-C>
             pass
         except vim.error:
@@ -1201,6 +1202,9 @@ class RgExplManager(Manager):
             else:
                 self._getInstance().buffer[:] = self._orig_buffer
                 self._getInstance().window.cursor = (1, 0)
+                self._getInstance().buffer.options["modified"] = False
+                lfCmd("call leaderf#colorscheme#highlightBlank('{}', {})"
+                        .format(self._getExplorer().getStlCategory(), self._getInstance().buffer.number))
 
         self._getInstance().buffer.options["buftype"] = "nofile"
         self._getInstance().buffer.options["modifiable"] = False

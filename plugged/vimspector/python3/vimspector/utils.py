@@ -117,6 +117,9 @@ def CleanUpCommand( name, api_prefix ):
 
 
 def CleanUpHiddenBuffer( buf ):
+  if not buf.valid:
+    return
+
   try:
     vim.command( 'bdelete! {}'.format( buf.number ) )
   except vim.error as e:
@@ -291,6 +294,10 @@ def TemporaryVimOption( opt, value ):
     yield
   finally:
     vim.options[ opt ] = old_value
+
+
+def DirectoryOfCurrentFile():
+  return os.path.dirname( os.path.abspath( vim.current.buffer.name ) )
 
 
 def PathToConfigFile( file_name, from_directory = None ):
@@ -672,7 +679,7 @@ def ParseVariables( variables_list,
             "Unsupported variable defn {}: Missing 'shell'".format( n ) )
       else:
         new_variables[ n ] = ExpandReferencesInObject( v,
-                                                       mapping,
+                                                       new_mapping,
                                                        calculus,
                                                        user_choices )
 
@@ -792,7 +799,7 @@ def GetVisualSelection( bufnr ):
   return lines
 
 
-def DisplaySplash( api_prefix, splash, text ):
+def DisplaySplash( api_prefix: str, splash, text: typing.Union[ str, list ] ):
   if splash:
     return Call( f'vimspector#internal#{api_prefix}popup#UpdateSplash',
                  splash,
