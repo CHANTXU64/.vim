@@ -157,39 +157,6 @@ endfunction
 
 
 """"""""""""""""""""""""""""""
-" => Nerdtree
-""""""""""""""""""""""""""""""
-let NERDTreeMapCloseDir = 'n'
-let NERDTreeMapCloseChildren = 'N'
-let g:NERDTreeMapPreview = 'h'
-let NERDTreeShowBookmarks=1
-let NERDTreeIgnore = ['\.pyc$', '__pycache__']
-
-
-""""""""""""""""""""""""""""""
-" => Nerdtree-tabs
-""""""""""""""""""""""""""""""
-nmap <leader>tt :NERDTreeTabsOpen<CR> :NERDTreeSteppedOpen<CR>
-nmap <leader>tT :NERDTreeTabsClose<CR>
-
-
-""""""""""""""""""""""""""""""
-" => NERDTree-git
-""""""""""""""""""""""""""""""
-let g:NERDTreeGitStatusIndicatorMapCustom = {
-      \ 'Modified'  : 'M',
-      \ 'Staged'    : 'S',
-      \ 'Untracked' : 'U',
-      \ 'Renamed'   : 'R',
-      \ 'Unmerged'  : 'ᶴ',
-      \ 'Deleted'   : 'D',
-      \ 'Dirty'     : '˜',
-      \ 'Clean'     : 'ᵅ',
-      \ 'Unknown'   : '?'
-      \ }
-
-
-""""""""""""""""""""""""""""""
 " => delimitMate
 """"""""""""""""""""""""""""""
 let delimitMate_expand_cr = 2

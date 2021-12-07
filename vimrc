@@ -8,11 +8,6 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'itchyny/lightline.vim'
 
-Plug 'preservim/nerdtree', { 'on': 'NERDTreeTabsOpen' }
-Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeTabsOpen' }
-Plug 'jistr/vim-nerdtree-tabs', { 'on': 'NERDTreeTabsOpen' }
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight', { 'on': 'NERDTreeTabsOpen' }
-
 Plug 'liuchengxu/vista.vim'
 
 Plug 'junegunn/vim-easy-align'
