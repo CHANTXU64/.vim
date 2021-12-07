@@ -33,6 +33,7 @@ Plug 'chrisbra/csv.vim', { 'for': 'csv' }
 "             \ }
 
 " Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'uiiaoo/java-syntax.vim'
 
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
