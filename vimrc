@@ -63,6 +63,8 @@ Plug 'luochen1990/rainbow'
 
 Plug 'ybian/smartim'
 
+Plug 'voldikss/vim-floaterm'
+
 call plug#end()
 
 augroup load_delimitMate

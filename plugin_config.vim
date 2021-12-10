@@ -326,4 +326,18 @@ let test#strategy = 'vimterminal'
 let loaded_netrwPlugin = 1
 
 
+""""""""""""""""""""""""""""""
+" => floaterm
+""""""""""""""""""""""""""""""
+let g:floaterm_width = 0.9
+let g:floaterm_height = 0.8
+let g:floaterm_opener = 'edit'
+let g:floaterm_autoclose = 1
+let g:floaterm_keymap_new = '<C-t><C-n>'
+let g:floaterm_keymap_prev = '<C-t><BS>'
+let g:floaterm_keymap_next = '<C-t><C-l>'
+let g:floaterm_keymap_toggle = '<C-t><C-t>'
+let g:floaterm_keymap_kill = '<C-t><C-d>'
+nnoremap <silent> <C-t><C-g> :FloatermNew --name=lazygit lazygit<CR>
+
 " vim: et ts=2 sts=2 sw=2 tw=80

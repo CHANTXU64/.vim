@@ -16,17 +16,18 @@ hi PmenuSel ctermfg=232 ctermbg=248
 hi Search term=standout ctermfg=8 ctermbg=229
 hi Cursor ctermfg=231 ctermbg=black
 
+nnoremap 1 !
+nnoremap 2 @
+nnoremap 3 #
+nnoremap 4 $
+nnoremap 5 %
+nnoremap 6 ^
+nnoremap 7 :%s/
+nnoremap 8 *
+
 nnoremap ' `
 xnoremap ' `
 onoremap ' `
-nnoremap _ :
-xnoremap _ :
-
-nnoremap q_ q:
-xnoremap q_ q:
-
-nnoremap & :&&<CR>
-xnoremap & :&&<CR>
 
 nnoremap 0 ^
 xnoremap 0 ^
@@ -34,13 +35,6 @@ onoremap 0 ^
 nnoremap ^ 0
 xnoremap ^ 0
 onoremap ^ 0
-
-nnoremap gh H
-xnoremap gh H
-onoremap gh H
-nnoremap gl L
-xnoremap gl L
-onoremap gl L
 
 nnoremap gH K
 xnoremap gH K
@@ -217,7 +211,7 @@ inoremap <C-F> <Right>
 " Close all the buffers
 map <leader>ba :bufdo bd<CR>
 
-:let g:csv_delim=','
+" let g:csv_delim=','
 
 " Don't close window, when deleting a buffer
 nmap <silent> <leader>bd :call <SID>BufcloseCloseIt()<CR>:tabclose<CR>gT
