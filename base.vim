@@ -16,15 +16,6 @@ hi PmenuSel ctermfg=232 ctermbg=248
 hi Search term=standout ctermfg=8 ctermbg=229
 hi Cursor ctermfg=231 ctermbg=black
 
-nnoremap 1 !
-nnoremap 2 @
-nnoremap 3 #
-nnoremap 4 $
-nnoremap 5 %
-nnoremap 6 ^
-nnoremap 7 :%s/
-nnoremap 8 *
-
 nnoremap ' `
 xnoremap ' `
 onoremap ' `
