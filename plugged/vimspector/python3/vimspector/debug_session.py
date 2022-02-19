@@ -25,6 +25,7 @@ import importlib
 
 from vimspector import ( breakpoints,
                          code,
+                         core_utils,
                          debug_adapter_connection,
                          install,
                          output,
@@ -66,6 +67,7 @@ class DebugSession( object ):
     self._breakpoints = breakpoints.ProjectBreakpoints()
     self._splash_screen = None
     self._remote_term = None
+    self._adapter_term = None
 
     self._run_on_server_exit = None
 
@@ -100,7 +102,17 @@ class DebugSession( object ):
         configurations.update( database.get( 'configurations' ) or {} )
         adapters.update( database.get( 'adapters' ) or {} )
 
-    return launch_config_file, configurations
+    filetype_configurations = configurations
+    if filetypes:
+      # filter out any configurations that have a 'filetypes' list set and it
+      # doesn't contain one of the current filetypes
+      filetype_configurations = {
+        k: c for k, c in configurations.items() if 'filetypes' not in c or any(
+          ft in c[ 'filetypes' ] for ft in filetypes
+        )
+      }
+
+    return launch_config_file, filetype_configurations, configurations
 
   def Start( self,
              force_choose=False,
@@ -113,9 +125,6 @@ class DebugSession( object ):
 
     self._logger.info( "User requested start debug session with %s",
                        launch_variables )
-    self._configuration = None
-    self._adapter = None
-    self._launch_config = None
 
     current_file = utils.GetBufferFilepath( vim.current.buffer )
     adapters = {}
@@ -125,7 +134,9 @@ class DebugSession( object ):
     if adhoc_configurations:
       configurations = adhoc_configurations
     else:
-      launch_config_file, configurations = self.GetConfigurations( adapters )
+      ( launch_config_file,
+        configurations,
+        all_configurations ) = self.GetConfigurations( adapters )
 
     if not configurations:
       utils.UserMessage( 'Unable to find any debug configurations. '
@@ -175,7 +186,27 @@ class DebugSession( object ):
     else:
       self._workspace_root = os.path.dirname( current_file )
 
-    configuration = configurations[ configuration_name ]
+    try:
+      configuration = configurations[ configuration_name ]
+    except KeyError:
+      # Maybe the specified one by name that's not for this filetype? Let's try
+      # that one...
+      configuration = all_configurations[ configuration_name ]
+
+    current_configuration_name = configuration_name
+    while 'extends' in configuration:
+      base_configuration_name = configuration.pop( 'extends' )
+      base_configuration = all_configurations.get( base_configuration_name )
+      if base_configuration is None:
+        raise RuntimeError( f"The adapter { current_configuration_name } "
+                            f"extends configuration { base_configuration_name }"
+                            ", but this does not exist" )
+
+      core_utils.override( base_configuration, configuration )
+      current_configuration_name = base_configuration_name
+      configuration = base_configuration
+
+
     adapter = configuration.get( 'adapter' )
     if isinstance( adapter, str ):
       adapter_dict = adapters.get( adapter )
@@ -202,12 +233,55 @@ class DebugSession( object ):
 
         utils.UserMessage( f"The specified adapter '{adapter}' is not "
                            "available. Did you forget to run "
-                           "'install_gadget.py'?",
+                           "'VimspectorInstall'?",
                            persist = True,
                            error = True )
         return
 
       adapter = adapter_dict
+
+    if not adapter:
+      utils.UserMessage( 'No adapter configured for {}'.format(
+        configuration_name ),
+        persist=True )
+      return
+
+    # Pull in anything from the base(s)
+    # FIXME: this is copypasta from above, but sharing the code is a little icky
+    # due to the way it returns from this method (maybe use an exception?)
+    while 'extends' in adapter:
+      base_adapter_name = adapter.pop( 'extends' )
+      base_adapter = adapters.get( base_adapter_name )
+
+      if base_adapter is None:
+        suggested_gadgets = installer.FindGadgetForAdapter( base_adapter_name )
+        if suggested_gadgets:
+          response = utils.AskForInput(
+            f"The specified base adapter '{base_adapter_name}' is not "
+            "installed. Would you like to install the following gadgets? ",
+            ' '.join( suggested_gadgets ) )
+          if response:
+            new_launch_variables = dict( launch_variables )
+            new_launch_variables[ 'configuration' ] = configuration_name
+
+            installer.RunInstaller(
+              self._api_prefix,
+              False, # Don't leave open
+              *shlex.split( response ),
+              then = lambda: self.Start( new_launch_variables ) )
+            return
+          elif response is None:
+            return
+
+        utils.UserMessage( f"The specified base adapter '{base_adapter_name}' "
+                           "is not available. Did you forget to run "
+                           "'VimspectorInstall'?",
+                           persist = True,
+                           error = True )
+        return
+
+      core_utils.override( base_adapter, adapter )
+      adapter = base_adapter
 
     # Additional vars as defined by VSCode:
     #
@@ -286,11 +360,6 @@ class DebugSession( object ):
                                     USER_CHOICES )
     except KeyboardInterrupt:
       self._Reset()
-      return
-
-    if not adapter:
-      utils.UserMessage( 'No adapter configured for {}'.format(
-        configuration_name ), persist=True )
       return
 
     self._StartWithConfiguration( configuration, adapter )
@@ -657,6 +726,51 @@ class DebugSession( object ):
     self._variablesView.SetVariableValue( new_value, buf, line_num )
 
   @IfConnected()
+  def ReadMemory( self, length = None, offset = None ):
+    if not self._server_capabilities.get( 'supportsReadMemoryRequest' ):
+      utils.UserMessage( "Server does not support memory request",
+                         error = True )
+      return
+
+    memoryReference = self._variablesView.GetMemoryReference()
+    if memoryReference is None:
+      utils.UserMessage( "Cannot find memory reference for that",
+                         error = True )
+      return
+
+    if length is None:
+      length = utils.AskForInput( 'How much data to display? ',
+                                  default_value = '1024' )
+
+    try:
+      length = int( length )
+    except ValueError:
+      return
+
+    if offset is None:
+      offset = utils.AskForInput( 'Location offset? ',
+                                  default_value = '0' )
+
+    try:
+      offset = int( offset )
+    except ValueError:
+      return
+
+
+    def handler( msg ):
+      self._codeView.ShowMemory( memoryReference, length, offset, msg )
+
+    self._connection.DoRequest( handler, {
+      'command': 'readMemory',
+      'arguments': {
+        'memoryReference': memoryReference,
+        'count': int( length ),
+        'offset': int( offset )
+      }
+    } )
+
+
+  @IfConnected()
   def AddWatch( self, expression ):
     self._variablesView.AddWatch( self._stackTraceView.GetCurrentFrame(),
                                   expression )
@@ -673,7 +787,7 @@ class DebugSession( object ):
 
 
   @IfConnected()
-  def ShowEvalBalloon( self, winnr, expression, is_hover ):
+  def HoverEvalTooltip( self, winnr, bufnr, lnum, expression, is_hover ):
     frame = self._stackTraceView.GetCurrentFrame()
     # Check if RIP is in a frame
     if frame is None:
@@ -681,14 +795,13 @@ class DebugSession( object ):
       return ''
 
     # Check if cursor in code window
-    if winnr != int( self._codeView._window.number ):
-      self._logger.debug( 'Winnr %s is not the code window %s',
-                          winnr,
-                          self._codeView._window.number )
-      return ''
+    if winnr == int( self._codeView._window.number ):
+      return self._variablesView.HoverEvalTooltip( frame, expression, is_hover )
 
+    return self._variablesView.HoverVarWinTooltip( bufnr,
+                                                   lnum,
+                                                   is_hover )
     # Return variable aware function
-    return self._variablesView.VariableEval( frame, expression, is_hover )
 
 
   def CleanUpTooltip( self ):
@@ -856,8 +969,7 @@ class DebugSession( object ):
     with utils.LetCurrentWindow( stack_trace_window ):
       vim.command( f'{ one_third }wincmd _' )
 
-    self._variablesView = variables.VariablesView( vars_window,
-                                                   watch_window )
+    self._variablesView = variables.VariablesView( vars_window, watch_window )
 
     # Output/logging
     vim.current.window = code_window
@@ -914,8 +1026,7 @@ class DebugSession( object ):
     with utils.LetCurrentWindow( stack_trace_window ):
       vim.command( f'{ one_third }wincmd |' )
 
-    self._variablesView = variables.VariablesView( vars_window,
-                                                   watch_window )
+    self._variablesView = variables.VariablesView( vars_window, watch_window )
 
 
     # Output/logging
@@ -959,8 +1070,13 @@ class DebugSession( object ):
     # the codeView.SetCurrentFrame already checked the frame was valid and
     # countained a valid source
     assert frame
-    self._variablesView.SetSyntax( self._codeView.current_syntax )
-    self._stackTraceView.SetSyntax( self._codeView.current_syntax )
+    if self._codeView.current_syntax not in ( 'ON', 'OFF' ):
+      self._variablesView.SetSyntax( self._codeView.current_syntax )
+      self._stackTraceView.SetSyntax( self._codeView.current_syntax )
+    else:
+      self._variablesView.SetSyntax( None )
+      self._stackTraceView.SetSyntax( None )
+
     self._variablesView.LoadScopes( frame )
     self._variablesView.EvaluateWatches( frame )
 
@@ -1008,6 +1124,36 @@ class DebugSession( object ):
       self._adapter[ 'cwd' ] = os.getcwd()
 
     vim.vars[ '_vimspector_adapter_spec' ] = self._adapter
+
+    # if the debug adapter is lame and requires a terminal or has any
+    # input/output on stdio, then launch it that way
+    if self._adapter.get( 'tty', False ):
+      if 'port' not in self._adapter:
+        utils.UserMessage( "Invalid adapter configuration. When using a tty, "
+                           "communication must use socket. Add the 'port' to "
+                           "the adapter config." )
+        return False
+
+      if 'command' not in self._adapter:
+        utils.UserMessage( "Invalid adapter configuration. When using a tty, "
+                           "a command must be supplied. Add the 'commmand' to "
+                           "the adapter config." )
+        return False
+
+      command = self._adapter[ 'command' ]
+      if isinstance( command, str ):
+        command = shlex.split( command )
+
+      self._adapter_term = terminal.LaunchTerminal(
+          self._api_prefix,
+          {
+            'args': command,
+            'cwd': self._adapter[ 'cwd' ],
+            'env': self._adapter[ 'env' ],
+          },
+          self._codeView._window,
+          self._adapter_term )
+
     if not vim.eval( "vimspector#internal#{}#StartDebugSession( "
                      "  g:_vimspector_adapter_spec "
                      ")".format( self._connection_type ) ):
@@ -1044,7 +1190,9 @@ class DebugSession( object ):
         handlers,
         lambda msg: utils.Call(
           "vimspector#internal#{}#Send".format( self._connection_type ),
-          msg ) )
+          msg ),
+        self._adapter.get( 'sync_timeout' ),
+        self._adapter.get( 'async_timeout' ) )
 
     self._logger.info( 'Debug Adapter Started' )
     return True
@@ -1070,10 +1218,14 @@ class DebugSession( object ):
         vim.eval( 'vimspector#internal#{}#StopDebugSession()'.format(
           self._connection_type ) )
 
-      self._connection.DoRequest( handler, {
-        'command': 'disconnect',
-        'arguments': arguments,
-      }, failure_handler = handler, timeout = 5000 )
+      self._connection.DoRequest(
+        handler,
+        {
+          'command': 'disconnect',
+          'arguments': arguments,
+        },
+        failure_handler = handler,
+        timeout = self._connection.sync_timeout )
 
     if not interactive:
       disconnect()
@@ -1297,7 +1449,8 @@ class DebugSession( object ):
         'pathFormat': 'path',
         'supportsVariableType': True,
         'supportsVariablePaging': False,
-        'supportsRunInTerminalRequest': True
+        'supportsRunInTerminalRequest': True,
+        'supportsMemoryReferences': True
       },
     } )
 
@@ -1314,6 +1467,9 @@ class DebugSession( object ):
 
     self._logger.debug( "LAUNCH!" )
     self._launch_config = {}
+    # TODO: Should we use core_utils.override for this? That would strictly be a
+    # change in behaviour as dicts in the specific configuration would merge
+    # with dicts in the adapter, where before they would overlay
     self._launch_config.update( self._adapter.get( 'configuration', {} ) )
     self._launch_config.update( self._configuration[ 'configuration' ] )
 
@@ -1354,6 +1510,7 @@ class DebugSession( object ):
         '',
         'Use :VimspectorReset to close'
       ]
+      self._logger.info( "Launch failed: %s", '\n'.join( text ) )
       self._splash_screen = utils.DisplaySplash( self._api_prefix,
                                                  self._splash_screen,
                                                  text )
@@ -1393,10 +1550,10 @@ class DebugSession( object ):
     # leader rather than the process. The workaround is to manually SIGTRAP the
     # PID.
     #
-    self._splash_screen = utils.HideSplash( self._api_prefix,
-                                            self._splash_screen )
-
     if self._launch_complete and self._init_complete:
+      self._splash_screen = utils.HideSplash( self._api_prefix,
+                                              self._splash_screen )
+
       for h in self._on_init_complete_handlers:
         h()
       self._on_init_complete_handlers = []
