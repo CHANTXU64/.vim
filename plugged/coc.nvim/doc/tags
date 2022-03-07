@@ -89,6 +89,7 @@ CocAction('formatSelected')	coc.txt	/*CocAction('formatSelected')*
 CocAction('getCurrentFunctionSymbol')	coc.txt	/*CocAction('getCurrentFunctionSymbol')*
 CocAction('getHover')	coc.txt	/*CocAction('getHover')*
 CocAction('getWordEdit')	coc.txt	/*CocAction('getWordEdit')*
+CocAction('getWorkspaceSymbols')	coc.txt	/*CocAction('getWorkspaceSymbols')*
 CocAction('hideOutline')	coc.txt	/*CocAction('hideOutline')*
 CocAction('highlight')	coc.txt	/*CocAction('highlight')*
 CocAction('incomingCalls')	coc.txt	/*CocAction('incomingCalls')*
@@ -123,7 +124,6 @@ CocAction('toggleService')	coc.txt	/*CocAction('toggleService')*
 CocAction('toggleSource')	coc.txt	/*CocAction('toggleSource')*
 CocAction('uninstallExtension')	coc.txt	/*CocAction('uninstallExtension')*
 CocAction()	coc.txt	/*CocAction()*
-CocAction(getWorkspaceSymbols)	coc.txt	/*CocAction(getWorkspaceSymbols)*
 CocActionAsync()	coc.txt	/*CocActionAsync()*
 CocBold	coc.txt	/*CocBold*
 CocCodeLens	coc.txt	/*CocCodeLens*
@@ -360,6 +360,7 @@ g:coc_start_at_startup	coc.txt	/*g:coc_start_at_startup*
 g:coc_status	coc.txt	/*g:coc_status*
 g:coc_status_error_sign	coc.txt	/*g:coc_status_error_sign*
 g:coc_status_warning_sign	coc.txt	/*g:coc_status_warning_sign*
+g:coc_terminal_height	coc.txt	/*g:coc_terminal_height*
 g:coc_text_prop_offset	coc.txt	/*g:coc_text_prop_offset*
 g:coc_uri_prefix_replace_patterns	coc.txt	/*g:coc_uri_prefix_replace_patterns*
 g:coc_user_config	coc.txt	/*g:coc_user_config*

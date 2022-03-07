@@ -3,7 +3,7 @@ let s:root = expand('<sfile>:h:h:h')
 let s:is_win = has('win32') || has('win64')
 let s:is_vim = !has('nvim')
 let s:clear_match_by_id = has('nvim-0.5.0') || has('patch-8.1.1084')
-let s:vim_api_version = 21
+let s:vim_api_version = 25
 let s:activate = ""
 let s:quit = ""
 
@@ -232,7 +232,7 @@ function! s:Call(method, args)
   endtry
 endfunction
 
-function! coc#util#get_bufoptions(bufnr, maxFileSize) abort
+function! coc#util#get_bufoptions(bufnr) abort
   if !bufloaded(a:bufnr) | return v:null | endif
   let bufname = bufname(a:bufnr)
   let buftype = getbufvar(a:bufnr, '&buftype')
@@ -243,23 +243,23 @@ function! coc#util#get_bufoptions(bufnr, maxFileSize) abort
   elseif !empty(bufname)
     let size = getfsize(bufname)
   endif
-  let lines = []
-  if getbufvar(a:bufnr, 'coc_enabled', 1) && (buftype == '' || buftype == 'acwrite') && size < a:maxFileSize
+  let lines = v:null
+  if getbufvar(a:bufnr, 'coc_enabled', 1) && (buftype == '' || buftype == 'acwrite') && size < get(g:, 'coc_max_filesize', 2097152)
     let lines = getbufline(a:bufnr, 1, '$')
   endif
   return {
-        \ 'bufname': bufname,
         \ 'size': size,
-        \ 'buftype': buftype,
+        \ 'lines': lines,
         \ 'winid': winid,
+        \ 'bufname': bufname,
+        \ 'buftype': buftype,
         \ 'previewwindow': v:false,
-        \ 'variables': s:variables(a:bufnr),
-        \ 'fullpath': empty(bufname) ? '' : fnamemodify(bufname, ':p'),
         \ 'eol': getbufvar(a:bufnr, '&eol'),
+        \ 'variables': s:variables(a:bufnr),
         \ 'filetype': getbufvar(a:bufnr, '&filetype'),
         \ 'iskeyword': getbufvar(a:bufnr, '&iskeyword'),
         \ 'changedtick': getbufvar(a:bufnr, 'changedtick'),
-        \ 'lines': lines,
+        \ 'fullpath': empty(bufname) ? '' : fnamemodify(bufname, ':p'),
         \}
 endfunction
 
@@ -539,14 +539,14 @@ function! coc#util#vim_info()
   return {
         \ 'apiversion': s:vim_api_version,
         \ 'mode': mode(),
+        \ 'config': get(g:, 'coc_user_config', {}),
         \ 'floating': has('nvim') && exists('*nvim_open_win') ? v:true : v:false,
         \ 'extensionRoot': coc#util#extension_root(),
         \ 'globalExtensions': get(g:, 'coc_global_extensions', []),
-        \ 'config': get(g:, 'coc_user_config', {}),
-        \ 'pid': coc#util#getpid(),
-        \ 'columns': &columns,
         \ 'lines': &lines,
+        \ 'columns': &columns,
         \ 'cmdheight': &cmdheight,
+        \ 'pid': coc#util#getpid(),
         \ 'filetypeMap': get(g:, 'coc_filetype_map', {}),
         \ 'version': coc#util#version(),
         \ 'completeOpt': &completeopt,
@@ -562,6 +562,7 @@ function! coc#util#vim_info()
         \ 'locationlist': get(g:,'coc_enable_locationlist', 1),
         \ 'progpath': v:progpath,
         \ 'guicursor': &guicursor,
+        \ 'tabCount': tabpagenr('$'),
         \ 'updateHighlight': has('nvim-0.5.0') || has('patch-8.1.1719') ? v:true : v:false,
         \ 'vimCommands': get(g:, 'coc_vim_commands', []),
         \ 'sign': exists('*sign_place') && exists('*sign_unplace'),
@@ -571,12 +572,13 @@ function! coc#util#vim_info()
         \}
 endfunction
 
-function! coc#util#highlight_options()
+function! coc#util#all_state()
   return {
-        \ 'colorscheme': get(g:, 'colors_name', ''),
-        \ 'background': &background,
-        \ 'runtimepath': join(globpath(&runtimepath, '', 0, 1), ','),
-        \}
+        \ 'bufnr': bufnr('%'),
+        \ 'winid': win_getid(),
+        \ 'bufnrs': map(getbufinfo({'bufloaded': 1}),'v:val["bufnr"]'),
+        \ 'winids': map(getwininfo(),'v:val["winid"]'),
+        \ }
 endfunction
 
 function! coc#util#set_lines(bufnr, changedtick, original, replacement, start, end, changes) abort
@@ -603,7 +605,7 @@ function! coc#util#set_lines(bufnr, changedtick, original, replacement, start, e
       endif
     endif
   endif
-  if exists('*nvim_buf_set_text') && !empty(a:changes)
+  if exists('*nvim_buf_set_text') && !empty(a:changes) && len(a:changes) < 200
     for item in a:changes
       let lines = nvim_buf_get_lines(a:bufnr, 0, -1, v:false)
       call nvim_buf_set_text(a:bufnr, item[1], item[2], item[3], item[4], item[0])
@@ -915,6 +917,37 @@ function! coc#util#get_format_opts(bufnr) abort
       \ }
 endfunction
 
+function! coc#util#get_editoroption(winid) abort
+  if has('nvim')
+    " avoid float window
+    let config = nvim_win_get_config(a:winid)
+    if !empty(get(config, 'relative', ''))
+      return v:null
+    endif
+  endif
+  let info = getwininfo(a:winid)[0]
+  let bufnr = info['bufnr']
+  let buftype = getbufvar(bufnr, '&buftype')
+  " avoid window for other purpose.
+  if buftype !=# '' && buftype !=# 'acwrite'
+    return v:null
+  endif
+  let tabSize = getbufvar(bufnr, '&shiftwidth')
+  if tabSize == 0
+    let tabSize = getbufvar(bufnr, '&tabstop')
+  endif
+  return {
+        \ 'bufnr': bufnr,
+        \ 'winid': a:winid,
+        \ 'winids': map(getwininfo(), 'v:val["winid"]'),
+        \ 'tabpagenr': info['tabnr'],
+        \ 'winnr': winnr(),
+        \ 'visibleRanges': s:visible_ranges(a:winid),
+        \ 'tabSize': tabSize,
+        \ 'insertSpaces': getbufvar(bufnr, '&expandtab') ? v:true : v:false
+        \ }
+endfunction
+
 " Get indentkeys for indent on TextChangedP, consider = for word indent only.
 function! coc#util#get_indentkeys() abort
   if empty(&indentexpr)
@@ -924,4 +957,32 @@ function! coc#util#get_indentkeys() abort
     return ''
   endif
   return &indentkeys
+endfunction
+
+function! s:visible_ranges(winid) abort
+  let info = getwininfo(a:winid)[0]
+  let res = []
+  let begin = 0
+  let curr = info['topline']
+  let max = info['botline']
+  if win_getid() != a:winid
+    return [[curr, max]]
+  endif
+  while curr <= max
+    let closedend = foldclosedend(curr)
+    if closedend == -1
+      let begin = begin == 0 ? curr : begin
+      if curr == max
+        call add(res, [begin, curr])
+      endif
+      let curr = curr + 1
+    else
+      if begin != 0
+        call add(res, [begin, curr - 1])
+        let begin = closedend + 1
+      endif
+      let curr = closedend + 1
+    endif
+  endwhile
+  return res
 endfunction

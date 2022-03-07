@@ -80,6 +80,3 @@ so ~/.vim/base.vim
 
 so ~/.vim/plugin_config.vim
 
-if has('nvim')
-  so ~/.vim/nvim.vim
-endif

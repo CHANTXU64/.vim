@@ -731,7 +731,7 @@ Built-in configurations:~
 "workspace.ignoredFiletypes":~
 
 	Filetypes to ignore for workspace folder resolution,
-	default: `["markdown","log","txt","help"]`
+	default: `[]`
 
 	Note: This is the filetype after mapping by `g:coc_filetype_map`.
 
@@ -1817,6 +1817,10 @@ g:coc_prompt_win_width 					*g:coc_prompt_win_width*
 
 	Width of input prompt window, default `32`.
 
+g:coc_terminal_height					*g:coc_terminal_height*
+
+	Height of terminal window, default `8`.
+
 g:coc_markdown_disabled_languages  		*g:coc_markdown_disabled_languages*
 
 	Filetype list that should be disabled for highlight in markdown block,
@@ -2553,7 +2557,7 @@ Acceptable {action} names for |CocAction()| and |CocActionAsync|.
 	Get workspaceEdit of current word, language server used when possible,
 	extract word from current buffer as fallback.
 
-"getWorkspaceSymbols" {input}			*CocAction(getWorkspaceSymbols)*
+"getWorkspaceSymbols" {input}			*CocAction('getWorkspaceSymbols')*
 
 	Get workspace symbols from {input}.
 
@@ -2571,8 +2575,9 @@ Acceptable {action} names for |CocAction()| and |CocActionAsync|.
 
 "showOutline" [{keep}]				*CocAction('showOutline')*
 
-	Show outline tree view for current buffer. Old outline window on current
-	tab would be replaced.
+	Show outline tree view for current buffer.  Does nothing outline
+	window already shown for current buffer on current tab.
+
 	Outline view has Window variable `cocViewId` set to `OUTLINE`.
 
 	{keep} override `"outline.keepWindow"` configuration when specified.
@@ -2599,6 +2604,20 @@ Acceptable {action} names for |CocAction()| and |CocActionAsync|.
 >
 	autocmd VimEnter,Tabnew *
 		\ if empty(&buftype) | call CocActionAsync('showOutline', 1) | endif
+<
+	To close outline when it's the last window automatically, use
+	|autocmd| like:
+>
+	autocmd BufEnter * call CheckOutline()
+	function! CheckOutline() abort
+	  if &filetype ==# 'coctree' && winnr('$') == 1
+	    if tabpagenr('$') != 1
+	      close
+	    else
+	      bdelete
+	    endif
+	  endif
+	endfunction
 <
 "hideOutline" 					*CocAction('hideOutline')*
 

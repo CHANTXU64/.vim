@@ -43,7 +43,7 @@ let g:coc_service_initialized = 0
 let s:is_win = has('win32') || has('win64')
 let s:root = expand('<sfile>:h:h')
 let s:is_vim = !has('nvim')
-let s:is_gvim = get(v:, 'progname', '') ==# 'gvim'
+let s:is_gvim = s:is_vim && has("gui_running")
 
 if get(g:, 'coc_start_at_startup', 1) && !s:is_gvim
   call coc#rpc#start_server()
@@ -243,7 +243,7 @@ function! s:Disable() abort
 endfunction
 
 function! s:Autocmd(...) abort
-  if !g:coc_service_initialized
+  if !get(g:, 'coc_workspace_initialized', 0)
     return
   endif
   call coc#rpc#notify('CocAutocmd', a:000)
@@ -260,7 +260,7 @@ function! s:HandleCharInsert(char, bufnr) abort
 endfunction
 
 function! s:SyncAutocmd(...)
-  if !g:coc_service_initialized
+  if !get(g:, 'coc_workspace_initialized', 0)
     return
   endif
   call coc#rpc#request('CocAutocmd', a:000)
@@ -297,17 +297,17 @@ function! s:Enable(initialize)
     else
       autocmd DirChanged        * call s:Autocmd('DirChanged', get(v:event, 'cwd', ''))
       autocmd TermOpen          * call s:Autocmd('TermOpen', +expand('<abuf>'))
-      autocmd TermClose         * call s:Autocmd('TermClose', +expand('<abuf>'))
       autocmd CursorMoved       * call coc#float#nvim_refresh_scrollbar(win_getid())
       autocmd WinEnter          * call coc#float#nvim_win_enter(win_getid())
       if exists('##WinClosed')
         autocmd WinClosed       * call coc#float#close_related(+expand('<afile>'))
-        autocmd WinClosed       * call s:Autocmd('WinClosed', +expand('<afile>'))
       endif
     endif
     if has('nvim-0.4.0') || has('patch-8.1.1719')
       autocmd CursorHold        * call coc#float#check_related()
     endif
+    autocmd TabNew              * call s:Autocmd('TabNew', tabpagenr())
+    autocmd TabClosed           * call s:Autocmd('TabClosed', +expand('<afile>'))
     autocmd WinLeave            * call s:Autocmd('WinLeave', win_getid())
     autocmd WinEnter            * call s:Autocmd('WinEnter', win_getid())
     autocmd BufWinLeave         * call s:Autocmd('BufWinLeave', +expand('<abuf>'), bufwinid(+expand('<abuf>')))
@@ -327,8 +327,8 @@ function! s:Enable(initialize)
     autocmd BufWritePost        * call s:Autocmd('BufWritePost', +expand('<abuf>'))
     autocmd CursorMoved         * call s:Autocmd('CursorMoved', +expand('<abuf>'), [line('.'), col('.')])
     autocmd CursorMovedI        * call s:Autocmd('CursorMovedI', +expand('<abuf>'), [line('.'), col('.')])
-    autocmd CursorHold          * call s:Autocmd('CursorHold', +expand('<abuf>'))
-    autocmd CursorHoldI         * call s:Autocmd('CursorHoldI', +expand('<abuf>'))
+    autocmd CursorHold          * call s:Autocmd('CursorHold', +expand('<abuf>'), [line('.'), col('.')])
+    autocmd CursorHoldI         * call s:Autocmd('CursorHoldI', +expand('<abuf>'), [line('.'), col('.')])
     autocmd BufNewFile,BufReadPost * call s:Autocmd('BufCreate', +expand('<abuf>'))
     autocmd BufUnload           * call s:Autocmd('BufUnload', +expand('<abuf>'))
     autocmd BufWritePre         * call s:SyncAutocmd('BufWritePre', +expand('<abuf>'))
