@@ -60,7 +60,7 @@ let g:Lf_Helps = {
 let g:Lf_Arguments = {
             \ "file":[
             \           [
-            \               {"name": ["directory"], "nargs": "?", "help": "serarch files under <directory>"},
+            \               {"name": ["directory"], "nargs": "*", "help": "serarch files under <directory>"},
             \               {"name": ["--file"], "nargs": "+", "help": "read file list from the specified file."},
             \           ],
             \           {"name": ["--no-ignore"], "nargs": 0, "help": "don't respect ignore files (.gitignore, .ignore, etc.)."},
@@ -72,6 +72,7 @@ let g:Lf_Arguments = {
             \ "mru":[
             \           {"name": ["--cwd"], "nargs": 0, "help": "search MRU in current working directory"},
             \           {"name": ["--no-split-path"], "nargs": 0, "help": "do not split the path"},
+            \           {"name": ["--absolute-path"], "nargs": 0, "help": "show absolute path"},
             \   ],
             \ "tag":[],
             \ "bufTag":[
@@ -224,6 +225,7 @@ let g:Lf_CommonArguments = [
             \ {"name": ["--popup-width"], "nargs": 1, "help": "specifies the width of popup window, only available in popup mode."},
             \ {"name": ["--no-sort"], "nargs": 0, "help": "do not sort the result."},
             \ {"name": ["--case-insensitive"], "nargs": 0, "help": "fuzzy search case insensitively."},
+            \ {"name": ["--auto-preview"], "nargs": 0, "help": "open preview window automatically."},
             \]
 
 " arguments is something like g:Lf_CommonArguments

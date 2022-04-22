@@ -86,13 +86,13 @@ class DebugSession( object ):
     self._launch_complete = False
     self._on_init_complete_handlers = []
     self._server_capabilities = {}
-    vim.vars[ 'vimspector_session_windows' ] = {}
+    utils.SetSessionWindows( {} )
     self.ClearTemporaryBreakpoints()
 
   def GetConfigurations( self, adapters ):
     current_file = utils.GetBufferFilepath( vim.current.buffer )
     filetypes = utils.GetBufferFiletypes( vim.current.buffer )
-    configurations = {}
+    configurations = settings.Dict( 'configurations' )
 
     for launch_config_file in PathsToAllConfigFiles( VIMSPECTOR_HOME,
                                                      current_file,
@@ -119,7 +119,7 @@ class DebugSession( object ):
     return launch_config_file, filetype_configurations, configurations
 
   def Start( self,
-             force_choose=False,
+             force_choose = False,
              launch_variables = None,
              adhoc_configurations = None ):
     # We mutate launch_variables, so don't mutate the default argument.
@@ -131,7 +131,7 @@ class DebugSession( object ):
                        launch_variables )
 
     current_file = utils.GetBufferFilepath( vim.current.buffer )
-    adapters = {}
+    adapters = settings.Dict( 'adapters' )
 
     launch_config_file = None
     configurations = None
@@ -323,6 +323,8 @@ class DebugSession( object ):
     }
 
     calculus = {
+      'relativeFileDirname': lambda: os.path.dirname( relpath( current_file,
+                                       self._workspace_root ) ),
       'relativeFile': lambda: relpath( current_file,
                                        self._workspace_root ),
       'fileBasename': lambda: os.path.basename( current_file ),
@@ -382,7 +384,8 @@ class DebugSession( object ):
       if not self._uiTab:
         self._SetUpUI()
       else:
-        vim.current.tabpage = self._uiTab
+        with utils.NoAutocommands():
+          vim.current.tabpage = self._uiTab
 
       self._Prepare()
       if not self._StartDebugAdapter():
@@ -511,7 +514,8 @@ class DebugSession( object ):
 
     if self.HasUI():
       self._logger.debug( "Clearing down UI" )
-      vim.current.tabpage = self._uiTab
+      with utils.NoAutocommands():
+        vim.current.tabpage = self._uiTab
       self._splash_screen = utils.HideSplash( self._api_prefix,
                                               self._splash_screen )
       ResetUI()
@@ -519,10 +523,10 @@ class DebugSession( object ):
     else:
       ResetUI()
 
-    vim.vars[ 'vimspector_session_windows' ] = {
+    utils.SetSessionWindows( {
       'breakpoints': vim.vars[ 'vimspector_session_windows' ].get(
         'breakpoints' )
-    }
+    } )
 
     vim.command( 'doautocmd <nomodeline> User VimspectorDebugEnded' )
     vim.vars[ 'vimspector_resetting' ] = 0
@@ -847,9 +851,9 @@ class DebugSession( object ):
       with utils.LetCurrentTabpage( self._uiTab ):
         vim.command( f'botright { settings.Int( "bottombar_height" ) }new' )
         self._outputView.UseWindow( vim.current.window )
-        vim.vars[ 'vimspector_session_windows' ][ 'output' ] = utils.WindowID(
-          vim.current.window,
-          self._uiTab )
+        utils.UpdateSessionWindows( {
+          'output': utils.WindowID( vim.current.window, self._uiTab )
+        } )
 
     self._outputView.ShowOutput( category )
 
@@ -979,7 +983,7 @@ class DebugSession( object ):
 
     # TODO: If/when we support multiple sessions, we'll need some way to
     # indicate which tab was created and store all the tabs
-    vim.vars[ 'vimspector_session_windows' ] = {
+    utils.SetSessionWindows( {
       'mode': 'horizontal',
       'tabpage': self._uiTab.number,
       'code': utils.WindowID( code_window, self._uiTab ),
@@ -990,7 +994,7 @@ class DebugSession( object ):
       'eval': None, # updated every time eval popup is opened
       'breakpoints': vim.vars[ 'vimspector_session_windows' ].get(
         'breakpoints' ) # same as above, but for breakpoints
-    }
+    } )
     with utils.RestoreCursorPosition():
       with utils.RestoreCurrentWindow():
         with utils.RestoreCurrentBuffer( vim.current.window ):
@@ -1042,7 +1046,7 @@ class DebugSession( object ):
 
     # TODO: If/when we support multiple sessions, we'll need some way to
     # indicate which tab was created and store all the tabs
-    vim.vars[ 'vimspector_session_windows' ] = {
+    utils.SetSessionWindows( {
       'mode': 'vertical',
       'tabpage': self._uiTab.number,
       'code': utils.WindowID( code_window, self._uiTab ),
@@ -1053,7 +1057,7 @@ class DebugSession( object ):
       'eval': None, # updated every time eval popup is opened
       'breakpoints': vim.vars[ 'vimspector_session_windows' ].get(
         'breakpoints' ) # same as above, but for breakpoints
-    }
+    } )
     with utils.RestoreCursorPosition():
       with utils.RestoreCurrentWindow():
         with utils.RestoreCurrentBuffer( vim.current.window ):
@@ -1757,6 +1761,9 @@ class DebugSession( object ):
   def ToggleBreakpointViewBreakpoint( self ):
     self._breakpoints.ToggleBreakpointViewBreakpoint()
 
+  def ToggleAllBreakpointsViewBreakpoint( self ):
+    self._breakpoints.ToggleAllBreakpointsViewBreakpoint()
+
   def DeleteBreakpointViewBreakpoint( self ):
     self._breakpoints.ClearBreakpointViewBreakpoint()
 
@@ -1773,6 +1780,49 @@ class DebugSession( object ):
                             line,
                             { 'temporary': True },
                             lambda: self.Continue() )
+
+  @IfConnected()
+  def GoTo( self, file_name, line ):
+    def failure_handler( reason, *args ):
+      utils.UserMessage( f"Can't jump to location: {reason}", error=True )
+
+    def handle_targets( msg ):
+      targets = msg.get( 'body', {} ).get( 'targets', [] )
+      if not targets:
+        failure_handler( "No targets" )
+        return
+
+      if len( targets ) == 1:
+        target_selected = 0
+      else:
+        target_selected = utils.SelectFromList( "Which target?", [
+          t[ 'label' ] for t in targets
+        ], ret = 'index' )
+
+      if target_selected is None:
+        return
+
+      self._connection.DoRequest( None, {
+        'command': 'goto',
+        'arguments': {
+          'threadId': self._stackTraceView.GetCurrentThreadId(),
+          'targetId': targets[ target_selected ][ 'id' ]
+        },
+      }, failure_handler )
+
+    if not self._server_capabilities.get( 'supportsGotoTargetsRequest', False ):
+      failure_handler( "Server doesn't support it" )
+      return
+
+    self._connection.DoRequest( handle_targets, {
+      'command': 'gotoTargets',
+      'arguments': {
+        'source': {
+          'path': utils.NormalizePath( file_name )
+        },
+        'line': line
+      },
+    }, failure_handler )
 
 
   def ClearTemporaryBreakpoints( self ):

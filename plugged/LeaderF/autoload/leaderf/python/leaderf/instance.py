@@ -361,12 +361,16 @@ class LfInstance(object):
 
         buf_number = int(lfEval("bufadd('{}')".format(escQuote(self._buffer_name))))
 
+        preview_pos = lfEval("get(g:, 'Lf_PopupPreviewPosition', 'top')")
         width = lfEval("get(g:, 'Lf_PopupWidth', 0)")
         width = self._arguments.get("--popup-width", [width])[0]
         width = width.strip('"').strip("'")
         width = float(lfEval(width))
         if width <= 0:
-            maxwidth = int(int(lfEval("&columns")) * 2 // 3)
+            if preview_pos.lower() in ('right', 'left'):
+                maxwidth = int(int(lfEval("&columns")) * 2 // 5)
+            else:
+                maxwidth = int(int(lfEval("&columns")) * 2 // 3)
         elif width < 1:
             maxwidth = int(int(lfEval("&columns")) * width)
             maxwidth = max(20, maxwidth)
@@ -380,23 +384,37 @@ class LfInstance(object):
         height = height.strip('"').strip("'")
         height = float(lfEval(height))
         if height <= 0:
-            maxheight = int(int(lfEval("&lines")) * 0.4)
+            if preview_pos.lower() in ('right', 'left'):
+                maxheight = int(int(lfEval("&lines")) * 0.7)
+            else:
+                maxheight = int(int(lfEval("&lines")) * 0.4)
         elif height < 1:
             maxheight = int(int(lfEval("&lines")) * height)
             if maxheight < 1:
                 maxheight = 1
         else:
             height = int(height)
-            maxheight = min(height, int(lfEval("&lines")))
+            maxheight = min(height, int(lfEval("&lines")) - 2)
+            if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
+                maxheight -= 2
 
         line, col = [int(i) for i in lfEval("get(g:, 'Lf_PopupPosition', [0, 0])")]
         if line == 0:
-            line = (int(lfEval("&lines")) - maxheight) // 2
+            line = (int(lfEval("&lines")) - 2 - maxheight) // 2
         else:
             line = min(line, int(lfEval("&lines")) - maxheight)
 
         if col == 0:
-            col = (int(lfEval("&columns")) - maxwidth) // 2
+            if preview_pos.lower() == 'right':
+                col = max(0, (int(lfEval("&columns")) - maxwidth*2) // 2)
+            elif preview_pos.lower() == 'left':
+                col = (int(lfEval("&columns")) - maxwidth*2) // 2
+                if col < 0:
+                    col = int(lfEval("&columns")) - maxwidth + 1
+                else:
+                    col += maxwidth + 1
+            else:
+                col = (int(lfEval("&columns")) - maxwidth) // 2
         else:
             col = min(col, int(lfEval("&columns")) - maxwidth)
 
@@ -406,11 +424,17 @@ class LfInstance(object):
         if col <= 0:
             col = 1
 
+        if lfEval("has('nvim')") == '1':
+            col -= 1
+
         self._popup_maxheight = max(maxheight - 2, 1) # there is an input window above
 
         if lfEval("has('nvim')") == '1':
             self._win_pos = "floatwin"
-            floatwin_height = 1
+            if lfEval("get(g:, 'Lf_PopupAutoAjustHeight', 1)") == '1':
+                floatwin_height = 1
+            else:
+                floatwin_height = self._popup_maxheight
 
             config = {
                     "relative": "editor",
@@ -420,10 +444,22 @@ class LfInstance(object):
                     "row"     : line + 1,
                     "col"     : col
                     }
+
+            popup_borders = lfEval("g:Lf_PopupBorders")
+            borderchars = [popup_borders[4], popup_borders[0], popup_borders[5], popup_borders[1],
+                    popup_borders[6], popup_borders[2], popup_borders[7], popup_borders[3]]
+            if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
+                if lfEval("get(g:, 'Lf_PopupShowStatusline', 1)") == '1':
+                    config["border"] = ['','','',borderchars[3],'','','',borderchars[7]]
+                else:
+                    config["border"] = ['','',''] + borderchars[3:]
+                config["row"] += 1
+                config["width"] -= 2
+
             lfCmd("noautocmd silent noswapfile let winid = nvim_open_win(%d, 1, %s)" % (buf_number, str(config)))
             self._popup_winid = int(lfEval("winid"))
             self._setAttributes()
-            if lfEval("get(g:, 'Lf_PopupShowFoldcolumn', 1)") == '0':
+            if lfEval("get(g:, 'Lf_PopupShowFoldcolumn', 1)") == '0' or lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
                 try:
                     lfCmd("call nvim_win_set_option(%d, 'foldcolumn', 0)" % self._popup_winid)
                 except vim.error:
@@ -438,7 +474,7 @@ class LfInstance(object):
 
             self._tabpage_object = vim.current.tabpage
             self._buffer_object = vim.buffers[buf_number]
-            self._window_object = FloatWindow(self._popup_winid, vim.current.window, self._buffer_object, self._tabpage_object, line + 1)
+            self._window_object = FloatWindow(self._popup_winid, vim.current.window, self._buffer_object, self._tabpage_object, config["row"])
             self._popup_instance.content_win = self._window_object
 
             input_win_config = {
@@ -449,6 +485,10 @@ class LfInstance(object):
                     "row"     : line,
                     "col"     : col
                     }
+
+            if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
+                input_win_config["border"] = borderchars[:4] + ['','','', borderchars[7]]
+                input_win_config["width"] -= 2
 
             if self._input_buffer_number == -1:
                 self._input_buffer_number = int(lfEval("bufadd('')"))
@@ -494,9 +534,13 @@ class LfInstance(object):
                         "anchor"  : "NW",
                         "height"  : 1,
                         "width"   : maxwidth,
-                        "row"     : line + 1 + floatwin_height,
+                        "row"     : config["row"] + floatwin_height,
                         "col"     : col
                         }
+
+                if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
+                    stl_win_config["border"] = ['','',''] + borderchars[3:]
+                    stl_win_config["width"] -= 2
 
                 if self._stl_buffer_number == -1:
                     self._stl_buffer_number = int(lfEval("bufadd('')"))
@@ -526,7 +570,7 @@ class LfInstance(object):
                     lfCmd("call nvim_win_set_option(%d, 'cursorlineopt', 'both')" % winid)
                 lfCmd("call nvim_win_set_option(%d, 'colorcolumn', '')" % winid)
                 lfCmd("call nvim_win_set_option(%d, 'winhighlight', 'Normal:Lf_hl_popup_blank')" % winid)
-                self._popup_instance.statusline_win = FloatWindow(winid, getWindow(int(lfEval("win_id2win(%d)" % winid))), vim.buffers[buf_number], vim.current.tabpage, line + 1 + floatwin_height)
+                self._popup_instance.statusline_win = FloatWindow(winid, getWindow(int(lfEval("win_id2win(%d)" % winid))), vim.buffers[buf_number], vim.current.tabpage, stl_win_config["row"])
 
             if "--recall" in self._arguments:
                 self.refreshPopupStatusline()
@@ -539,11 +583,16 @@ class LfInstance(object):
             lfCmd("augroup END")
         else:
             self._win_pos = "popup"
+            if lfEval("get(g:, 'Lf_PopupAutoAjustHeight', 1)") == '1':
+                minheight = 1
+            else:
+                minheight = self._popup_maxheight
 
             options = {
                     "maxwidth":        maxwidth,
                     "minwidth":        maxwidth,
                     "maxheight":       self._popup_maxheight,
+                    "minheight":       minheight,
                     "zindex":          20480,
                     "pos":             "topleft",
                     "line":            line + 1,      # there is an input window above
@@ -551,8 +600,21 @@ class LfInstance(object):
                     "padding":         [0, 0, 0, 0],
                     "scrollbar":       0,
                     "mapping":         0,
+                    "borderhighlight": ["Lf_hl_previewTitle"],
                     "filter":          "leaderf#PopupFilter",
                     }
+
+            borderchars = lfEval("g:Lf_PopupBorders")
+            if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
+                if lfEval("get(g:, 'Lf_PopupShowStatusline', 1)") == '1':
+                    options["border"] = [0, 1, 0, 1]
+                else:
+                    options["border"] = [0, 1, 1, 1]
+                options["borderchars"] = borderchars
+                options["maxwidth"] -= 2
+                options["minwidth"] -= 2
+                options["line"] += 1
+                options["borderhighlight"] = ["Lf_hl_popupBorder"]
 
             lfCmd("noautocmd silent noswapfile let winid = popup_create(%d, %s)" % (buf_number, str(options)))
             self._popup_winid = int(lfEval("winid"))
@@ -570,7 +632,7 @@ class LfInstance(object):
             lfCmd("call win_execute(%d, 'setlocal cursorline')" % self._popup_winid)
             if lfEval("exists('+cursorlineopt')") == '1':
                 lfCmd("call win_execute(%d, 'setlocal cursorlineopt=both')" % self._popup_winid)
-            if lfEval("get(g:, 'Lf_PopupShowFoldcolumn', 1)") == '0':
+            if lfEval("get(g:, 'Lf_PopupShowFoldcolumn', 1)") == '0' or lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
                 lfCmd("call win_execute(%d, 'setlocal foldcolumn=0')" % self._popup_winid)
             else:
                 lfCmd("call win_execute(%d, 'setlocal foldcolumn=1')" % self._popup_winid)
@@ -581,7 +643,7 @@ class LfInstance(object):
 
             self._tabpage_object = vim.current.tabpage
             self._buffer_object = vim.buffers[buf_number]
-            self._window_object = PopupWindow(self._popup_winid, self._buffer_object, self._tabpage_object, line+1)
+            self._window_object = PopupWindow(self._popup_winid, self._buffer_object, self._tabpage_object, options["line"])
             self._popup_instance.content_win = self._window_object
 
             input_win_options = {
@@ -594,7 +656,15 @@ class LfInstance(object):
                     "col":             col,
                     "scrollbar":       0,
                     "mapping":         0,
+                    "borderhighlight": ["Lf_hl_previewTitle"],
                     }
+
+            if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
+                input_win_options["border"] = [1, 1, 0, 1]
+                input_win_options["borderchars"] = borderchars
+                input_win_options["maxwidth"] -= 2
+                input_win_options["minwidth"] -= 2
+                input_win_options["borderhighlight"] = ["Lf_hl_popupBorder"]
 
             if self._input_buffer_number == -1:
                 self._input_buffer_number = int(lfEval("bufadd('')"))
@@ -628,11 +698,19 @@ class LfInstance(object):
                         "maxheight":       1,
                         "zindex":          20480,
                         "pos":             "topleft",
-                        "line":            line + 1 + self._window_object.height,
+                        "line":            options["line"] + self._window_object.height,
                         "col":             col,
                         "scrollbar":       0,
                         "mapping":         0,
+                        "borderhighlight": ["Lf_hl_previewTitle"],
                         }
+
+                if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1':
+                    statusline_win_options["border"] = [0, 1, 1, 1]
+                    statusline_win_options["borderchars"] = borderchars
+                    statusline_win_options["maxwidth"] -= 2
+                    statusline_win_options["minwidth"] -= 2
+                    statusline_win_options["borderhighlight"] = ["Lf_hl_popupBorder"]
 
                 if self._stl_buffer_number == -1:
                     self._stl_buffer_number = int(lfEval("bufadd('')"))
@@ -657,7 +735,7 @@ class LfInstance(object):
                 lfCmd("call win_execute(%d, 'setlocal colorcolumn=')" % winid)
                 lfCmd("call win_execute(%d, 'setlocal wincolor=Lf_hl_popup_blank')" % winid)
 
-                self._popup_instance.statusline_win = PopupWindow(winid, vim.buffers[buf_number], vim.current.tabpage, line + 1 + self._window_object.height)
+                self._popup_instance.statusline_win = PopupWindow(winid, vim.buffers[buf_number], vim.current.tabpage, statusline_win_options["line"])
 
             lfCmd("call leaderf#ResetPopupOptions(%d, 'callback', function('leaderf#PopupClosed', [%s, %d]))"
                     % (self._popup_winid, str(self._popup_instance.getWinIdList()), id(self._manager)))
@@ -1189,6 +1267,9 @@ class LfInstance(object):
             self.buffer.options['modifiable'] = False
 
     def refreshPopupStatusline(self):
+        if lfEval("get(g:, 'Lf_PopupAutoAjustHeight', 1)") == '0':
+            return
+
         statusline_win = self._popup_instance.statusline_win
         buffer_len = len(self._buffer_object)
         if self._win_pos == 'popup':
@@ -1416,5 +1497,11 @@ class LfInstance(object):
 
     def getPopupInstance(self):
         return self._popup_instance
+
+    def getPopupHeight(self):
+        if lfEval("get(g:, 'Lf_PopupShowStatusline', 1)") == '1':
+            return self._popup_maxheight + 1
+        else:
+            return self._popup_maxheight
 
 #  vim: set ts=4 sw=4 tw=0 et :

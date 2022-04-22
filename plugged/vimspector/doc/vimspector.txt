@@ -44,7 +44,8 @@ Contents ~
    5. API Summary                                      |vimspector-api-summary|
    6. Clear breakpoints                          |vimspector-clear-breakpoints|
    7. Run to Cursor                                  |vimspector-run-to-cursor|
-   8. Save and restore                                |vimspector-save-restore|
+   8. Go to current line                        |vimspector-go-to-current-line|
+   9. Save and restore                                |vimspector-save-restore|
   3. Stepping                                             |vimspector-stepping|
   4. Variables and scopes                         |vimspector-variables-scopes|
   5. Variable or selection hover evaluation |vimspector-variable-or-selection-hover-evaluation|
@@ -234,6 +235,7 @@ Supported debugging features ~
 - conditional breakpoints (function, line)
 - step in/out/over/up, stop, restart
 - run to cursor
+- go to line (reset program counter to line)
 - launch and attach
 - remote launch, remote attach
 - locals and globals display
@@ -338,7 +340,8 @@ pre-packaged. To use a release tarball:
 >
   let g:vimspector_enable_mappings = 'HUMAN'
 <
-1. Configure your project's debug profiles (create '.vimspector.json')
+1. Configure your project's debug profiles (create '.vimspector.json', or
+   set 'g:vimspector_configurations')
 
 Alternatively, you can clone the repo and select which gadgets are installed:
 
@@ -346,7 +349,8 @@ Alternatively, you can clone the repo and select which gadgets are installed:
 2. Install the plugin as a Vim package. See ':help packages'.
 3. Add 'packadd! vimspector' to you '.vimrc'
 4. Install some 'gadgets' (debug adapters) - see ':VimspectorInstall ...'
-5. Configure your project's debug profiles (create '.vimspector.json')
+5. Configure your project's debug profiles (create '.vimspector.json', or
+   set 'g:vimspector_configurations')
 
 If you prefer to use a plugin manager, see the plugin manager's docs. For
 Vundle, use:
@@ -622,12 +626,12 @@ probably still make it work, but it's more effort.
 
 You essentially need to get a working installation of the debug adapter, find
 out how to start it, and configure that in an 'adapters' entry in either your
-'.vimspector.json' or in '.gadgets.json'.
+'.vimspector.json' or in '.gadgets.json' or in 'g:vimspector_adapters'.
 
 The simplest way in practice is to install or start Visual Studio Code and use
 its extension manager to install the relevant extension. You can then configure
 the adapter manually in the 'adapters' section of your '.vimspector.json' or in
-a 'gadgets.json'.
+a 'gadgets.json' or in 'g:vimspector_adapters'.
 
 PRs are always welcome to add supported languages (which roughly translates to
 updating 'python/vimspector/gadgets.py' and testing it).
@@ -844,6 +848,8 @@ following '<Plug>' mappings:
 | '<Plug>VimspectorToggleConditionalBreakpoint' | Toggle conditional line breakpoint or logpoint on the current line. | 'vimspector#ToggleBreakpoint( { trigger expr, hit count expr } )' |
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | '<Plug>VimspectorAddFunctionBreakpoint'       | Add a function breakpoint for the expression under cursor           | "vimspector#AddFunctionBreakpoint( '<cexpr>' )"                   |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| '<Plug>VimspectorGoToCurrentLine'             | Reset the current program counter to the current line               | 'vimspector#GoToCurrentLine()'                                    |
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | '<Plug>VimspectorRunToCursor'                 | Run to Cursor                                                       | 'vimspector#RunToCursor()'                                        |
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1084,6 +1090,7 @@ I recommend a mapping like this to toggle the breakpoints window:
 The following mappings apply by default in the breakpoints window:
 
 - 't', '<F9>' - toggle, i.e. enable/dissable breakpoint
+- 'T' - toggle, i.e. enable/dissable ALL breakpoints
 - 'dd', '<Del>' - delete the current breakpiont
 - 'i', 'a', 'o' - add a new line breakpoint
 - 'I', 'A', 'O' - add a new function breakpoint
@@ -1155,8 +1162,14 @@ guide [25] for details on that.
                                                        *vimspector-api-summary*
 API Summary ~
 
-- Use 'vimspector#ToggleBreakpoint( { options dict } )' to set/disable/delete
-  a line breakpoint. The argument is optional (see below).
+**NOTE:*** Previously, ToggleBreakpoint would cycle between 3 states: enabled,
+disabled, deleted. Many users found the 'disabled' state was rarely useful, so
+the behaviour has been changed. ToggleBreakpoint always creates or deletes a
+breakpoint. If you wish to 'disable' breakpoints, use the breakpoints window
+and 'toggle' ('t') from there.
+
+- Use 'vimspector#ToggleBreakpoint( { options dict } )' to set/delete a line
+  breakpoint. The argument is optional (see below).
 
 - Use "vimspector#AddFunctionBreakpoint( '<name>', { options dict} )" to add
   a function breakpoint. The second argument is optional (see below).
@@ -1222,6 +1235,20 @@ Run to Cursor ~
 Use 'vimspector#RunToCursor' or '<leader><F8>': this creates a temporary
 breakpoint on the current line, then continues execution, clearing the
 breakpoint when it is hit.
+
+-------------------------------------------------------------------------------
+                                                *vimspector-go-to-current-line*
+Go to current line ~
+
+Use 'vimspector#GoToCurrentLine()' or some mapping to
+'<Plug>VimspectorGoToCurrentLine' to jump the current execution to the line
+your cursor is currently on.
+
+Where supported this can be useful to re-run sections of code or skip over them
+entirely.
+
+If there are multiple possible "targets" on the current line, you're prompted
+to pick one.
 
 -------------------------------------------------------------------------------
                                                       *vimspector-save-restore*
@@ -2224,7 +2251,7 @@ Other servers ~
 - Java - vscode-javac. This works, but is not as functional as Java Debug
   Server. Take a look at this comment [52] for instructions.
 
-- See also the wiki [15] which has community-contributed plugin files for
+- See also the wiki [53] which has community-contributed plugin files for
   some languages.
 
 ===============================================================================
@@ -2536,7 +2563,7 @@ FAQ ~
 1. Q: Does it work with _this_ language? A: Probably, but it won't
    necessarily be easy to work out what to put in the '.vimspector.json'. As
    you can see above, some of the servers aren't really editor agnostic, and
-   require very-specific unique handling. See the wiki [53] for details on
+   require very-specific unique handling. See the wiki [15] for details on
    additonal language support
 
 2. How do I stop it starting a new Terminal.app on macOS? See this comment
@@ -2576,8 +2603,9 @@ FAQ ~
    otherwise share any data with any third parties.
 
 4. Do I _have_ to put a '.vimspector.json' in the root of every project? No,
-   you can put all of your adapter and debug configs in a single directory
-   [55] if you want to, but note the caveat that '${workspaceRoot}' won't be
+   you can use 'g:vimspector_adapters' and 'g:vimspector_configurations' or
+   put all of your adapter and debug configs in a single directory [55] if
+   you want to, but note the caveat that '${workspaceRoot}' won't be
    calculated correctly in that case. The vimsepctor author uses this a lot
    [56]
 
@@ -2590,6 +2618,35 @@ FAQ ~
    you help? sure, check this link which has a working example [57]. Or
    google it.
 
+Example 'g:vimspector_adapters' and 'g:vimspector_configurations':
+>
+  let g:vimspector_adapters = #{
+        \   test_debugpy: #{ extends: 'debugpy' }
+        \ }
+  
+  let g:vimspector_configurations = {
+        \ "test_debugpy_config": {
+        \   "adapter": "test_debugpy",
+        \   "filetypes": [ "python" ],
+        \   "configuration": {
+        \     "request": "launch",
+        \     "type": "python",
+        \     "cwd": "${fileDirname}",
+        \     "args": [],
+        \     "program": "${file}",
+        \     "stopOnEntry": v:false,
+        \     "console": "integratedTerminal",
+        \     "integer": 123,
+        \   },
+        \   "breakpoints": {
+        \     "exception": {
+        \       "raised": "N",
+        \       "uncaught": "",
+        \       "userUnhandled": ""
+        \     }
+        \   }
+        \ } }
+<
 ===============================================================================
                                                         *vimspector-references*
 References ~
@@ -2608,7 +2665,7 @@ References ~
 [12] https://asciinema.org/a/1wZJSoCgs3AvjkhKwetJOJhDh
 [13] https://asciinema.org/a/1wZJSoCgs3AvjkhKwetJOJhDh.svg
 [14] https://github.com/go-delve/delve
-[15] https://github.com/puremourning/vimspector/wiki/languages
+[15] https://github.com/puremourning/vimspector/wiki/Additional-Language-Support
 [16] https://asciinema.org/a/Hfu4ZvuyTZun8THNen9FQbTay
 [17] https://asciinema.org/a/Hfu4ZvuyTZun8THNen9FQbTay.svg
 [18] https://trello.com/b/yvAKK0rD/vimspector
@@ -2646,7 +2703,7 @@ References ~
 [50] https://github.com/puremourning/vimspector/issues/3
 [51] https://github.com/tomblind/local-lua-debugger-vscode
 [52] https://github.com/puremourning/vimspector/issues/3#issuecomment-576916076
-[53] https://github.com/puremourning/vimspector/wiki/Additional-Language-Support
+[53] https://github.com/puremourning/vimspector/wiki/languages
 [54] https://github.com/puremourning/vimspector/issues/90#issuecomment-577857322
 [55] https://puremourning.github.io/vimspector/configuration.html#debug-configurations
 [56] https://github.com/puremourning/.vim-mac/tree/master/vimspector-conf

@@ -3,7 +3,7 @@ let s:root = expand('<sfile>:h:h:h')
 let s:is_win = has('win32') || has('win64')
 let s:is_vim = !has('nvim')
 let s:clear_match_by_id = has('nvim-0.5.0') || has('patch-8.1.1084')
-let s:vim_api_version = 25
+let s:vim_api_version = 27
 let s:activate = ""
 let s:quit = ""
 
@@ -68,6 +68,10 @@ function! coc#util#version()
   let c = execute('silent version')
   let lines = split(matchstr(c,  'NVIM v\zs[^\n-]*'))
   return lines[0]
+endfunction
+
+function! coc#util#change_info() abort
+  return {'lnum': line('.'), 'col': col('.'), 'line': getline('.'), 'changedtick': b:changedtick}
 endfunction
 
 function! coc#util#check_refresh(bufnr)
@@ -255,7 +259,8 @@ function! coc#util#get_bufoptions(bufnr) abort
         \ 'buftype': buftype,
         \ 'previewwindow': v:false,
         \ 'eol': getbufvar(a:bufnr, '&eol'),
-        \ 'variables': s:variables(a:bufnr),
+        \ 'indentkeys': coc#util#get_indentkeys(),
+        \ 'variables': coc#util#variables(a:bufnr),
         \ 'filetype': getbufvar(a:bufnr, '&filetype'),
         \ 'iskeyword': getbufvar(a:bufnr, '&iskeyword'),
         \ 'changedtick': getbufvar(a:bufnr, 'changedtick'),
@@ -263,7 +268,7 @@ function! coc#util#get_bufoptions(bufnr) abort
         \}
 endfunction
 
-function! s:variables(bufnr) abort
+function! coc#util#variables(bufnr) abort
   let info = getbufinfo(a:bufnr)
   let variables = empty(info) ? {} : copy(info[0]['variables'])
   for key in keys(variables)
@@ -272,6 +277,14 @@ function! s:variables(bufnr) abort
     endif
   endfor
   return variables
+endfunction
+
+function! coc#util#suggest_variables(bufnr) abort
+  return {
+      \ 'coc_suggest_disable': getbufvar(a:bufnr, 'coc_suggest_disable', 0),
+      \ 'coc_disabled_sources': getbufvar(a:bufnr, 'coc_disabled_sources', []),
+      \ 'coc_suggest_blacklist': getbufvar(a:bufnr, 'coc_suggest_blacklist', []),
+      \ }
 endfunction
 
 function! coc#util#root_patterns() abort
@@ -339,7 +352,7 @@ function! coc#util#get_data_home()
     endif
   endif
   if !isdirectory(dir)
-    echohl MoreMsg | echom '[coc.nvim] creating data directory: '.dir | echohl None
+    call coc#float#create_notification(['creating data directory: '.dir], {'timeout': 2000})
     call mkdir(dir, "p", 0755)
   endif
   return dir
@@ -361,7 +374,6 @@ function! coc#util#get_complete_option()
   let line = getline(pos[1])
   let input = matchstr(strpart(line, 0, pos[2] - 1), '\k*$')
   let col = pos[2] - strlen(input)
-  let synname = synIDattr(synID(pos[1], col, 1), 'name')
   return {
         \ 'word': matchstr(strpart(line, col - 1), '^\k\+'),
         \ 'input': empty(input) ? '' : input,
@@ -372,12 +384,15 @@ function! coc#util#get_complete_option()
         \ 'linenr': pos[1],
         \ 'colnr' : pos[2],
         \ 'col': col - 1,
-        \ 'synname': synname,
         \ 'changedtick': b:changedtick,
         \ 'blacklist': get(b:, 'coc_suggest_blacklist', []),
         \ 'disabled': get(b:, 'coc_disabled_sources', []),
         \ 'indentkeys': coc#util#get_indentkeys()
         \}
+endfunction
+
+function! coc#util#synname() abort
+  return synIDattr(synID(line('.'), col('.') - 1, 1), 'name')
 endfunction
 
 function! coc#util#with_callback(method, args, cb)
@@ -581,9 +596,13 @@ function! coc#util#all_state()
         \ }
 endfunction
 
-function! coc#util#set_lines(bufnr, changedtick, original, replacement, start, end, changes) abort
+function! coc#util#set_lines(bufnr, changedtick, original, replacement, start, end, changes, cursor, col) abort
   if !bufloaded(a:bufnr)
     return
+  endif
+  let delta = 0
+  if !empty(a:col)
+    let delta = col('.') - a:col
   endif
   if getbufvar(a:bufnr, 'changedtick') != a:changedtick && bufnr('%') == a:bufnr
     " try apply current line change
@@ -593,10 +612,10 @@ function! coc#util#set_lines(bufnr, changedtick, original, replacement, start, e
     if type(previous) == 1
       let content = getline('.')
       if previous !=# content
-        let diff = coc#helper#str_diff(content, previous, col('.'))
+        let diff = coc#string#diff(content, previous, col('.'))
         let changed = get(a:replacement, idx, 0)
         if type(changed) == 1 && strcharpart(previous, 0, diff['end']) ==# strcharpart(changed, 0, diff['end'])
-          let applied = coc#helper#str_apply(changed, diff)
+          let applied = coc#string#apply(changed, diff)
           let replacement = copy(a:replacement)
           let replacement[idx] = applied
           call coc#compat#buf_set_lines(a:bufnr, a:start, a:end, replacement)
@@ -605,13 +624,15 @@ function! coc#util#set_lines(bufnr, changedtick, original, replacement, start, e
       endif
     endif
   endif
-  if exists('*nvim_buf_set_text') && !empty(a:changes) && len(a:changes) < 200
-    for item in a:changes
-      let lines = nvim_buf_get_lines(a:bufnr, 0, -1, v:false)
+  if exists('*nvim_buf_set_text') && !empty(a:changes)
+    for item in reverse(copy(a:changes))
       call nvim_buf_set_text(a:bufnr, item[1], item[2], item[3], item[4], item[0])
     endfor
   else
     call coc#compat#buf_set_lines(a:bufnr, a:start, a:end, a:replacement)
+  endif
+  if !empty(a:cursor)
+    call cursor(a:cursor[0], a:cursor[1] + delta)
   endif
 endfunction
 
@@ -918,7 +939,10 @@ function! coc#util#get_format_opts(bufnr) abort
 endfunction
 
 function! coc#util#get_editoroption(winid) abort
-  if has('nvim')
+  if !coc#compat#win_is_valid(a:winid)
+    return v:null
+  endif
+  if has('nvim') && exists('*nvim_win_get_config')
     " avoid float window
     let config = nvim_win_get_config(a:winid)
     if !empty(get(config, 'relative', ''))
@@ -962,6 +986,9 @@ endfunction
 function! s:visible_ranges(winid) abort
   let info = getwininfo(a:winid)[0]
   let res = []
+  if !has_key(info, 'topline') || !has_key(info, 'botline')
+    return res
+  endif
   let begin = 0
   let curr = info['topline']
   let max = info['botline']

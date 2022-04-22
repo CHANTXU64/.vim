@@ -30,8 +30,6 @@ EOF
 endfunction
 
 
-let s:enabled = v:null
-
 " In vim, py3eval( 'None' ) returns v:none
 " In neovim, py3eval( 'None' ) returns v:null
 "
@@ -39,7 +37,7 @@ let s:enabled = v:null
 let s:None = has( 'nvim' ) ? v:null : v:none
 
 function! s:Initialised() abort
-  return s:enabled != v:null
+  return exists( 's:enabled' )
 endfunction
 
 function! s:Enabled() abort
@@ -194,6 +192,16 @@ function! vimspector#RunToCursor() abort
     return
   endif
   py3 _vimspector_session.RunTo(
+        \ vim.eval( "expand( '%' )" ),
+        \ int( vim.eval( "line( '.' )" ) ) )
+endfunction
+
+
+function! vimspector#GoToCurrentLine() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.GoTo(
         \ vim.eval( "expand( '%' )" ),
         \ int( vim.eval( "line( '.' )" ) ) )
 endfunction
@@ -438,6 +446,13 @@ function! vimspector#ToggleBreakpointViewBreakpoint() abort
     return
   endif
   py3 _vimspector_session.ToggleBreakpointViewBreakpoint()
+endfunction
+
+function! vimspector#ToggleAllBreakpointsViewBreakpoint() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.ToggleAllBreakpointsViewBreakpoint()
 endfunction
 
 function! vimspector#DeleteBreakpointViewBreakpoint() abort

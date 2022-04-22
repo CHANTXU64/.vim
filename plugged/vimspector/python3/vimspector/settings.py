@@ -39,6 +39,9 @@ DEFAULTS = {
   # Session files
   'session_file_name': '.vimspector.session',
 
+  # Breakpoints
+  'toggle_disables_breakpoint': False,
+
   # Signs
   'sign_priority': {
     'vimspectorPC':            200,
@@ -68,6 +71,7 @@ DEFAULTS = {
     },
     'breakpoints': {
       'toggle': [ 't', '<F9>' ],
+      'toggle_all': [ 'T' ],
       'delete': [ 'dd', '<Del>' ],
       'add_line': [ 'i', 'a', 'o', '<Insert>' ],
       'add_func': [ 'I', 'A', 'O', '<leader><Insert>' ],
@@ -77,6 +81,10 @@ DEFAULTS = {
 
   # Custom
   'java_hotcodereplace_mode': 'ask',
+
+  # Debug configs
+  'adapters': {},
+  'configurations': {},
 }
 
 
@@ -88,6 +96,10 @@ def Get( option: str, cls=str ):
 
 def Int( option: str ):
   return Get( option, cls=builtins.int )
+
+
+def Bool( option: str ):
+  return bool( Int( option ) )
 
 
 def List( option: str ):
@@ -107,10 +119,51 @@ DICT_TYPE = dict
 if hasattr( vim, 'Dictionary' ):
   DICT_TYPE = vim.Dictionary
 
+LIST_TYPE = list
+if hasattr( vim, 'List' ):
+  LIST_TYPE = vim.List
+
+
+def _IsDict( o ):
+  return isinstance( o, DICT_TYPE ) or isinstance( o, dict )
+
+
+def _IsList( o ):
+  return isinstance( o, LIST_TYPE ) or isinstance( o, list )
+
 
 def Dict( option ):
-  return _UpdateDict( DICT_TYPE( DEFAULTS.get( option, {} ) ),
-                      vim.vars.get( f'vimspector_{ option }', DICT_TYPE() ) )
+  return _UpdateDict(
+    dict( DEFAULTS.get( option, {} ) ),
+    DictNoBytes( vim.vars.get( f'vimspector_{ option }', DICT_TYPE() ) ) )
+
+
+def ObjectNoBytes( o ):
+  if o is None:
+    return None
+
+  if isinstance( o, bytes ):
+    o = o.decode( 'utf-8' )
+  elif _IsDict( o ):
+    o = DictNoBytes( o )
+  elif _IsList( o ):
+    new_o = []
+    for i in o:
+      new_o.append( ObjectNoBytes( i ) )
+    o = new_o
+  return o
+
+
+def DictNoBytes( d ):
+  if d is None:
+    return d
+
+  r = {}
+  for k, v in d.items():
+    if isinstance( k, bytes ):
+      k = k.decode( 'utf-8' )
+    r[ k ] = ObjectNoBytes( v )
+  return r
 
 
 def _UpdateDict( target, override ):
@@ -141,9 +194,9 @@ def _UpdateDict( target, override ):
 
   for key, value in override.items():
     current_value = target.get( key )
-    if not isinstance( current_value, DICT_TYPE ):
+    if not _IsDict( current_value ):
       target[ key ] = value
-    elif isinstance( value, DICT_TYPE ):
+    elif _IsDict( value ):
       target[ key ] = _UpdateDict( current_value, value )
     else:
       target[ key ] = value

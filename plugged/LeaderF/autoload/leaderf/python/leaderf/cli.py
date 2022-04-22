@@ -205,6 +205,8 @@ class LfCli(object):
         input_window = self._instance.getPopupInstance().input_win
         content_winid = self._instance.getPopupInstance().content_win.id
         input_win_width = input_window.width
+        if lfEval("get(g:, 'Lf_PopupShowBorder', 0)") == '1' and lfEval("has('nvim')") == '0':
+            input_win_width -= 2
         if self._instance.getWinPos() == 'popup':
             lfCmd("""call win_execute(%d, 'let line_num = line(".")')""" % content_winid)
             line_num = lfEval("line_num")
@@ -241,7 +243,7 @@ class LfCli(object):
                                                                                sep,
                                                                                part3,
                                                                                sep_width=len(sep),
-                                                                               part1_width=part1_width,
+                                                                               part1_width=max(0, part1_width),
                                                                                part2_width=len(part2),
                                                                                part3_width=len(part3))
         if self._instance.getWinPos() == 'popup':

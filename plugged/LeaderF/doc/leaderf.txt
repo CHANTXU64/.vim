@@ -622,6 +622,18 @@ g:Lf_NoChdir                                    *g:Lf_NoChdir*
     to `dir`.
     Default value is 1.
 
+g:Lf_Global                                      *g:Lf_Global*
+    Use this option to customize the global executable to use. e.g., >
+    let g:Lf_Global = "/bin/global"
+<
+    Default value is "global".
+
+g:Lf_Gtags                                       *g:Lf_Gtags*
+    Use this option to customize the global executable to use. e.g., >
+    let g:Lf_Gtags = "/bin/gtags"
+<
+    Default value is "gtags".
+
 g:Lf_GtagsAutoGenerate                          *g:Lf_GtagsAutoGenerate*
     If the value is 1 and there is a rootmark defined by |g:Lf_RootMarkers|
     under the project root directory, gtags files will be generated
@@ -807,6 +819,8 @@ g:Lf_PopupPreviewPosition                       *g:Lf_PopupPreviewPosition*
     The value can be one of the following:
     'top': the preview window is on the top of the main LeaderF window.
     'bottom': the preview window is at the bottom of the main LeaderF window.
+    'left': the preview window is on the left of the main LeaderF window.
+    'right': the preview window is on the right of the main LeaderF window.
     'cursor': the preview window is at the cursor position in the main LeaderF
               window.
 
@@ -866,6 +880,33 @@ g:Lf_PopupShowFoldcolumn                        *g:Lf_PopupShowFoldcolumn*
     showing foldcolumn, otherwise not.
 
     Default value is 1.
+
+g:Lf_PopupAutoAjustHeight                       *g:Lf_PopupAutoAjustHeight*
+    Specifies whether to adjust the height of popup window automatically.
+
+    Default value is 1.
+
+g:Lf_PopupShowBorder                            *g:Lf_PopupShowBorder*
+    Specifies whether to show border for popup window.
+
+    Default value is 0.
+
+g:Lf_PopupBorders                               *g:Lf_PopupBorders*
+    Specifies a list of characters, defining the character to use for the
+    top/right/bottom/left border, followed by the character to use for the
+    topleft/topright/botright/botleft corner.
+    Example: >
+    let g:Lf_PopupBorders = ["─","│","─","│","╭","╮","╯","╰"]
+    let g:Lf_PopupBorders = ["─","│","─","│","┌","┐","┘","└"]
+    let g:Lf_PopupBorders = ["━","┃","━","┃","┏","┓","┛","┗"]
+    let g:Lf_PopupBorders = ["═","║","═","║","╔","╗","╝","╚"]
+<
+    For some terminals, the non-ascii characters can not be displayed
+    properly for borders, see https://github.com/neovim/neovim/issues/17996.
+    To have a good display for non-ascii characters, perhaps you need to set
+    the value of |ambiwidth| as "single".
+
+    Default value is ["-","|","-","|","+","+","+","+"].
 
 g:Lf_AutoResize                                 *g:Lf_AutoResize*
     Auto resize the LeaderF window height automatically.

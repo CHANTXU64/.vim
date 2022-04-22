@@ -40,12 +40,14 @@ class BreakpointsView( object ):
       vim.command( f'botright { settings.Int( "bottombar_height" ) }new' )
       self._win = vim.current.window
       if self._HasBuffer():
-        vim.current.buffer = self._buffer
+        with utils.NoAutocommands():
+          vim.current.buffer = self._buffer
       else:
         self._buffer = vim.current.buffer
         mappings = settings.Dict( 'mappings' )[ 'breakpoints' ]
         groups = {
           'toggle': 'ToggleBreakpointViewBreakpoint',
+          'toggle_all': 'ToggleAllBreakpointsViewBreakpoint',
           'delete': 'DeleteBreakpointViewBreakpoint',
           'jump_to': 'JumpToBreakpointViewBreakpoint',
           'add_line': 'SetAdvancedLineBreakpoint',
@@ -59,11 +61,9 @@ class BreakpointsView( object ):
         utils.SetUpHiddenBuffer( self._buffer,
                                  "vimspector.Breakpoints" )
 
-      # neovim madness need to re-assign the dict to trigger rpc call
-      # see https://github.com/neovim/pynvim/issues/261
-      session_wins = vim.vars[ 'vimspector_session_windows' ]
-      session_wins[ 'breakpoints' ] = utils.WindowID( self._win )
-      vim.vars[ 'vimspector_session_windows' ] = session_wins
+      utils.UpdateSessionWindows( {
+        'breakpoints': utils.WindowID( self._win )
+      } )
 
       # set highlighting
       vim.eval( "matchadd( 'WarningMsg', 'ENABLED', 100 )" )
@@ -77,6 +77,9 @@ class BreakpointsView( object ):
                      ':call vimspector#DeleteBreakpointViewBreakpoint()<CR>' )
         vim.command( 'nnoremenu <silent> 1.2 WinBar.Toggle '
                      ':call vimspector#ToggleBreakpointViewBreakpoint()<CR>' )
+        vim.command( 'nnoremenu <silent> 1.2 WinBar.*Toggle '
+                     ':call'
+                       ' vimspector#ToggleAllBreakpointsViewBreakpoint()<CR>' )
         vim.command( 'nnoremenu <silent> 1.3 WinBar.Jump\\ To '
                      ':call vimspector#JumpToBreakpointViewBreakpoint()<CR>' )
         # TODO: Add tests for this function
@@ -238,6 +241,31 @@ class ProjectBreakpoints( object ):
                               bp.get( 'lnum' ),
                               should_delete = False )
 
+  def ToggleAllBreakpointsViewBreakpoint( self ):
+    # Try and guess the best action - if more breakpoitns are currently enabled
+    # than disabled, then disable all. Otherwise, enable all.
+    enabled = 0
+    disabled = 0
+    for filename, bps in self._line_breakpoints.items():
+      for bp in bps:
+        if bp[ 'state' ] == 'ENABLED':
+          enabled += 1
+        else:
+          disabled += 1
+
+    if enabled > disabled:
+      new_state = 'DISABLED'
+    else:
+      new_state = 'ENABLED'
+
+    for filename, bps in self._line_breakpoints.items():
+      for bp in bps:
+        bp[ 'state' ] = new_state
+
+    # FIXME: We don't really handle 'DISABLED' state for function breakpoints,
+    # so they are not touched
+    self.UpdateUI()
+
   def JumpToBreakpointViewBreakpoint( self ):
     bp = self._breakpoints_view.GetBreakpointForLine()
     if not bp:
@@ -278,16 +306,17 @@ class ProjectBreakpoints( object ):
       for bp in breakpoints:
         self._SignToLine( file_name, bp )
 
+        line = bp[ 'line' ]
         if 'server_bp' in bp:
-          line = bp[ 'server_bp' ][ 'line' ]
-          if bp[ 'server_bp' ][ 'verified' ]:
+          server_bp = bp[ 'server_bp' ]
+          line = server_bp.get( 'line', line )
+          if server_bp[ 'verified' ]:
             state = 'VERIFIED'
             valid = 1
           else:
             state = 'PENDING'
             valid = 0
         else:
-          line = bp[ 'line' ]
           state = bp[ 'state' ]
           valid = 1
 
@@ -394,6 +423,10 @@ class ProjectBreakpoints( object ):
         json.dumps( server_bp ) ) )
       return
 
+    if 'line' not in server_bp:
+      # There's nothing we can really add without a line
+      return
+
     existing_bp, _ = self._FindLineBreakpoint( source[ 'path' ],
                                                server_bp[ 'line' ] )
 
@@ -457,11 +490,16 @@ class ProjectBreakpoints( object ):
     if not file_name:
       return
 
+    # We only disable when *toggling* in the breakpoints window
+    # (should_delete=False), or for legacy reasons, when a switch is set
+    can_disble = not should_delete or settings.Bool(
+      'toggle_disables_breakpoint' )
+
     bp, index = self._FindLineBreakpoint( file_name, line )
     if bp is None:
       # ADD
       self._PutLineBreakpoint( file_name, line, options )
-    elif bp[ 'state' ] == 'ENABLED':
+    elif bp[ 'state' ] == 'ENABLED' and can_disble:
       # DISABLE
       bp[ 'state' ] = 'DISABLED'
     elif not should_delete:
@@ -819,11 +857,12 @@ class ProjectBreakpoints( object ):
           bp[ 'sign_id' ] = self._next_sign_id
           self._next_sign_id += 1
 
+        line = bp[ 'line' ]
         if 'server_bp' in bp:
-          line = bp[ 'server_bp' ][ 'line' ]
-          verified = bp[ 'server_bp' ][ 'verified' ]
+          server_bp = bp[ 'server_bp' ]
+          line = server_bp.get( 'line', line )
+          verified = server_bp[ 'verified' ]
         else:
-          line = bp[ 'line' ]
           verified = self._connection is None
 
         sign = ( 'vimspectorBPDisabled'
