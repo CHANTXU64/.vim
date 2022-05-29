@@ -317,6 +317,12 @@ nnoremap <leader>sf :call SmartimToggle()<CR>
 " => test
 """"""""""""""""""""""""""""""
 let test#strategy = 'vimterminal'
+nmap <silent> <leader>Ts :TestSuite<CR>
+nmap <silent> <leader>Tt :TestFile<CR>
+nmap <silent> <leader>Tn :TestNearest<CR>
+let test#go#gotest#options = {
+  \ 'suite':   '-coverprofile=coverage.out',
+\}
 
 
 """"""""""""""""""""""""""""""

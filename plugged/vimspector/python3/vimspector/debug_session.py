@@ -172,8 +172,8 @@ class DebugSession( object ):
     else:
       # Find a single configuration with 'default' True and autoselect not False
       defaults = { n: c for n, c in configurations.items()
-                   if c.get( 'default', False ) is True
-                   and c.get( 'autoselect', True ) is not False }
+                   if c.get( 'default', False )
+                   and c.get( 'autoselect', True ) }
 
       if len( defaults ) == 1:
         configuration_name = next( iter( defaults.keys() ) )
@@ -1515,11 +1515,8 @@ class DebugSession( object ):
     def failure_handler( reason, msg ):
       text = [
         'Launch Failed',
-        '',
-        reason,
-        '',
-        'Use :VimspectorReset to close'
-      ]
+        '' ] + reason.splitlines() + [
+        '', 'Use :VimspectorReset to close' ]
       self._logger.info( "Launch failed: %s", '\n'.join( text ) )
       self._splash_screen = utils.DisplaySplash( self._api_prefix,
                                                  self._splash_screen,

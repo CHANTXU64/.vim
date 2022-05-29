@@ -39,5 +39,6 @@
         "name": "JavaSE-11",
         "path": ""
 
-    }]
+    }],
+    "go.goplsPath": "gopls"
 }
