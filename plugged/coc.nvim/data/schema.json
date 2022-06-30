@@ -11,6 +11,11 @@
           "default": false,
           "description": "Set to true to use borders."
         },
+        "rounded": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use rounded borders when border is true."
+        },
         "highlight": {
           "type": "string",
           "default": "CocFloating",
@@ -797,6 +802,7 @@
       "additionalProperties": false,
       "properties": {
         "border": {},
+        "rounded": {},
         "highlight": {},
         "borderhighlight": {},
         "title": {},
@@ -858,6 +864,7 @@
       "additionalProperties": false,
       "properties": {
         "border": {},
+        "rounded": {},
         "highlight": {},
         "borderhighlight": {},
         "title": {},
@@ -942,6 +949,7 @@
       "additionalProperties": false,
       "properties": {
         "border": {},
+        "rounded": {},
         "highlight": {},
         "borderhighlight": {},
         "title": {},
@@ -1038,6 +1046,14 @@
       "default": false,
       "description": "Use menu picker for message notification with actions."
     },
+    "notification.disabledProgressSources": {
+      "type": "array",
+      "default": [],
+      "description": "Soureces that should be disabled for message progress, use * to disable all message only progresses",
+      "items": {
+        "type": "string"
+      }
+    },
     "notification.minProgressWidth": {
       "type": "integer",
       "default": 30,
@@ -1054,6 +1070,11 @@
       "minimum": 0,
       "maximum": 100,
       "description": "Winblend option of notification window, neovim only."
+    },
+    "workspace.openOutputCommand": {
+      "type": "string",
+      "default": "vs",
+      "description": "Command used to open output channel."
     },
     "workspace.openResourceCommand": {
       "type": "string",
@@ -1163,11 +1184,6 @@
       "type": "boolean",
       "default": false,
       "description": "Use vsplit for preview window."
-    },
-    "list.matchHighlightGroup": {
-      "type": "string",
-      "default": "CocSearch",
-      "description": "Highlight group used for matched texts in list window."
     },
     "list.previewHighlightGroup": {
       "type": "string",

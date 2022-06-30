@@ -157,8 +157,10 @@ CocInlayHint	coc.txt	/*CocInlayHint*
 CocItalic	coc.txt	/*CocItalic*
 CocJumpPlaceholder	coc.txt	/*CocJumpPlaceholder*
 CocLinkedEditing	coc.txt	/*CocLinkedEditing*
+CocListLine	coc.txt	/*CocListLine*
 CocListMode	coc.txt	/*CocListMode*
 CocListPath	coc.txt	/*CocListPath*
+CocListSearch	coc.txt	/*CocListSearch*
 CocLocations()	coc.txt	/*CocLocations()*
 CocLocationsAsync()	coc.txt	/*CocLocationsAsync()*
 CocLocationsChange	coc.txt	/*CocLocationsChange*
@@ -368,7 +370,6 @@ coc-config-list-indicator	coc-config.txt	/*coc-config-list-indicator*
 coc-config-list-insertMappings	coc-config.txt	/*coc-config-list-insertMappings*
 coc-config-list-interactiveDebounceTime	coc-config.txt	/*coc-config-list-interactiveDebounceTime*
 coc-config-list-limitLines	coc-config.txt	/*coc-config-list-limitLines*
-coc-config-list-matchHighlightGroup	coc-config.txt	/*coc-config-list-matchHighlightGroup*
 coc-config-list-maxPreviewHeight	coc-config.txt	/*coc-config-list-maxPreviewHeight*
 coc-config-list-menuAction	coc-config.txt	/*coc-config-list-menuAction*
 coc-config-list-nextKeymap	coc-config.txt	/*coc-config-list-nextKeymap*
@@ -386,6 +387,7 @@ coc-config-list-source-outline-ctagsFilestypes	coc-config.txt	/*coc-config-list-
 coc-config-list-source-symbols-excludes	coc-config.txt	/*coc-config-list-source-symbols-excludes*
 coc-config-notification	coc-config.txt	/*coc-config-notification*
 coc-config-notification-border	coc-config.txt	/*coc-config-notification-border*
+coc-config-notification-disabledProgressSources	coc-config.txt	/*coc-config-notification-disabledProgressSources*
 coc-config-notification-focusable	coc-config.txt	/*coc-config-notification-focusable*
 coc-config-notification-highlightGroup	coc-config.txt	/*coc-config-notification-highlightGroup*
 coc-config-notification-marginRight	coc-config.txt	/*coc-config-notification-marginRight*
@@ -478,6 +480,7 @@ coc-config-workspace	coc-config.txt	/*coc-config-workspace*
 coc-config-workspace-bottomUpFiletypes	coc-config.txt	/*coc-config-workspace-bottomUpFiletypes*
 coc-config-workspace-ignoredFiletypes	coc-config.txt	/*coc-config-workspace-ignoredFiletypes*
 coc-config-workspace-ignoredFolders	coc-config.txt	/*coc-config-workspace-ignoredFolders*
+coc-config-workspace-openOutputCommand	coc-config.txt	/*coc-config-workspace-openOutputCommand*
 coc-config-workspace-openResourceCommand	coc-config.txt	/*coc-config-workspace-openResourceCommand*
 coc-config-workspace-workspaceFolderCheckCwd	coc-config.txt	/*coc-config-workspace-workspaceFolderCheckCwd*
 coc-config-workspace-workspaceFolderFallbackCwd	coc-config.txt	/*coc-config-workspace-workspaceFolderFallbackCwd*
@@ -506,6 +509,7 @@ coc-global-variables	coc.txt	/*coc-global-variables*
 coc-highlights	coc.txt	/*coc-highlights*
 coc-highlights-diagnostics	coc.txt	/*coc-highlights-diagnostics*
 coc-highlights-document	coc.txt	/*coc-highlights-document*
+coc-highlights-list	coc.txt	/*coc-highlights-list*
 coc-installation	coc.txt	/*coc-installation*
 coc-interface	coc.txt	/*coc-interface*
 coc-introduction	coc.txt	/*coc-introduction*
