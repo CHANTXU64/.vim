@@ -930,6 +930,11 @@ fu! csv#GetColPat(colnr, zs_flag) "{{{3
 endfu
 fu! csv#SetupAutoCmd(window,bufnr) "{{{3
     " Setup QuitPre autocommand to quit cleanly
+    if a:bufnr == 0
+        " something went wrong, 
+        " how can this happen?
+        return
+    endif
     aug CSV_QuitPre
         au!
         exe "au QuitPre * call CSV_CloseBuffer(".winbufnr(a:window).")"
@@ -1020,7 +1025,7 @@ fu! csv#SplitHeaderLine(lines, bang, hor) "{{{3
         " disable airline
         let w:airline_disabled = 1
         let win = winnr()
-        setl scrollbind buftype=nowrite bufhidden=wipe noswapfile nobuflisted
+        setl scrollbind buftype=nofile bufhidden=wipe noswapfile nobuflisted
         noa wincmd p
         let b:csv_SplitWindow = win
         aug CSV_Preview

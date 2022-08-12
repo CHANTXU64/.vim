@@ -488,6 +488,7 @@ class BufTagExplManager(Manager):
 
         if lfEval("get(g:, 'Lf_PreviewInPopup', 0)") == '1':
             self._previewInPopup(line, self._getInstance().buffer, line_nr)
+            lfCmd("redraw")
             return
 
         orig_pos = self._getInstance().getOriginalPos()
@@ -515,6 +516,7 @@ class BufTagExplManager(Manager):
             self._relocateCursor()
 
     def _bangReadFinished(self):
+        super(BufTagExplManager, self)._bangReadFinished()
         self._relocateCursor()
 
     def _relocateCursor(self):
