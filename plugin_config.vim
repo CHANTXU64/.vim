@@ -23,6 +23,7 @@ hi CocInfoSign ctermbg=248
 hi CocInfoFloat ctermbg=253
 hi CocHintSign ctermbg=248
 hi CocHintFloat ctermbg=253
+hi CocMenuSel ctermbg=229
 imap <C-L> <Plug>(coc-snippets-expand)
 nmap [e <Plug>(coc-diagnostic-prev)
 nmap -e <Plug>(coc-diagnostic-next)
@@ -216,7 +217,7 @@ let g:lightline = {
       \             [ 'paste', 'spell' ],
       \             [ 'git-status', 'readonly', 'filename' ] ],
       \   'right': [ [ 'coc_info', 'coc_hints', 'coc_errors', 'coc_warnings', 'coc_ok' ],
-      \              [ 'coc_status' ],
+      \              [ ],
       \              [ 'lineinfo' ],
       \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
       \ },
