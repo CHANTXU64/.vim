@@ -122,6 +122,9 @@ csv-toc	ft-csv.txt	/*csv-toc*
 csv-transpose	ft-csv.txt	/*csv-transpose*
 csv-vertfold	ft-csv.txt	/*csv-vertfold*
 csv_arrange_align	ft-csv.txt	/*csv_arrange_align*
+csv_arrange_use_all_rows	ft-csv.txt	/*csv_arrange_use_all_rows*
+csv_no_progress	ft-csv.txt	/*csv_no_progress*
+csv_skipfirst	ft-csv.txt	/*csv_skipfirst*
 format_number_csv	ft-csv.txt	/*format_number_csv*
 ft-csv.txt	ft-csv.txt	/*ft-csv.txt*
 g:csv_bind_B	ft-csv.txt	/*g:csv_bind_B*

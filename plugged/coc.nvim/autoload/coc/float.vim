@@ -154,7 +154,7 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
       let config = s:convert_config_nvim(a:config, 0)
       let hlgroup = get(a:config, 'highlight', 'CocFloating')
       let current = getwinvar(a:winid, '&winhl', '')
-      let winhl = coc#util#merge_winhl(current, [['Normal', hlgroup], ['NormalNC', hlgroup], ['FoldColumn', hlgroup]])
+      let winhl = coc#util#merge_winhl(current, [['Normal', hlgroup], ['FoldColumn', hlgroup], ['Search', '']])
       if winhl !=# current
         call setwinvar(a:winid, '&winhl', winhl)
       endif
@@ -190,6 +190,8 @@ function! coc#float#create_float_win(winid, bufnr, config) abort
           \ 'border': border,
           \ 'callback': { -> coc#float#on_close(winid)},
           \ 'borderhighlight': [s:get_borderhighlight(a:config)],
+          \ 'scrollbarhighlight': 'CocFloatSbar',
+          \ 'thumbhighlight': 'CocFloatThumb',
           \ }
     let winid = popup_create(bufnr, opts)
     if !s:popup_list_api
@@ -246,7 +248,7 @@ function! coc#float#nvim_create_related(winid, config, opts) abort
   endif
   " Check right border
   if pad
-    call coc#float#nvim_right_pad(a:config, a:winid, related)
+    call coc#float#nvim_right_pad(a:config, a:winid, shadow, related)
   elseif exists
     call coc#float#close_related(a:winid, 'pad')
   endif
@@ -274,14 +276,15 @@ function! coc#float#nvim_border_win(config, borderchars, winid, border, title, h
         \ }
   if has('nvim-0.5.0') && a:shadow && !a:hasbtn && a:border[2]
     let opt['border'] = 'shadow'
+    let opt['noautocmd'] = 1
   endif
   if winid
     call nvim_win_set_config(winid, opt)
-    call setwinvar(winid, '&winhl', 'Normal:'.a:hlgroup.',NormalNC:'.a:hlgroup.',Search:')
+    call setwinvar(winid, '&winhl', 'Normal:'.a:hlgroup.',Search:')
   else
     noa let winid = nvim_open_win(bufnr, 0, opt)
     call setwinvar(winid, 'delta', -1)
-    let winhl = 'Normal:'.a:hlgroup.',NormalNC:'.a:hlgroup.',Search:'
+    let winhl = 'Normal:'.a:hlgroup.',Search:'
     call s:nvim_add_related(winid, a:winid, 'border', winhl, a:related)
   endif
 endfunction
@@ -306,13 +309,13 @@ function! coc#float#nvim_close_btn(config, winid, border, hlgroup, related) abor
   else
     let bufnr = coc#float#create_buf(0, ['X'])
     noa let winid = nvim_open_win(bufnr, 0, config)
-    let winhl = 'Normal:'.a:hlgroup.',NormalNC:'.a:hlgroup
+    let winhl = 'Normal:'.a:hlgroup.',Search:'
     call s:nvim_add_related(winid, a:winid, 'close', winhl, a:related)
   endif
 endfunction
 
 " Create padding window by config of current window & border config
-function! coc#float#nvim_right_pad(config, winid, related) abort
+function! coc#float#nvim_right_pad(config, winid, shadow, related) abort
   let winid = coc#float#get_related(a:winid, 'pad')
   let config = {
         \ 'relative': a:config['relative'],
@@ -325,6 +328,9 @@ function! coc#float#nvim_right_pad(config, winid, related) abort
         \ }
   if has('nvim-0.5.1')
     let config['zindex'] = 300
+  endif
+  if has('nvim-0.5.0') && a:shadow
+    let config['border'] = 'shadow'
   endif
   if winid && nvim_win_is_valid(winid)
     if has('nvim-0.5.0')
@@ -454,7 +460,7 @@ function! coc#float#nvim_scrollbar(winid) abort
   if ch <= height || height <= 1
     " no scrollbar, remove exists
     if id
-      call s:close_win(id)
+      call s:close_win(id, 1)
     endif
     return
   endif
@@ -474,7 +480,10 @@ function! coc#float#nvim_scrollbar(winid) abort
         \ 'style': 'minimal',
         \ }
   if has('nvim-0.5.1')
-    let opts['zindex'] = 300
+    let opts['zindex'] = get(config, 'zindex', 50)
+  endif
+  if has('nvim-0.5.0') && s:has_shadow(config)
+    let opts['border'] = 'shadow'
   endif
   if id
     call nvim_win_set_config(id, opts)
@@ -511,9 +520,9 @@ function! coc#float#nvim_scrollbar(winid) abort
   call nvim_buf_clear_namespace(sbuf, -1, 0, -1)
   for idx in range(0, height - 1)
     if idx >= start && idx < start + thumb_height
-      call nvim_buf_add_highlight(sbuf, -1, 'PmenuThumb', idx, 0, 1)
+      call nvim_buf_add_highlight(sbuf, -1, 'CocFloatThumb', idx, 0, 1)
     else
-      call nvim_buf_add_highlight(sbuf, -1, 'PmenuSbar', idx, 0, 1)
+      call nvim_buf_add_highlight(sbuf, -1, 'CocFloatSbar', idx, 0, 1)
     endif
   endfor
 endfunction
@@ -549,9 +558,10 @@ function! coc#float#create_border_lines(border, borderchars, title, width, heigh
 endfunction
 
 " Close float window by id
-function! coc#float#close(winid) abort
+function! coc#float#close(winid, ...) abort
+  let noautocmd = get(a:, 1, 0)
   call coc#float#close_related(a:winid)
-  call s:close_win(a:winid)
+  call s:close_win(a:winid, noautocmd)
   return 1
 endfunction
 
@@ -610,8 +620,8 @@ function! coc#float#scrollable(winid) abort
   endif
   if s:is_vim
     let pos = popup_getpos(a:winid)
-    if get(popup_getoptions(a:winid), 'scrollbar', 0)
-      return get(pos, 'scrollbar', 0)
+    if get(pos, 'scrollbar', 0)
+      return 1
     endif
     let ch = coc#float#content_height(bufnr, pos['core_width'], getwinvar(a:winid, '&wrap'))
     return ch > pos['core_height']
@@ -685,15 +695,10 @@ function! coc#float#content_height(bufnr, width, wrap) abort
     return 0
   endif
   if !a:wrap
-    return has('nvim') ? nvim_buf_line_count(a:bufnr) : len(getbufline(a:bufnr, 1, '$'))
+    return coc#compat#buf_line_count(a:bufnr)
   endif
   let lines = has('nvim') ? nvim_buf_get_lines(a:bufnr, 0, -1, 0) : getbufline(a:bufnr, 1, '$')
-  let total = 0
-  for line in lines
-    let dw = max([1, strdisplaywidth(line)])
-    let total += float2nr(ceil(str2float(string(dw))/a:width))
-  endfor
-  return total
+  return coc#string#content_height(lines, a:width)
 endfunction
 
 function! coc#float#nvim_refresh_scrollbar(winid) abort
@@ -728,7 +733,7 @@ function! coc#float#close_related(winid, ...) abort
     let curr = coc#window#get_var(id, 'kind', '')
     if empty(kind) || curr ==# kind
       if curr == 'list'
-        call coc#float#close(id)
+        call coc#float#close(id, 1)
       elseif s:is_vim
         " vim doesn't throw
         noa call popup_close(id)
@@ -768,7 +773,7 @@ function! coc#float#vim_buttons(winid, config) abort
   let btns = get(a:config, 'buttons', [])
   if empty(btns)
     if winid
-      call s:close_win(winid)
+      call s:close_win(winid, 1)
       " fix padding
       let opts = popup_getoptions(a:winid)
       let padding = get(opts, 'padding', v:null)
@@ -1123,7 +1128,7 @@ function! s:gen_filter_keys(line) abort
   return [cols, used]
 endfunction
 
-function! s:close_win(winid) abort
+function! s:close_win(winid, noautocmd) abort
   if a:winid <= 0
     return
   endif
@@ -1132,7 +1137,11 @@ function! s:close_win(winid) abort
     call popup_close(a:winid)
   else
     if nvim_win_is_valid(a:winid)
-      call nvim_win_close(a:winid, 1)
+      if a:noautocmd
+        noa call nvim_win_close(a:winid, 1)
+      else
+        call nvim_win_close(a:winid, 1)
+      endif
     endif
   endif
 endfunction
@@ -1312,7 +1321,7 @@ endfunction
 function! s:set_float_defaults(winid, config) abort
   if !s:is_vim
     let hlgroup = get(a:config, 'highlight', 'CocFloating')
-    call setwinvar(a:winid, '&winhl', 'Normal:'.hlgroup.',NormalNC:'.hlgroup.',FoldColumn:'.hlgroup.',Search:')
+    call setwinvar(a:winid, '&winhl', 'Normal:'.hlgroup.',FoldColumn:'.hlgroup.',Search:')
     call setwinvar(a:winid, 'border', get(a:config, 'border', []))
     call setwinvar(a:winid, 'scrollinside', get(a:config, 'scrollinside', 0))
     if !get(a:config, 'nopad', 0)
@@ -1356,7 +1365,7 @@ function! s:nvim_add_related(winid, target, kind, winhl, related) abort
   endif
   " minimal not work
   if !has('nvim-0.4.3')
-    call setwinvar(a:winid, '&colorcolumn', 0)
+    call setwinvar(a:winid, '&colorcolumn', '')
     call setwinvar(a:winid, '&number', 0)
     call setwinvar(a:winid, '&relativenumber', 0)
     call setwinvar(a:winid, '&foldcolumn', 0)
@@ -1427,4 +1436,10 @@ function! s:get_borderhighlight(config) abort
   endif
   let highlight = type(borderhighlight) == 3 ? borderhighlight[0] : borderhighlight
   return coc#highlight#compose_hlgroup(highlight, hlgroup)
+endfunction
+
+function! s:has_shadow(config) abort
+  let border = get(a:config, 'border', [])
+  let filtered = filter(copy(border), 'type(v:val) == 3 && get(v:val, 1, "") ==# "FloatShadow"')
+  return len(filtered) > 0
 endfunction

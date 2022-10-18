@@ -31,3 +31,4 @@ plugged/**/.gitignore
 .DS_Store
 *.yml
 tags
+.tmp

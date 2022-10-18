@@ -182,8 +182,8 @@ set ttyfast
 map <leader>pp :setlocal paste!<CR>
 
 set undofile
-set undodir=~/.vimtmp/undo
-set dir=~/.vimtmp/swap
+set undodir=~/.vim/.tmp/undo
+set dir=~/.vim/.tmp/swap
 
 "展开当前文件所在目录
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'

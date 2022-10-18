@@ -88,8 +88,10 @@ while [ -n "$1" ]; do
   esac
 done
 
+# Version specific flags, which exist in vim but not nvim or other way around
+# vim: --not-a-term: silences a warning
 IS_NVIM=$($VIM_EXE --version | grep -cm1 NVIM)
-VERSION_OPTIONS=$([ "$IS_NVIM" ] && echo '' || echo '--not-a-term')
+VERSION_OPTIONS=$([ "$IS_NVIM" -ne 0 ] && echo '--headless' || echo '--not-a-term')
 
 RUN_VIM="${VIM_EXE} -N --clean ${VERSION_OPTIONS}"
 RUN_TEST="${RUN_VIM} -S lib/run_test.vim"
@@ -99,6 +101,21 @@ RUN_TEST="${RUN_VIM} -S lib/run_test.vim"
 # variable substitution
 if [ "${out_fd}" = "1" ]; then
   exec 3>&1
+fi
+
+# Basic pre-flight check that vim and python work
+# ffs neovim https://github.com/neovim/neovim/issues/14438
+if ${RUN_VIM} -u support/test_python3.vim .fail; then
+  rm -f .fail
+  echo "$VIM_EXE appears to have working python3 support. Let's go..."
+else
+  cat .fail
+  rm -f .fail
+  echo ""
+  echo ""
+  echo "ERROR: $VIM_EXE does not appear to have working python3 support."
+  echo "ERROR: Cannot continue"
+  exit 1
 fi
 
 if [ -z "$VIMSPECTOR_MIMODE" ]; then

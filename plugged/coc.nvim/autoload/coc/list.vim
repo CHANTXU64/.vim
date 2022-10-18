@@ -102,9 +102,11 @@ function! coc#list#setup(source)
 endfunction
 
 function! coc#list#select(bufnr, line) abort
-  call sign_unplace(s:sign_group, { 'buffer': a:bufnr })
-  if a:line > 0
-    call sign_place(6, s:sign_group, 'CocListCurrent', a:bufnr, {'lnum': a:line})
+  if !empty(a:bufnr) && bufloaded(a:bufnr)
+    call sign_unplace(s:sign_group, { 'buffer': a:bufnr })
+    if a:line > 0
+      call sign_place(6, s:sign_group, 'CocListCurrent', a:bufnr, {'lnum': a:line})
+    endif
   endif
 endfunction
 
@@ -192,6 +194,7 @@ function! coc#list#preview(lines, config) abort
     let filetype = get(s:filetype_map, extname, '')
   endif
   let range = get(a:config, 'range', v:null)
+  let targetRange = get(a:config, 'targetRange', v:null)
   let hlGroup = get(a:config, 'hlGroup', 'Search')
   let lnum = get(a:config, 'lnum', 1)
   let position = get(a:config, 'position', 'below')
@@ -260,8 +263,14 @@ function! coc#list#preview(lines, config) abort
     " vim send <esc> to buffer on FocusLost, <C-w> and other cases
     call coc#compat#execute(winid, 'nnoremap <silent><nowait><buffer> <esc> :call CocActionAsync("listCancel")<CR>')
   endif
+  if !empty(targetRange)
+    for lnum in range(targetRange['start']['line'] + 1, targetRange['end']['line'] + 1)
+      call sign_place(0, 'CocCursorLine', 'CocListCurrent', bufnr, {'lnum': lnum})
+    endfor
+  else
+    call sign_unplace('CocCursorLine', { 'buffer': bufnr })
+  endif
   if !empty(range)
-    call sign_place(1, 'CocCursorLine', 'CocCurrentLine', bufnr, {'lnum': lnum})
     call coc#highlight#match_ranges(winid, bufnr, [range], hlGroup, 10)
   endif
 endfunction

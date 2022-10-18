@@ -759,6 +759,11 @@ g:Lf_PreviewPopupWidth                          *g:Lf_PreviewPopupWidth*
 
     Default value is 0.
 
+g:Lf_PreviewScrollStepSize                      *g:Lf_PreviewScrollStepSize*
+    Specify how many rows will be scrolled at once in the preview window.
+
+    Default value is 1.
+
 g:Lf_PopupWidth                                 *g:Lf_PopupWidth*
     Specify the width of the popup window or floating window when LeaderF is
     in popup mode. `Popup mode` is when |g:Lf_WindowPosition| is 'popup' or '--popup'
@@ -1001,6 +1006,24 @@ g:Lf_SpinSymbols                                *g:Lf_SpinSymbols*
     For Linux platform, the default value is ['△', '▲', '▷', '▶', '▽', '▼', '◁', '◀'],
     for Windows and MacOS, the default value is ['🌘', '🌗', '🌖', '🌕', '🌔', '🌓', '🌒', '🌑']
 
+g:Lf_FileActions                                *g:Lf_FileActions*
+    Specify the command to handle the user seleted file instead the default
+    vim edit command.
+
+    e.g.: >
+    " _vimrc or .vimrc adding the following code
+    let g:Lf_FileActions = { '.pdf': '!start'
+                           \,'.doc':'!start'
+                           \,'.docx':'!start'
+                           \,'.odt':'!start'
+                           \,'.xlsx':'!start'
+                           \,'.jpg':'!start'
+                           \}
+<
+    then if the user select "da\db\c.pdf", leaderf will execute command as following: >
+    :!start da\db\c.pdf
+<
+    to open "da\db\c.pdf" with pdfreader in Windows OS.
 ==============================================================================
 USAGE                                           *leaderf-usage*
 

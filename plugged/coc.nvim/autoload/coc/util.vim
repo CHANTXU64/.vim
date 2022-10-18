@@ -2,7 +2,7 @@ scriptencoding utf-8
 let s:root = expand('<sfile>:h:h:h')
 let s:is_win = has('win32') || has('win64')
 let s:is_vim = !has('nvim')
-let s:vim_api_version = 31
+let s:vim_api_version = 32
 
 function! coc#util#remote_fns(name)
   let fns = ['init', 'complete', 'should_complete', 'refresh', 'get_startcol', 'on_complete', 'on_enter']
@@ -89,7 +89,7 @@ endfunction
 
 function! coc#util#path_replace_patterns() abort
   if has('win32unix') && exists('g:coc_cygqwin_path_prefixes')
-    echohl WarningMsg 
+    echohl WarningMsg
     echon 'g:coc_cygqwin_path_prefixes is deprecated, use g:coc_uri_prefix_replace_patterns instead' 
     echohl None
     return g:coc_cygqwin_path_prefixes
@@ -115,9 +115,6 @@ function! coc#util#check_refresh(bufnr)
   endif
   if getbufvar(a:bufnr, 'coc_diagnostic_disable', 0)
     return 0
-  endif
-  if get(g: , 'EasyMotion_loaded', 0)
-    return EasyMotion#is_active() != 1
   endif
   return 1
 endfunction
@@ -294,7 +291,6 @@ function! coc#util#vim_info()
         \ 'pid': coc#util#getpid(),
         \ 'filetypeMap': get(g:, 'coc_filetype_map', {}),
         \ 'version': coc#util#version(),
-        \ 'completeOpt': &completeopt,
         \ 'pumevent': 1,
         \ 'isVim': has('nvim') ? v:false : v:true,
         \ 'isCygwin': has('win32unix') ? v:true : v:false,
@@ -309,12 +305,13 @@ function! coc#util#vim_info()
         \ 'guicursor': &guicursor,
         \ 'pumwidth': exists('&pumwidth') ? &pumwidth : 15,
         \ 'tabCount': tabpagenr('$'),
-        \ 'updateHighlight': has('nvim-0.5.0') || has('patch-8.1.1719') ? v:true : v:false,
+        \ 'updateHighlight': has('nvim-0.5.0') || has('textprop') ? v:true : v:false,
         \ 'vimCommands': get(g:, 'coc_vim_commands', []),
         \ 'sign': exists('*sign_place') && exists('*sign_unplace'),
         \ 'ambiguousIsNarrow': &ambiwidth ==# 'single' ? v:true : v:false,
-        \ 'textprop': has('textprop') && has('patch-8.1.1719') && !has('nvim') ? v:true : v:false,
-        \ 'dialog': has('nvim-0.4.0') || has('patch-8.2.0750') ? v:true : v:false,
+        \ 'textprop': has('textprop') ? v:true : v:false,
+        \ 'virtualText': has('nvim-0.5.0') || has('patch-9.0.0067') ? v:true : v:false,
+        \ 'dialog': has('nvim-0.4.0') || has('popupwin') ? v:true : v:false,
         \ 'semanticHighlights': coc#util#semantic_hlgroups()
         \}
 endfunction
@@ -475,37 +472,45 @@ function! coc#util#get_indentkeys() abort
   return &indentkeys
 endfunction
 
-function! coc#util#get_bufoptions(bufnr) abort
+function! coc#util#get_bufoptions(bufnr, max) abort
   if !bufloaded(a:bufnr) | return v:null | endif
   let bufname = bufname(a:bufnr)
   let buftype = getbufvar(a:bufnr, '&buftype')
-  let winid = bufwinid(a:bufnr)
-  let size = -1
-  if bufnr('%') == a:bufnr
-    let size = line2byte(line("$") + 1)
-  elseif !empty(bufname)
-    let size = getfsize(bufname)
-  endif
+  let size = coc#util#bufsize(a:bufnr)
   let lines = v:null
-  if getbufvar(a:bufnr, 'coc_enabled', 1) && (buftype == '' || buftype == 'acwrite') && size < get(g:, 'coc_max_filesize', 2097152)
+  if getbufvar(a:bufnr, 'coc_enabled', 1)
+        \ && (buftype == '' || buftype == 'acwrite' || getbufvar(a:bufnr, 'coc_force_attach', 0))
+        \ && size != -2
+        \ && size < a:max
     let lines = getbufline(a:bufnr, 1, '$')
   endif
   return {
         \ 'bufnr': a:bufnr,
         \ 'size': size,
         \ 'lines': lines,
-        \ 'winid': winid,
+        \ 'winid': bufwinid(a:bufnr),
         \ 'bufname': bufname,
         \ 'buftype': buftype,
         \ 'previewwindow': v:false,
         \ 'eol': getbufvar(a:bufnr, '&eol'),
-        \ 'indentkeys': coc#util#get_indentkeys(),
         \ 'variables': coc#util#variables(a:bufnr),
         \ 'filetype': getbufvar(a:bufnr, '&filetype'),
+        \ 'lisp': getbufvar(a:bufnr, '&lisp'),
         \ 'iskeyword': getbufvar(a:bufnr, '&iskeyword'),
         \ 'changedtick': getbufvar(a:bufnr, 'changedtick'),
         \ 'fullpath': empty(bufname) ? '' : fnamemodify(bufname, ':p'),
         \}
+endfunction
+
+function! coc#util#bufsize(bufnr) abort
+  if bufnr('%') == a:bufnr
+    return line2byte(line("$") + 1)
+  endif
+  let bufname = bufname(a:bufnr)
+  if !getbufvar(a:bufnr, '&modified') && filereadable(bufname)
+    return getfsize(bufname)
+  endif
+  return strlen(join(getbufline(a:bufnr, 1, '$'), '\n'))
 endfunction
 
 function! coc#util#get_config_home()
@@ -546,7 +551,7 @@ function! coc#util#get_data_home()
     endif
   endif
   if !isdirectory(dir)
-    call coc#notify#create(['creating data directory: '.dir], {
+    call coc#notify#create(['creating coc.nvim data directory: '.dir], {
           \ 'borderhighlight': 'CocInfoSign',
           \ 'timeout': 5000,
           \ 'kind': 'info',
@@ -564,8 +569,16 @@ function! coc#util#get_complete_option()
   let line = getline(pos[1])
   let input = matchstr(strpart(line, 0, pos[2] - 1), '\k*$')
   let col = pos[2] - strlen(input)
+  let position = {
+      \ 'line': line('.')-1,
+      \ 'character': strchars(strpart(getline('.'), 0, col('.') - 1))
+      \ }
+  let word = matchstr(strpart(line, col - 1), '^\k\+')
+  let followWord = len(word) > 0 ? strcharpart(word, strchars(input)) : ''
   return {
-        \ 'word': matchstr(strpart(line, col - 1), '^\k\+'),
+        \ 'word': word,
+        \ 'followWord': followWord,
+        \ 'position': position,
         \ 'input': empty(input) ? '' : input,
         \ 'line': line,
         \ 'filetype': &filetype,
@@ -577,7 +590,6 @@ function! coc#util#get_complete_option()
         \ 'changedtick': b:changedtick,
         \ 'blacklist': get(b:, 'coc_suggest_blacklist', []),
         \ 'disabled': get(b:, 'coc_disabled_sources', []),
-        \ 'indentkeys': coc#util#get_indentkeys()
         \}
 endfunction
 
@@ -604,6 +616,16 @@ function! coc#util#get_changeinfo()
         \ 'line': getline('.'),
         \ 'changedtick': b:changedtick,
         \}
+endfunction
+
+" Get the valid position from line, character of current buffer
+function! coc#util#valid_position(line, character) abort
+  let total = line('$') - 1
+  if a:line > total
+    return [total, 0]
+  endif
+  let max = strchars(getline(a:line + 1)) - (mode() ==# 'n' ? 1 : 0)
+  return a:character > max ? [a:line, max] : [a:line, a:character]
 endfunction
 
 function! s:visible_ranges(winid) abort

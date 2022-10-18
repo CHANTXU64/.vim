@@ -14,9 +14,13 @@
 " limitations under the License.
 
 if !has( 'python3' )
-  echohl WarningMsg
-  echom 'Vimspector unavailable: Requires Vim compiled with +python3'
-  echohl None
+  augroup VimspectorNoPython
+    autocmd!
+    autocmd VimEnter *
+          \   echohl WarningMsg
+          \ | echom 'Vimspector unavailable: Requires Vim compiled with +python3'
+          \ | echohl None
+  augroup END
   finish
 endif
 
@@ -108,20 +112,27 @@ nnoremap <silent> <Plug>VimspectorJumpToNextBreakpoint
 nnoremap <silent> <Plug>VimspectorJumpToPreviousBreakpoint
       \ :<c-u>call <SID>SetRepeat( "\<Plug>VimspectorJumpToPreviousBreakpoint" )<CR>
       \ :<c-u>call vimspector#JumpToPreviousBreakpoint()<CR>
+nnoremap <silent> <Plug>VimspectorJumpToProgramCounter
+      \ :<c-u>call vimspector#JumpToProgramCounter()<CR>
 
 nnoremap <silent> <Plug>VimspectorBreakpoints
       \ :<c-u>call vimspector#ListBreakpoints()<CR>
+nnoremap <silent> <Plug>VimspectorDisassemble
+      \ :<c-u>call vimspector#ShowDisassembly()<CR>
 
 if s:mappings ==# 'VISUAL_STUDIO'
   nmap <F5>         <Plug>VimspectorContinue
   nmap <S-F5>       <Plug>VimspectorStop
   nmap <C-S-F5>     <Plug>VimspectorRestart
   nmap <F6>         <Plug>VimspectorPause
+  nmap <F8>         <Plug>VimspectorJumpToNextBreakpoint
+  nmap <S-F8>       <Plug>VimspectorJumpToPreviousBreakpoint
   nmap <F9>         <Plug>VimspectorToggleBreakpoint
   nmap <S-F9>       <Plug>VimspectorAddFunctionBreakpoint
   nmap <F10>        <Plug>VimspectorStepOver
   nmap <F11>        <Plug>VimspectorStepInto
   nmap <S-F11>      <Plug>VimspectorStepOut
+  nmap <M-8>        <Plug>VimspectorDisassemble
 elseif s:mappings ==# 'HUMAN'
   nmap <F5>         <Plug>VimspectorContinue
   nmap <leader><F5> <Plug>VimspectorLaunch
@@ -140,7 +151,7 @@ endif
 command! -bar -nargs=1 -complete=custom,vimspector#CompleteExpr
       \ VimspectorWatch
       \ call vimspector#AddWatch( <f-args> )
-command! -bar -nargs=? -complete=custom,vimspector#CompleteOutput
+command! -bar -nargs=? -complete=customlist,vimspector#CompleteOutput
       \ VimspectorShowOutput
       \ call vimspector#ShowOutput( <f-args> )
 command! -bar
@@ -158,6 +169,9 @@ command! -bar
 command! -bar
       \ VimspectorBreakpoints
       \ call vimspector#ListBreakpoints()
+command! -bar
+      \ VimspectorDisassemble
+      \ call vimspector#ShowDisassembly()
 
 " Installer commands
 command! -bar -bang -nargs=* -complete=custom,vimspector#CompleteInstall
@@ -202,4 +216,3 @@ augroup END
 " boilerplate {{{
 call s:restore_cpo()
 " }}}
-
