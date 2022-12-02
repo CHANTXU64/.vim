@@ -4,7 +4,7 @@
 let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd',
       \'coc-markdownlint', 'coc-snippets', 'coc-css', 'coc-tabnine',
       \'coc-html', 'coc-cmake', 'coc-pyright', 'coc-jedi', 'coc-git',
-      \'coc-translator']
+      \'coc-translator', 'coc-go']
 nnoremap <silent> <leader>h :call CocActionAsync('doHover')<cr>
 nmap gd <Plug>(coc-definition)
 nmap gD <Plug>(coc-implementation)
