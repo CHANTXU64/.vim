@@ -26,9 +26,17 @@ onoremap 0 ^
 nnoremap ^ 0
 xnoremap ^ 0
 onoremap ^ 0
+nnoremap _ 0
+xnoremap _ 0
+onoremap _ 0
 
 nnoremap gH K
 xnoremap gH K
+
+xnoremap il g_o0
+onoremap il :normal vil<CR>
+xnoremap al $o0
+onoremap al :normal val<CR>
 
 nnoremap t f
 nnoremap f t
@@ -139,9 +147,10 @@ set backspace=eol,start,indent
 
 set cursorline
 set number
-set relativenumber
+set signcolumn=number
+" set relativenumber
 
-set colorcolumn=81
+set colorcolumn=80
 
 set ignorecase
 set smartcase
@@ -182,8 +191,13 @@ set ttyfast
 map <leader>pp :setlocal paste!<CR>
 
 set undofile
-set undodir=~/.vim/.tmp/undo
-set dir=~/.vim/.tmp/swap
+if has('nvim')
+    set undodir=~/.vim/.tmp/neovim_undo
+    set dir=~/.vim/.tmp/neovim_swap
+else
+    set undodir=~/.vim/.tmp/undo
+    set dir=~/.vim/.tmp/swap
+endif
 
 "展开当前文件所在目录
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
@@ -307,4 +321,8 @@ nmap Q :registers<CR>
 
 " map <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>
 " map <C-D> <C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E><C-E>
+
+if has('nvim')
+    so ~/.vim/nvim.vim
+endif
 

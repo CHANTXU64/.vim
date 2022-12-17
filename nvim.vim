@@ -1,13 +1,4 @@
-set guicursor=
-set noruler
+" vim: et ts=2 sts=2 sw=2 tw=80
 
-lua << EOF
-require'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true,
-    disable = { "cpp", "lua" },
-  },
-  textobjects = { enable = true },
-}
-EOF
+set guicursor=i:block
 

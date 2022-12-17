@@ -1,18 +1,51 @@
 """""""""""""""""""""""""""""""
 "" => coc
 """""""""""""""""""""""""""""""
+let g:coc_config_home = '~/.vim/'
 let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd',
       \'coc-markdownlint', 'coc-snippets', 'coc-css', 'coc-tabnine',
       \'coc-html', 'coc-cmake', 'coc-pyright', 'coc-jedi', 'coc-git',
       \'coc-translator', 'coc-go']
-nnoremap <silent> <leader>h :call CocActionAsync('doHover')<cr>
+nnoremap <silent> <leader>h :call CocActionAsync('doHover')<CR>
+" nnoremap <silent> K :call ShowDocumentation()<CR>
+" function! ShowDocumentation()
+"   if CocAction('hasProvider', 'hover')
+"     call CocActionAsync('doHover')
+"   else
+"     call feedkeys('K', 'in')
+"   endif
+" endfunction
 nmap gd <Plug>(coc-definition)
-nmap gD <Plug>(coc-implementation)
+nmap gD <Plug>(coc-type-definition)
+nmap gi <Plug>(coc-implementation)
 nmap gr <Plug>(coc-references)
-vmap <leader>fs <Plug>(coc-format-selected)
-nmap <leader>fs <Plug>(coc-format-selected)
-nmap <leader>fae <Plug>(coc-format)
-nmap <leader>r <Plug>(coc-rename)
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>ff <leader>fil
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>aa <leader>ail
+nmap <leader>ac <Plug>(coc-codeaction-cursor)
+" Remap keys for apply code actions affect whole buffer.
+" nmap <leader>as  <Plug>(coc-codeaction-source)
+" Apply the most preferred quickfix action to fix diagnostic on the current line.
+" nmap <leader>qf  <Plug>(coc-fix-current)
+" Remap keys for apply refactor code actions.
+nmap <silent> <leader>re <Plug>(coc-codeaction-refactor)
+xmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+nmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+nmap <silent> <leader>rr <leader>ril
+" Run the Code Lens action on the current line.
+" nmap <leader>cl  <Plug>(coc-codelens-action)
+nmap <silent> <leader>rn <Plug>(coc-rename)
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
 autocmd CursorHold * silent call FuncCursorHold()
 hi CocHighlightText ctermbg=254
 hi CocErrorSign ctermbg=248 ctermfg=9
@@ -39,6 +72,16 @@ if exists('*CocActionAsync')
   call CocActionAsync('highlight')
 endif
 endfunction
+
+" Remap <C-f> and <C-b> for scroll float windows/popups.
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
