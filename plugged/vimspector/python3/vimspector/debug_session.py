@@ -70,7 +70,9 @@ class DebugSession( object ):
     self._disassemblyView: disassembly.DisassemblyView = None
 
     self._breakpoints = breakpoints.ProjectBreakpoints(
-      self._render_emitter, self._IsPCPresentAt )
+      self._render_emitter,
+      self._IsPCPresentAt,
+      self._disassemblyView )
     self._saved_variables_data = None
 
     self._splash_screen = None
@@ -520,6 +522,7 @@ class DebugSession( object ):
       self._outputView = None
       self._codeView = None
       self._disassemblyView = None
+      self._breakpoints.SetDisassemblyManager( None )
       self._remote_term = None
       self._uiTab = None
 
@@ -651,6 +654,7 @@ class DebugSession( object ):
       'arguments': arguments,
     } )
 
+    # TODO: WHy is this different from StepInto and StepOut
     self._stackTraceView.OnContinued()
     self.ClearCurrentPC()
 
@@ -813,14 +817,18 @@ class DebugSession( object ):
       return
 
     if not self._server_capabilities.get( 'supportsDisassembleRequest', False ):
-      utils.UserMessage( "Sorry, server desn't suport that" )
+      utils.UserMessage( "Sorry, server doesn't support that" )
       return
 
     with utils.LetCurrentWindow( self._codeView._window ):
       vim.command( f'rightbelow { settings.Int( "disassembly_height" ) }new' )
-      self._disassemblyView = disassembly.DisassemblyView( vim.current.window,
-                                                           self._connection,
-                                                           self._api_prefix )
+      self._disassemblyView = disassembly.DisassemblyView(
+        vim.current.window,
+        self._connection,
+        self._api_prefix,
+        self._render_emitter )
+
+      self._breakpoints.SetDisassemblyManager( self._disassemblyView )
 
       utils.UpdateSessionWindows( {
         'disassembly': utils.WindowID( vim.current.window, self._uiTab )
@@ -829,6 +837,11 @@ class DebugSession( object ):
       self._disassemblyView.SetCurrentFrame(
         self._stackTraceView.GetCurrentFrame(),
         True )
+
+
+  def OnDisassemblyWindowScrolled( self, win_id ):
+    if self._disassemblyView:
+      self._disassemblyView.OnWindowScrolled( win_id )
 
 
   @IfConnected()
@@ -1457,6 +1470,9 @@ class DebugSession( object ):
 
     return ssh
 
+  def _GetShellCommand( self ):
+    return []
+
   def _GetDockerCommand( self, remote ):
     docker = [ 'docker', 'exec' ]
     docker.append( remote[ 'container' ] )
@@ -1472,7 +1488,9 @@ class DebugSession( object ):
       return self._GetSSHCommand( remote )
     elif is_docker_cmd:
       return self._GetDockerCommand( remote )
-    raise ValueError( 'Could not determine remote exec command' )
+    else:
+      # if it's neither docker nor ssh, run locally
+      return self._GetShellCommand()
 
 
   def _GetCommands( self, remote, pfx ):
@@ -1788,6 +1806,8 @@ class DebugSession( object ):
     self._variablesView.ConnectionClosed()
     self._outputView.ConnectionClosed()
     self._breakpoints.ConnectionClosed()
+    if self._disassemblyView:
+      self._disassemblyView.ConnectionClosed()
 
     self._ResetServerState()
 

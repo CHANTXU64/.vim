@@ -1,11 +1,65 @@
 scriptencoding utf-8
 
-function! coc#string#get_character(line, col) abort
-  return strchars(strpart(a:line, 0, a:col - 1))
-endfunction
-
 function! coc#string#last_character(line) abort
   return strcharpart(a:line, strchars(a:line) - 1, 1)
+endfunction
+
+" Get utf16 code unit index from col (0 based)
+function! coc#string#character_index(line, byteIdx) abort
+  if a:byteIdx <= 0
+    return 0
+  endif
+  let i = 0
+  for char in split(strpart(a:line, 0, a:byteIdx), '\zs')
+    let i += char2nr(char) > 65535 ? 2 : 1
+  endfor
+  return i
+endfunction
+
+function! coc#string#common_start(text, other) abort
+  let arr = split(a:text, '\zs')
+  let other = split(a:other, '\zs')
+  let total = min([len(arr), len(other)])
+  if total == 0
+    return 0
+  endif
+  for i in range(0, total - 1)
+    if arr[i] !=# other[i]
+      return i
+    endif
+  endfor
+  return total
+endfunction
+
+" Convert utf16 character index to byte index
+function! coc#string#byte_index(line, character) abort
+  if a:character <= 0
+    return 0
+  endif
+  " code unit index
+  let i = 0
+  let len = 0
+  for char in split(a:line, '\zs')
+    let i += char2nr(char) > 65535 ? 2 : 1
+    let len += strlen(char)
+    if i >= a:character
+      break
+    endif
+  endfor
+  return len
+endfunction
+
+" Get character count from start col and end col, 1 based
+function! coc#string#get_char_count(text, start_col, end_col) abort
+  return strchars(strpart(a:text, a:start_col - 1, a:end_col - a:start_col))
+endfunction
+
+function! coc#string#character_length(text) abort
+  let i = 0
+  for char in split(a:text, '\zs')
+    let i += char2nr(char) > 65535 ? 2 : 1
+  endfor
+  return i
 endfunction
 
 function! coc#string#reflow(lines, width) abort

@@ -48,9 +48,10 @@ SetUpLogging( _logger )
 
 
 def BufferNumberForFile( file_name, create = True ):
-  return int( vim.eval( "bufnr( '{0}', {1} )".format(
-    Escape( file_name ),
-    int( create ) ) ) )
+  with NoAutocommands():
+    return int( vim.eval( "bufnr( '{0}', {1} )".format(
+      Escape( file_name ),
+      int( create ) ) ) )
 
 
 def BufferForFile( file_name ):
@@ -59,6 +60,17 @@ def BufferForFile( file_name ):
 
 def BufferExists( file_name ):
   return bool( int ( vim.eval( f"bufexists( '{ Escape( file_name ) }' )" ) ) )
+
+
+def BufferLineValue( file_name: str, line_num: int ) -> str:
+  if not BufferExists( file_name ):
+    return ''
+  Call( 'bufload', file_name )
+  buf = BufferForFile( file_name )
+  try:
+    return buf[ line_num - 1 ]
+  except IndexError:
+    return ''
 
 
 def NewEmptyBuffer():
@@ -236,10 +248,7 @@ def RestoreCurrentBuffer( window ):
     yield
   finally:
     if window.valid:
-      with RestoreCurrentWindow():
-        with NoAutocommands():
-          JumpToWindow( window )
-          vim.current.buffer = old_buffer
+      Call( 'win_execute', WindowID( window ), f'bu { old_buffer.number }' )
 
 
 @contextlib.contextmanager
@@ -753,7 +762,7 @@ def Exists( expr ):
   return int( vim.eval( f'exists( "{ expr }" )' ) )
 
 
-def SetSyntax( current_syntax, syntax, *args ):
+def SetSyntax( current_syntax: str, syntax: str, *buffers ):
   if not syntax:
     syntax = ''
 
@@ -763,7 +772,7 @@ def SetSyntax( current_syntax, syntax, *args ):
   # We use set syn= because just setting vim.Buffer.options[ 'syntax' ]
   # doesn't actually trigger the Syntax autocommand, and i'm not sure that
   # 'doautocmd Syntax' is the right solution or not
-  for buf in args:
+  for buf in buffers:
     Call( 'setbufvar', buf.number, '&syntax', syntax )
 
   return syntax
@@ -808,7 +817,7 @@ def DisplaySplash( api_prefix: str, splash, text: typing.Union[ str, list ] ):
 
 def HideSplash( api_prefix, splash ):
   if splash:
-    Call( f'vimspector#internal#{api_prefix}popup#HideSplash', splash )
+    return Call( f'vimspector#internal#{api_prefix}popup#HideSplash', splash )
 
   return None
 
@@ -862,6 +871,10 @@ def WindowID( window, tab=None ):
   if tab is None:
     tab = window.tabpage
   return int( Call( 'win_getid', window.number, tab.number ) )
+
+
+def GetWindowInfo( window ):
+  return Call( 'getwininfo', WindowID( window ) )[ 0 ]
 
 
 @memoize
@@ -951,12 +964,22 @@ def Base64ToHexDump( data, base_addr ):
 
 
 def ParseAddress( addr: str ):
+  if not addr:
+    return 0
+
   base = 10
   if addr.startswith( '0x' ):
     base = 16
-  return int( addr, base )
+
+  try:
+    return int( addr, base )
+  except ValueError:
+    return 0
 
 
 def Hex( val: int ):
   # TODO: is 16 always the right number ? what if your system is 32 bit
-  return f'0x{val:0>16x}'
+  try:
+    return f'0x{val:0>16x}'
+  except ValueError:
+    return f'0x{0:0>16x}'

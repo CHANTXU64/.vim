@@ -82,23 +82,23 @@ CodeLens~
 
 	Subseparator between codeLenses in virtual text.
 
-	Scope: `resource`, default: `" "`
+	Scope: `resource`, default: `" | "`
 
 ------------------------------------------------------------------------------
 Colors~
 							*coc-config-colors*
-"colors.filetypes"					*coc-config-colors-filetypes*
+"colors.enable"						*coc-config-colors-enable*
 
-	Filetypes that should be enabled for colors highlight feature, use "*"
-	for all filetypes.
+	Enable colors highlight feature, for termainal vim, 'termguicolors'
+	option should be enabled and the termainal support gui colors.
 
-	Scope: `resource`, default: `[]`
+	Scope: `language-overridable`, default: `false`
 
 "colors.highlightPriority"				*coc-config-colors-highlightPriority*
 
 	Priority for colors highlights, works on vim8 and neovim >= 0.6.0.
 
-	Scope: `resource`, default: `1000`
+	Scope: `application`, default: `1000`
 
 ------------------------------------------------------------------------------
 Cursors~
@@ -397,7 +397,8 @@ Dialog~
 
 "dialog.maxHeight"					*coc-config-dialog-maxHeight*
 
-	Maximum height of dialog window.
+	Maximum height of dialog window, for quickpick, it's content window's
+	height.
 
 	Scope: `application`, default: `30`
 
@@ -532,11 +533,11 @@ InlayHint~
 
 	Scope: `language-overridable`, default: `true`
 
-"inlayHint.display"					coc-config-inlayHint-display
+"inlayHint.display"					*coc-config-inlayHint-display*
 
 	Display inlay hints. Toggle with :CocCommand document.toggleInlayHint
 
-	Scope: `language-overridable`, default: true
+	Scope: `language-overridable`, default: `true`
 
 "inlayHint.parameterSeparator"				*coc-config-inlayHint-parameterSeparator*
 
@@ -565,9 +566,21 @@ InlayHint~
 ------------------------------------------------------------------------------
 Links~
 							*coc-config-links*
+"links.enable" 						*coc-config-links-enable*
+
+	Enable document links.
+
+	Scope: `language-overridable`, default: `true`
+
+"links.highlight"					*coc-config-links-highlight*
+
+	Use CocLink highlight group to highlight links.
+
+	Scope: `application`, default: `false`
+
 "links.tooltip"						*coc-config-links-tooltip*
 
-	Show tooltip of link under cursor on CursorHold, neovim only.
+	Show tooltip of link under cursor on CursorHold.
 
 	Scope: `application`, default: `false`
 
@@ -586,6 +599,12 @@ List~
 	delimited by spaces.
 
 	Scope: `application`, default: `true`
+
+"list.floatPreview" 					*coc-config-list-floatPreview*
+
+	Enable preview with float window/popup, default: `false`.
+
+	Scope: `application`, default: `false`
 
 "list.height"						*coc-config-list-height*
 
@@ -661,7 +680,7 @@ List~
 
 "list.previewToplineStyle"				*coc-config-list-previewToplineStyle*
 
-	Topline style for list previews
+	Topline style for list previews, could be "offset" or "middle".
 
 	Scope: `application`, default: `"offset"`
 
@@ -1056,12 +1075,6 @@ Signature~
 ------------------------------------------------------------------------------
 Snippet~
 							*coc-config-snippet*
-"snippet.choicesMenuPicker"				*coc-config-snippet-choicesMenuPicker*
-
-	Use menu picker instead of popup menu for choices placeholder.
-
-	Scope: `resource`, default: `false`
-
 "snippet.highlight"					*coc-config-snippet-highlight*
 
 	Use highlight group 'CocSnippetVisual' to highlight placeholders with 
@@ -1089,8 +1102,7 @@ Suggest~
 
 	Controls whether suggestions should be accepted on commit characters.
 	For example, in JavaScript, the semi-colon (`;`) can be a commit
-	character that accepts a suggestion and types that character. Requires
-	CompleteChanged event to work.
+	character that accepts a suggestion and types that character.
 
 	Scope: `language-overridable`, default: `false`
 
@@ -1161,16 +1173,16 @@ Suggest~
 
 	Scope: `application`, default: `"preview"`
 
+"suggest.enableFloat" 					*coc-config-suggest-enableFloat*
+
+	Enable float window with documentation aside with popupmenu.
+
+	Scope: `language-overridable`, default: `true"`
+
 "suggest.enablePreselect"				*coc-config-suggest-enablePreselect*
 
 	Enable preselect feature, works when |coc-config-suggest-noselect| is
 	false.
-
-	Scope: `application`, default: `true`
-
-"suggest.fixInsertedWord"				*coc-config-suggest-fixInsertedWord*
-
-	Make inserted word replace word characters after cursor position.
 
 	Scope: `application`, default: `true`
 
@@ -1184,7 +1196,7 @@ Suggest~
 	popup menu).
 
 	Note: "maxWidth" not works for popup menu, use
-	|coc-config-suggest-detailMaxLength| instead.
+	|coc-config-suggest-labelMaxLength| instead.
 
 "suggest.formatItems"					*coc-config-suggest-formatItems*
 
@@ -1198,6 +1210,12 @@ Suggest~
 
 	Scope: `language-overridable`, default: `null`
 
+"suggest.insertMode" 					*coc-config-suggest-insertMode*
+
+	Controls whether words are overwritten when accepting completions.
+
+	Scope: `language-overridable`, default: `“replace"`
+
 "suggest.ignoreRegexps"					*coc-config-suggest-ignoreRegexps*
 
 	Regexps to ignore when trigger suggest.
@@ -1209,7 +1227,7 @@ Suggest~
 	Invalid character for strip valid word when inserting text of complete
 	item.
 
-	Scope: `application`, default: `[" ","(","<","{","[","\r","\n"]`
+	Scope: `application`, default: `["\r","\n"]`
 
 "suggest.labelMaxLength"				*coc-config-suggest-labelMaxLength*
 
@@ -1427,6 +1445,13 @@ TypeHierarchy~
 ------------------------------------------------------------------------------
 Workspace~
 							*coc-config-workspace*
+"workspace.rootPatterns"				*coc-config-workspace-rootPatterns*
+
+	Root patterns to resolve workspaceFolder from parent folders of opened
+	files, resolved from up to down.
+
+	Scope: `application`, default: `[".git",".hg",".projections.json"]`
+
 "workspace.bottomUpFiletypes"				*coc-config-workspace-bottomUpFiletypes*
 
 	Filetypes that should have workspace folder should resolved from base 
@@ -1516,6 +1541,12 @@ Preferences~
 
 	Scope: `application`, default: `true`
 
+"coc.preferences.enableGFMBreaksInMarkdownDocument"	*coc-preferences-enableGFMBreaksInmakrdownDocument*
+
+	Exclude GFM breaks in markdown document.
+
+	Scope: `application`, default: `true`
+
 "coc.preferences.extensionUpdateCheck"			*coc-preferences-extensionUpdateCheck*
 
 	Interval for check extension update, could be "daily", "weekly" or
@@ -1529,24 +1560,17 @@ Preferences~
 
 	Scope: `application`, default: `true`
 
-"coc.preferences.formatOnSaveFiletypes"			*coc-preferences-formatOnSaveFiletypes*
+"coc.preferences.formatOnSave"			*coc-preferences-formatOnSave*
 
-	Filetypes that should run format on save.
+	Set to true to enable formatting on save.
 
-	Scope: `resource`, default: `[]`
+	Scope: `language-overridable`, default: `false`
 
 "coc.preferences.formatOnType"				*coc-preferences-formatOnType*
 
 	Set to true to enable formatting on typing
 
 	Scope: `language-overridable`, default: `false`
-
-"coc.preferences.formatOnTypeFiletypes"			*coc-preferences-formatOnTypeFiletypes*
-
-	Filetypes that should run format on typing. Only take effect when `coc.
-	preferences.formatOnType` set `true`
-
-	Scope: `resource`, default: `[]`
 
 "coc.preferences.jumpCommand"				*coc-preferences-jumpCommand*
 
@@ -1581,13 +1605,6 @@ Preferences~
 	with old name in the New Name field.
 
 	Scope: `application`, default: `true`
-
-"coc.preferences.rootPatterns"				*coc-preferences-rootPatterns*
-
-	Root patterns to resolve workspaceFolder from parent folders of opened
-	files, resolved from up to down.
-
-	Scope: `application`, default: `[".git",".hg",".projections.json"]`
 
 "coc.preferences.silentAutoupdate"			*coc-preferences-silentAutoupdate*
 
