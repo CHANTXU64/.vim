@@ -40,6 +40,10 @@ Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'josa42/vim-lightline-coc'
 Plug 'honza/vim-snippets'
 
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" Plug 'github/copilot.vim'
+
 " debug
 Plug 'puremourning/vimspector'
 

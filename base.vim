@@ -147,10 +147,10 @@ set backspace=eol,start,indent
 
 set cursorline
 set number
-set signcolumn=number
-" set relativenumber
+" set signcolumn=number
+set relativenumber
 
-set colorcolumn=80
+set colorcolumn=77
 
 set ignorecase
 set smartcase

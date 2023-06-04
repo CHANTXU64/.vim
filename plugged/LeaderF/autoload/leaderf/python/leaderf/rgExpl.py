@@ -107,6 +107,8 @@ class RgExplorer(Explorer):
             zero_args_options += "-v "
         if "--binary" in arguments_dict:
             zero_args_options += "--binary "
+        if "--column" in arguments_dict:
+            zero_args_options += "--column "
         if "--hidden" in arguments_dict:
             zero_args_options += "--hidden "
         if "--no-config" in arguments_dict:
@@ -127,6 +129,8 @@ class RgExplorer(Explorer):
             zero_args_options += "-U "
         if "--multiline-dotall" in arguments_dict:
             zero_args_options += "--multiline-dotall "
+        if "--crlf" in arguments_dict:
+            zero_args_options += "--crlf "
 
         one_args_options = ''
         if "--context-separator" in arguments_dict:
@@ -496,6 +500,8 @@ class RgExplManager(Manager):
                         file, line_num = m.group(1, 3)
             else:
                 m = re.match(r'^(.+?):(\d+):', line)
+                if m is None:
+                    return (None, None)
                 file, line_num = m.group(1, 2)
                 if not re.search(r"\d+_'No_Name_(\d+)'", file):
                     if not os.path.isabs(file):
@@ -556,13 +562,14 @@ class RgExplManager(Manager):
                 self._cursorline_dict[vim.current.window] = vim.current.window.options["cursorline"]
 
             lfCmd("setlocal cursorline")
-        except vim.error:
-            lfPrintTraceback()
+        except vim.error as e: # E37
+            if 'E325' not in str(e).split(':'):
+                lfPrintTraceback()
 
     def setArguments(self, arguments):
         self._arguments = arguments
         self._match_path = "--match-path" in arguments
-        self._has_column = "--column" in lfEval("get(g:, 'Lf_RgConfig', [])")
+        self._has_column = "--column" in lfEval("get(g:, 'Lf_RgConfig', [])") or "--column" in self._arguments
 
     def _getDigest(self, line, mode):
         """
@@ -804,31 +811,6 @@ class RgExplManager(Manager):
             else:
                 instance.window.options["cursorline"] = True
 
-    def _nearestAncestor(self, markers, path):
-        """
-        return the nearest ancestor path(including itself) of `path` that contains
-        one of files or directories in `markers`.
-        `markers` is a list of file or directory names.
-        """
-        if os.name == 'nt':
-            # e.g. C:\\
-            root = os.path.splitdrive(os.path.abspath(path))[0] + os.sep
-        else:
-            root = '/'
-
-        path = os.path.abspath(path)
-        while path != root:
-            for name in markers:
-                if os.path.exists(os.path.join(path, name)):
-                    return path
-            path = os.path.abspath(os.path.join(path, ".."))
-
-        for name in markers:
-            if os.path.exists(os.path.join(path, name)):
-                return path
-
-        return ""
-
     def startExplorer(self, win_pos, *args, **kwargs):
         arguments_dict = kwargs.get("arguments", {})
         if "--heading" in arguments_dict:
@@ -858,14 +840,14 @@ class RgExplManager(Manager):
         cur_buf_name = lfDecode(vim.current.buffer.name)
         fall_back = False
         if 'a' in mode:
-            working_dir = self._nearestAncestor(root_markers, self._orig_cwd)
+            working_dir = nearestAncestor(root_markers, self._orig_cwd)
             if working_dir: # there exists a root marker in nearest ancestor path
                 chdir(working_dir)
             else:
                 fall_back = True
         elif 'A' in mode:
             if cur_buf_name:
-                working_dir = self._nearestAncestor(root_markers, os.path.dirname(cur_buf_name))
+                working_dir = nearestAncestor(root_markers, os.path.dirname(cur_buf_name))
             else:
                 working_dir = ""
             if working_dir: # there exists a root marker in nearest ancestor path

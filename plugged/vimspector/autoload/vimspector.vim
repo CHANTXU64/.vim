@@ -45,7 +45,84 @@ function! s:Enabled() abort
     let s:enabled = vimspector#internal#state#Reset()
   endif
 
+  if s:enabled && py3eval( '_vimspector_session is None' )
+    " We have no active session, so create one
+    call vimspector#internal#state#NewSession( {} )
+  endif
+
   return s:enabled
+endfunction
+
+function! vimspector#NewSession( ... ) abort
+  if !s:Enabled()
+    return
+  endif
+
+  let options = {}
+  if a:0 > 0
+    call extend( options, { 'session_name': a:1 } )
+  endif
+
+  call vimspector#internal#state#NewSession( options )
+endfunction
+
+function! vimspector#SwitchToSession( name ) abort
+  if !s:Enabled()
+    return
+  endif
+
+  py3 << EOF
+s = _vimspector_session_man.FindSessionByName( vim.eval( 'a:name' ) )
+if s is not None:
+  _VimspectorSwitchTo( s )
+EOF
+endfunction
+
+function! vimspector#DestroySession( name ) abort
+  if !s:Enabled()
+    return
+  endif
+
+  py3 << EOF
+
+s = _vimspector_session_man.FindSessionByName( vim.eval( 'a:name' ) )
+if s is not None:
+  s = _vimspector_session_man.DestroyRootSession( s, _vimspector_session )
+  _VimspectorMakeActive( s )
+
+EOF
+endfunction
+
+function! vimspector#CompleteSessionName( ArgLead, CmdLine, CursorPos ) abort
+  " Don't call s:Enabled() because we don't want this function to initialise a
+  " new session
+  if !s:Initialised() || !s:enabled || py3eval( '_vimspector_session is None' )
+    return ''
+  endif
+  return py3eval( '"\n".join( _vimspector_session_man.GetSessionNames() )' )
+endfunction
+
+function! vimspector#GetSessionName() abort
+  if !s:Initialised() || !s:enabled || py3eval( '_vimspector_session is None' )
+    return ''
+  endif
+
+  return py3eval( '_vimspector_session.Name()' )
+endfunction
+
+function! vimspector#GetSessionID() abort
+  if !s:Initialised() || !s:enabled || py3eval( '_vimspector_session is None' )
+    return ''
+  endif
+
+  return py3eval( '_vimspector_session.session_id' )
+endfunction
+
+function! vimspector#RenameSession( name ) abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.name = vim.eval( 'a:name' )
 endfunction
 
 function! vimspector#Launch( ... ) abort
@@ -96,32 +173,17 @@ function! vimspector#ClearBreakpoints() abort
   py3 _vimspector_session.ClearBreakpoints()
 endfunction
 
-let s:extended_breakpoint_properties = [
-      \ { 'prop': 'condition', 'msg': 'Enter condition expression' },
-      \ { 'prop': 'hitCondition', 'msg': 'Enter hit count expression' },
-      \ { 'prop': 'logMessage',
-      \   'msg': 'Enter log expression (to make log point)' },
-    \ ]
-
-function! s:AskForInput( ... ) abort
-  return py3eval( '__import__( "vimspector", fromlist=[ "utils" ] )'
-                \ . '.utils.AskForInput( *vim.eval( "a:000" ) )' )
+function! vimspector#ResetExceptionBreakpoints() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.ResetExceptionBreakpoints()
 endfunction
 
-function! s:GetAdvancedBreakpointOptions() abort
-  let options = {}
-  for spec in s:extended_breakpoint_properties
-    let response = s:AskForInput( spec.msg . ': ' )
-    if response is s:None
-      return s:None
-    elseif response !=# ''
-      let options[ spec.prop ] = response
-    endif
-  endfor
-
-  return options
+function! s:GetAdvancedBreakpointOptions( ... ) abort
+  return py3eval( '__import__( "vimspector", fromlist=[ "breakpoints" ] )'
+                \ . '.breakpoints.GetAdvancedBreakpointOptions()' )
 endfunction
-
 
 function! vimspector#ToggleAdvancedBreakpoint() abort
   let options = s:GetAdvancedBreakpointOptions()
@@ -141,6 +203,11 @@ function! vimspector#ToggleBreakpoint( ... ) abort
     let options = a:1
   endif
   py3 _vimspector_session.ToggleBreakpoint( vim.eval( 'options' ) )
+endfunction
+
+function! s:AskForInput( ... ) abort
+  return py3eval( '__import__( "vimspector", fromlist=[ "utils" ] )'
+                \ . '.utils.AskForInput( *vim.eval( "a:000" ) )' )
 endfunction
 
 function! vimspector#SetAdvancedLineBreakpoint() abort
@@ -515,6 +582,13 @@ function! vimspector#JumpToBreakpointViewBreakpoint() abort
   py3 _vimspector_session.JumpToBreakpointViewBreakpoint()
 endfunction
 
+function! vimspector#EditBreakpointOptionsViewBreakpoint() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.EditBreakpointOptionsViewBreakpoint()
+endfunction
+
 function! vimspector#JumpToNextBreakpoint() abort
   if !s:Enabled()
     return
@@ -548,7 +622,7 @@ endfunction
 
 function! vimspector#CompleteOutput( ArgLead, CmdLine, CursorPos ) abort
   if !s:Enabled()
-    return
+    return ''
   endif
   let buffers = py3eval( '_vimspector_session.GetOutputBuffers() '
                        \ . ' if _vimspector_session else []' )
@@ -557,7 +631,7 @@ endfunction
 
 function! vimspector#CompleteExpr( ArgLead, CmdLine, CursorPos ) abort
   if !s:Enabled()
-    return
+    return ''
   endif
 
   let col = len( a:ArgLead )

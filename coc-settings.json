@@ -49,5 +49,6 @@
     "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
     "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
     "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
-    "typescript.format.semicolons": "insert"
+    "typescript.format.semicolons": "insert",
+    "coc.source.vimtex.filetypes": ["tex"],
 }

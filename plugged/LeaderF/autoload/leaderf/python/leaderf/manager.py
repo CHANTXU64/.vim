@@ -280,10 +280,10 @@ class Manager(object):
             self._defineMaps()
             self._defineCommonMaps()
 
-            id = int(lfEval("matchadd('Lf_hl_cursorline', '.*\%#.*', 9)"))
+            id = int(lfEval("matchadd('Lf_hl_cursorline', '.*\%#.*', -100)"))
             self._match_ids.append(id)
         else:
-            lfCmd("""call win_execute({}, 'let matchid = matchadd(''Lf_hl_cursorline'', ''.*\%#.*'', 9)')"""
+            lfCmd("""call win_execute({}, 'let matchid = matchadd(''Lf_hl_cursorline'', ''.*\%#.*'', -100)')"""
                     .format(self._getInstance().getPopupWinId()))
             id = int(lfEval("matchid"))
             self._match_ids.append(id)
@@ -785,7 +785,7 @@ class Manager(object):
                 lfCmd("let scratch_buffer = nvim_create_buf(0, 1)")
                 lfCmd("call setbufline(scratch_buffer, 1, content)")
                 lfCmd("call nvim_buf_set_option(scratch_buffer, 'bufhidden', 'wipe')")
-            height = min(maxheight, buffer_len)
+            height = max(1, min(maxheight, buffer_len))
             preview_pos = lfEval("get(g:, 'Lf_PreviewHorizontalPosition', 'right')")
             if preview_pos.lower() == 'center':
                 col = (int(lfEval("&columns")) - width) // 2

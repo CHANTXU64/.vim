@@ -30,7 +30,7 @@ GADGETS = {
                                                                 root,
                                                                 gadget ),
     'all': {
-      'version': '1.11.5',
+      'version': '1.14.5',
       "adapters": {
         "vscode-cpptools": {
           "name": "cppdbg",
@@ -53,32 +53,32 @@ GADGETS = {
     'linux': {
       'file_name': 'cpptools-linux.vsix',
       'checksum':
-        'f9e5fbd3e2b20f10c538257ac9dd30665abf53cfaaea403d08eb7a4739b79456',
+        '68348700fa21cad910c9a7fdee21a7fbf1121fb9f8eb491c0359ca45e09ccae4',
     },
     'linux_arm64': {
       'file_name': 'cpptools-linux-aarch64.vsix',
       'checksum':
-        'feeeddafc3d162039a842a9b7107c33b32b36f8e85b7e13ab918ea2aada48f8f',
+        'bea5b38d34eedcfc8072af8febc8ba2fc0426b80a9849971d2af9214bf70c69b',
     },
     'linux_armv7': {
       'file_name': 'cpptools-linux-armhf.vsix',
       'checksum':
-        '7f8a4e98add9c651d41066a09051cb18d80b55fdc8882251bb317243a021785c',
+        '8ee834bead728dfe64f344bd8e30e61bd29778286c5acc9406b6c4d6281b4ab6',
     },
     'macos': {
       'file_name': 'cpptools-osx.vsix',
       'checksum':
-        'a61abe2bec1016300a8508aee57108d804540f3b4c798dd9be4b87296e256640',
+        '02435e6ea60b0257b238291fb759572da3b943cb4af93711ba6af3a32735a474',
     },
     'macos_arm64': {
       'file_name': 'cpptools-osx-arm64.vsix',
       'checksum':
-        '943f68c0082c2ed46f2e9466c71062645a57f9ef448c9d849da60cd5b7a4b495',
+        '5a6fecd27bbedfefeabf77ab4638159da60478f77e306b73887b82e98fabd037',
     },
     'windows': {
       'file_name': 'cpptools-win32.vsix',
       'checksum':
-        '9e9eb748510d481ae388db0393a9a42a04014dde2f9ada87518764763f8455cd',
+        'e8f9fdd47026c21fc2e7ad6df6c3fca9a524a0bb8cf7b5f4329959469800dc8c',
       "adapters": {
         "vscode-cpptools": {
           "name": "cppdbg",
@@ -103,7 +103,7 @@ GADGETS = {
     'windows_arm64': {
       'file_name': 'cpptools-win-arm64.vsix',
       'checksum':
-        'cd4ec2f378521c761908574a4e1474bc3b8babaa8b734126e448001fcaaaa58d',
+        '8822922d671fb0a35c186f6868b57862914c1605452e0a0146077a69cf8c9d79',
     },
   },
   'debugpy': {
@@ -112,10 +112,10 @@ GADGETS = {
       'url': 'https://github.com/microsoft/debugpy/archive/${file_name}'
     },
     'all': {
-      'version': '1.6.3',
-      'file_name': 'v1.6.3.zip',
+      'version': '1.6.7',
+      'file_name': 'v1.6.7.zip',
       'checksum':
-        '3bc37b5bc82e50efab52d6d2ea4a1ffa5fd3f100ab725d7ff163cd0a7ee9cb40'
+        '59b441c3ddac3de9d47fd75a1766cf5636f09b281f907717c769149f86aa106e'
     },
     'do': lambda name, root, gadget: installer.InstallDebugpy( name,
                                                                root,
@@ -128,12 +128,9 @@ GADGETS = {
         ],
         "name": "debugpy",
         "configuration": {
-          "python": sys.executable,
-          # Don't debug into subprocesses, as this leads to problems (vimspector
-          # doesn't support the custom messages)
-          # https://github.com/puremourning/vimspector/issues/141
-          "subProcess": False,
-        }
+          "python": sys.executable
+        },
+        'custom_handler': 'vimspector.custom.python.Debugpy'
       }
     },
   },
@@ -161,12 +158,9 @@ GADGETS = {
         ],
         "name": "debugpy",
         "configuration": {
-          "python": sys.executable,
-          # Don't debug into subprocesses, as this leads to problems (vimspector
-          # doesn't support the custom messages)
-          # https://github.com/puremourning/vimspector/issues/141
-          "subProcess": False,
-        }
+          "python": sys.executable
+        },
+        'custom_handler': 'vimspector.custom.python.Debugpy'
       }
     },
   },
@@ -178,10 +172,10 @@ GADGETS = {
              '${version}/${file_name}',
     },
     'all': {
-      'version': '0.43.0',
-      'file_name': 'vscjava.vscode-java-debug-0.43.0.vsix',
+      'version': '0.50.0',
+      'file_name': 'vscjava.vscode-java-debug-0.50.0.vsix',
       'checksum':
-        '5df389d248b0b988fefa558d9f0f43a93a3c053b9992a3e13057b2bc465ba7f6',
+        'e5aabb93f8ee49881077aee63898b3ddda1dffc7d982227b1bcafbb86989dace',
     },
     'adapters': {
       "vscode-java": {
@@ -265,27 +259,27 @@ GADGETS = {
       'format': 'tar',
     },
     'all': {
-      'version': '2.0.0-915'
+      'version': '2.2.0-974'
     },
     'macos': {
       'file_name': 'netcoredbg-osx-amd64.tar.gz',
       'checksum':
-        '466b531e99661546a243bd3c35ac0adfd928acbb53e025f9967e48835cc936dc',
+        '6991d00da35c55b31775eb4fe4bae3b931e2b3b2d326208ba2fefdba59114441',
     },
     'linux': {
       'file_name': 'netcoredbg-linux-amd64.tar.gz',
       'checksum':
-        '82db34e2e8b5105128ad6b9585ba8830acfc3f33a485dac3b1219bd777fa7b6e',
+        '439b92e4f6c39b5cde520e449c8062b67405dbe46db8e04c134ea2937bfa338e',
     },
     'linux_arm64': {
       'file_name': 'netcoredbg-linux-arm64.tar.gz',
       'checksum':
-        '3073b2e8820eae153c023432787080a785e4f2a3c792ed6f9fd3b738129774ac',
+        '37aee82240d8bbbbc12971e44c8e762b783a92223f00521835ce6cb0512e64c3',
     },
     'windows': {
       'file_name': 'netcoredbg-win64.zip',
       'checksum':
-        '024f342fb5390d4d5c01c815b25911ab426f176be3d4c6e8c81ee2626beb24e2',
+        '11796043a7f6b0f1d47d26f46ed424606acf32bbf8aedae4a66a8073c9308deb',
     },
     'do': lambda name, root, gadget: installer.MakeSymlink(
       name,
@@ -338,6 +332,7 @@ GADGETS = {
           "type": "bashdb",
           "program": "${file}",
           "args": [],
+          "argsString": "",
           "env": {},
           "pathBash": "bash",
           "pathBashdb": "${BASHDB_HOME}/bashdb",
@@ -358,7 +353,7 @@ GADGETS = {
                                                              gadget ),
     'all': {
       'path': 'github.com/go-delve/delve/cmd/dlv',
-      'version': '1.9.0',
+      'version': '1.20.1',
     },
     'adapters': {
       "delve": {
@@ -432,8 +427,44 @@ GADGETS = {
       }
     }
   },
-  'vscode-node-debug2': {
+  'vscode-js-debug': {
     'language': 'node',
+    'enabled': False,
+    'download': {
+      'url': 'https://github.com/microsoft/vscode-js-debug/releases/download/'
+             '${version}/${file_name}',
+      'format': 'tar',
+    },
+    'all': {
+      'file_name': 'js-debug-dap-v1.77.0.tar.gz',
+      'version': 'v1.77.0',
+      'checksum':
+        '162460aa4086cef37573af7a97e6693bd309716e02ac6fbdff424cdd416f7a41',
+    },
+    'model': 'simple',
+    'adapters': {
+      'js-debug': {
+        'variables': {
+          'port': '${unusedLocalPort}'
+        },
+        'custom_handler': 'vimspector.custom.js.JsDebug',
+        'command': [
+          'node',
+          '${gadgetDir}/vscode-js-debug/js-debug/src/dapDebugServer.js',
+          '${port}',
+          '127.0.0.1'
+        ],
+        'port': '${port}',
+        'host': '127.0.0.1',
+        'configuration': {
+          'type': 'pwa-node',
+          'console': 'integratedTerminal'
+        }
+      },
+    },
+  },
+  'vscode-node-debug2': {
+    'language': 'node_legacy',
     'enabled': False,
     'repo': {
       'url': 'https://github.com/microsoft/vscode-node-debug2',
@@ -515,12 +546,12 @@ GADGETS = {
              '${version}/${file_name}',
     },
     'all': {
-      'version': 'v1.7.4',
+      'version': 'v1.9.0',
     },
     'macos': {
       'file_name': 'codelldb-x86_64-darwin.vsix',
       'checksum':
-        'f619449a4a151b0944c2c4f194de0b50e6a43e7273768eaf322ccde9a9f1e539',
+        '72e3a0a26dc43975723bc25ff2489aeb4bf3ca65a7112734b1ff6a76969e5bfe',
       'make_executable': [
         'adapter/codelldb',
         'lldb/bin/debugserver',
@@ -531,12 +562,12 @@ GADGETS = {
     'macos_arm64': {
       'file_name': 'codelldb-aarch64-darwin.vsix',
       'checksum':
-        'eb51069b2b68ec073a739e7b8149aa1511b643f1ccb20a7026d086166e06a270',
+        'cbfd547761ecfb6ea643f7dfbea080afddefccb003623a0e954969f569efb9cf',
     },
     'linux': {
       'file_name': 'codelldb-x86_64-linux.vsix',
       'checksum':
-        '9f489edbd15aa0ef4ee6386d1cb40f2c7cab703f347ebc7c3f4855fec6e916d2',
+        '27af4b0821fd1843b04d3fa0ea1ecfb202cda6b869b67205685a29079caa22b7',
       'make_executable': [
         'adapter/codelldb',
         'lldb/bin/lldb',
@@ -547,17 +578,17 @@ GADGETS = {
     'linux_arm64': {
       'file_name': 'codelldb-aarch64-linux.vsix',
       'checksum':
-        '64d2586b4b84868ba5d59679d0de5cd74f8c5e04c170abd0da2413034a280528',
+        '879ac7cf1c6a7944f82c42ee8b8d3da79abf084d8539abba6551ac6b6bb5ce54',
     },
     'linux_armv7': {
       'file_name': 'codelldb-arm-linux.vsix',
       'checksum':
-        '352b7fcbc0a8617bd87be6074da5d88afb17e807122bf8b3774c1c41dfbe6a11',
+        '211a68f25a1e28323e2f3101cd89438888b1e4bc182988c40f6a7a4162f390b1',
     },
     'windows': {
       'file_name': 'codelldb-x86_64-windows.vsix',
       'checksum':
-        '7664f3054354f388eb94c3eae803f60ce2c87df7f36e55d44f84e99ec67a7861',
+        'f961cdee239e78c789ea4e1e0929d055e1c7257ecad5f1fb1cc6f72ca3814791',
       'make_executable': []
     },
     'adapters': {

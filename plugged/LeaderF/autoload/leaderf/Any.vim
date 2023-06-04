@@ -82,7 +82,10 @@ let g:Lf_Arguments = {
             \           {"name": ["--tabpage"], "nargs": 0, "help": "search buffers in current tabpage"},
             \   ],
             \ "mru":[
-            \           {"name": ["--cwd"], "nargs": 0, "help": "search MRU in current working directory"},
+            \           [
+            \               {"name": ["--cwd"], "nargs": 0, "help": "search MRU in current working directory"},
+            \               {"name": ["--project"], "nargs": 0, "help": "search MRU in the project"},
+            \           ],
             \           {"name": ["--no-split-path"], "nargs": 0, "help": "do not split the path"},
             \           {"name": ["--absolute-path"], "nargs": 0, "help": "show absolute path"},
             \   ],
@@ -106,6 +109,7 @@ let g:Lf_Arguments = {
             \           {"name": ["-B", "--before-context"], "nargs": 1, "metavar": "<NUM>", "help": "Show NUM lines before each match."},
             \           {"name": ["-C", "--context"], "nargs": 1, "metavar": "<NUM>", "help": "Show NUM lines before and after each match."},
             \           {"name": ["--context-separator"], "nargs": 1, "metavar": "<SEPARATOR>", "help": "The string used to separate non-contiguous context lines in the output."},
+            \           {"name": ["--crlf"], "nargs": 0, "help": "ripgrep will treat CRLF ('\r\n') as a line terminator instead of just '\n'."},
             \           {"name": ["-e", "--regexp"], "action": "append", "metavar": "<PATTERN>...",
             \               "help": "A pattern to search for. This option can be provided multiple times, where all patterns given are searched."},
             \           {"name": ["-F", "--fixed-strings"], "nargs": 0, "help": "Treat the pattern as a literal string instead of a regular expression."},
@@ -118,6 +122,7 @@ let g:Lf_Arguments = {
             \           {"name": ["-w", "--word-regexp"], "nargs": 0, "help": "Only show matches surrounded by word boundaries. This is roughly equivalent to putting \\b before and after all of the search patterns."},
             \           {"name": ["-x", "--line-regexp"], "nargs": 0, "help": "Only show matches surrounded by line boundaries."},
             \           {"name": ["--binary"], "nargs": 0, "help": "Enabling this flag will cause ripgrep to search binary files."},
+            \           {"name": ["--column"], "nargs": 0, "help": "Show column numbers (1-based). This only shows the column numbers for the first match on each line."},
             \           {"name": ["--hidden"], "nargs": 0, "help": "Search hidden files and directories. By default, hidden files and directories are skipped."},
             \           {"name": ["--heading"], "nargs": 0, "help": "Prints the file path above clusters of matches from each file instead of printing the file path as a prefix for each matched line."},
             \           {"name": ["--no-config"], "nargs": 0, "help": "Never read configuration files. When this flag is present, rg will not respect the RIPGREP_CONFIG_PATH environment variable."},
