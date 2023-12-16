@@ -3,9 +3,9 @@
 """""""""""""""""""""""""""""""
 let g:coc_config_home = '~/.vim/'
 let g:coc_global_extensions = ['coc-tsserver', 'coc-clangd',
-      \'coc-markdownlint', 'coc-snippets', 'coc-css', 'coc-tabnine',
-      \'coc-html', 'coc-cmake', 'coc-pyright', 'coc-jedi', 'coc-git',
-      \'coc-translator', 'coc-go']
+      \ 'coc-markdownlint', 'coc-snippets', 'coc-css',
+      \ 'coc-html', 'coc-cmake', 'coc-pyright', 'coc-jedi', 'coc-git',
+      \ 'coc-translator', 'coc-go'] "'coc-tabnine',
 nnoremap <silent> <leader>h :call CocActionAsync('doHover')<CR>
 " nnoremap <silent> K :call ShowDocumentation()<CR>
 " function! ShowDocumentation()
@@ -306,6 +306,13 @@ call lightline#coc#register()
 " => vimspector
 """"""""""""""""""""""""""""""
 let g:vimspector_enable_mappings = 'HUMAN'
+let g:vimspector_install_gadgets = [ 'vscode-js-debug' ]
+
+" mnemonic 'di' = 'debug inspect' (pick your own, if you prefer!)
+" for normal mode - the word under the cursor
+" nmap <Leader>di <Plug>VimspectorBalloonEval
+" for visual mode, the visually selected text
+" xmap <Leader>di <Plug>VimspectorBalloonEval
 
 
 """"""""""""""""""""""""""""""
@@ -344,7 +351,7 @@ let g:semanticTermColors = [2, 5, 18, 33, 58, 92, 137, 161, 240]
 " => smartim
 """"""""""""""""""""""""""""""
 let g:smartim_default = 'com.apple.keylayout.ABC'
-let g:smartim_disable = 1
+let g:smartim_disable = 0
 function! SmartimToggle()
   if has('mac') && get(g:, 'smartim_disable') == 1
     let g:smartim_disable = 0

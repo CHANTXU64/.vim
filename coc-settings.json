@@ -6,7 +6,7 @@
         "UltiSnips",
         "myUltiSnips"
     ],
-    "jedi.enable": true,
+    "jedi.enable": false,
 	"jedi.startupMessage": false,
 	"jedi.markupKindPreferred": "plaintext",
 	"jedi.trace.server": "off",

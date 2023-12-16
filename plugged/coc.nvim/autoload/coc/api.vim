@@ -271,7 +271,7 @@ function! s:funcs.command(command) abort
     " get error from python script run.
     if !empty(err)
       unlet g:errmsg
-      throw err
+      throw 'Command error '.err
     endif
   endif
 endfunction
@@ -602,7 +602,7 @@ endfunction
 
 function! s:funcs.buf_get_var(bufnr, name)
   call s:check_bufnr(a:bufnr)
-  if !has_key(b:, a:name)
+  if !has_key(getbufvar(a:bufnr, ''), a:name)
     throw 'Key not found: '.a:name
   endif
   return getbufvar(a:bufnr, a:name)
@@ -616,11 +616,8 @@ endfunction
 
 function! s:funcs.buf_del_var(bufnr, name)
   call s:check_bufnr(a:bufnr)
-  if a:bufnr == bufnr('%')
-    execute 'unlet! b:'.a:name
-  else
-    call s:buf_execute(a:bufnr, ['unlet! b:'.a:name])
-  endif
+  let bufvars = getbufvar(a:bufnr, '')
+  call remove(bufvars, a:name)
   return v:null
 endfunction
 

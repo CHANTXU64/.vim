@@ -150,7 +150,7 @@ set number
 " set signcolumn=number
 set relativenumber
 
-set colorcolumn=77
+set colorcolumn=80
 
 set ignorecase
 set smartcase
@@ -265,6 +265,8 @@ nmap <C-T>n :tabnew<CR>
 nmap <C-T>o :tabonly<CR>
 nmap <C-T>m :tabmove 
 nmap <C-T><C-T> :tabnext<CR>
+
+nmap =w :vertical resize 86<CR>
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory

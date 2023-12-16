@@ -58,7 +58,7 @@ class FileExplorer(Explorer):
         self._cur_dir = ''
         self._content = []
         self._cache_dir = os.path.join(lfEval("g:Lf_CacheDirectory"),
-                                       '.LfCache',
+                                       'LeaderF',
                                        'python' + lfEval("g:Lf_PythonVersion"),
                                        'file')
         self._cache_index = os.path.join(self._cache_dir, 'cacheIndex')
@@ -107,7 +107,7 @@ class FileExplorer(Explorer):
                     target = i
 
             if target != -1:
-                lines[target] = re.sub('^\S*',
+                lines[target] = re.sub(r'^\S*',
                                        '%.3f' % time.time(),
                                        lines[target])
                 f.seek(0)
@@ -185,7 +185,7 @@ class FileExplorer(Explorer):
                     target = i
 
             if target != -1:
-                lines[target] = re.sub('^\S*', '%.3f' % time.time(), lines[target])
+                lines[target] = re.sub(r'^\S*', '%.3f' % time.time(), lines[target])
                 f.seek(0)
                 f.truncate(0)
                 f.writelines(lines)
@@ -433,7 +433,7 @@ class FileExplorer(Explorer):
                 followlinks = ""
 
             if lfEval("g:Lf_ShowRelativePath") == '1':
-                strip = "| sed 's#^\./##'"
+                strip = r"| sed 's#^\./##'"
             else:
                 strip = ""
 
@@ -490,7 +490,7 @@ class FileExplorer(Explorer):
                     return
 
                 # update the time
-                lines[target] = re.sub('^\S*',
+                lines[target] = re.sub(r'^\S*',
                                        '%.3f' % time.time(),
                                        lines[target])
                 f.seek(0)
@@ -545,7 +545,7 @@ class FileExplorer(Explorer):
 
             if target != -1:    # already cached
                 # update the time
-                lines[target] = re.sub('^\S*',
+                lines[target] = re.sub(r'^\S*',
                                        '%.3f' % time.time(),
                                        lines[target])
                 f.seek(0)
@@ -828,6 +828,9 @@ class FileExplManager(Manager):
 
     @removeDevIcons
     def _previewInPopup(self, *args, **kwargs):
+        if len(args) == 0 or args[0] == '':
+            return
+
         line = args[0]
         if not os.path.isabs(line):
             if self._getExplorer()._cmd_work_dir:

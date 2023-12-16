@@ -7,7 +7,7 @@ let g:test#plugin_path = expand('<sfile>:p:h:h')
 
 let g:test#default_runners = {
   \ 'CSharp':     ['Xunit', 'DotnetTest'],
-  \ 'Clojure':    ['FireplaceTest'],
+  \ 'Clojure':    ['FireplaceTest', 'LeinTest'],
   \ 'Crystal':    ['CrystalSpec'],
   \ 'Cpp':        ['Catch2'],
   \ 'Dart':       ['DartTest', 'FlutterTest'],
@@ -16,7 +16,7 @@ let g:test#default_runners = {
   \ 'Erlang':     ['CommonTest', 'EUnit', 'PropEr'],
   \ 'Go':         ['GoTest', 'Ginkgo', 'RichGo', 'Delve'],
   \ 'Groovy':     ['MavenTest', 'GradleTest'],
-  \ 'Haskell':    ['StackTest'],
+  \ 'Haskell':    ['StackTest', 'CabalTest'],
   \ 'Java':       ['MavenTest', 'GradleTest'],
   \ 'JavaScript': ['Ava', 'CucumberJS', 'DenoTest', 'Intern', 'TAP', 'Teenytest', 'Karma', 'Lab', 'Mocha',  'NgTest', 'Nx', 'Jasmine', 'Jest', 'ReactScripts', 'WebdriverIO', 'Cypress', 'VueTestUtils', 'Playwright', 'Vitest', 'Ember'],
   \ 'Kotlin':     ['GradleTest'],
@@ -33,6 +33,7 @@ let g:test#default_runners = {
   \ 'Shell':      ['Bats', 'ShellSpec'],
   \ 'Swift':      ['SwiftPM'],
   \ 'VimL':       ['Themis', 'VSpec', 'Vader', 'Testify', 'Vroom'],
+  \ 'Zig':        ['ZigTest'],
 \}
 
 let g:test#custom_strategies = get(g:, 'test#custom_strategies', {})

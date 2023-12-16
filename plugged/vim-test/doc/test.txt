@@ -70,8 +70,13 @@ In all commands [args] are forwarded to the underlying test runner.
 
 RUNNER COMMANDS                                 *test-runner_commands*
 
-In all commands [args] are forwarded to the underlying test runner.
+In all commands [args] are forwarded to the underlying test runner. To avoid
+pollution they are not defined by default, instead you can choose the ones you want,
+for example:
 
+>
+  let g:test#runner_commands = ['Minitest', 'Mocha']
+<
                                                 *test-:RSpec*
 :RSpec [args]                Uses the `rspec` command.
 
@@ -217,8 +222,14 @@ In all commands [args] are forwarded to the underlying test runner.
                              * Otherwise accepts a list of filenames (which it
                                translates to namespaces).
 
+                                                *test-:LeinTest*
+:LeinTest [args]             Uses the `lein` `test` command.
+
                                                 *test-:Bats*
 :Bats [args]                 Uses the `bats` command.
+
+                                                *test-:ZigTest*
+:ZigTest [args]              Uses the `zig` `test` command.
 
                                                 *test-:ShellSpec*
 :ShellSpec [args]                 Uses the `shellspec` command.
@@ -290,6 +301,9 @@ In all commands [args] are forwarded to the underlying test runner.
 
                                                 *test-:StackTest*
 :StackTest [args]            Uses the `stack test` command.
+
+                                                *test-:CabalTest*
+:CabalTest [args]            Uses the `cabal test` command.
 
                                                 *test-:NgTest*
 :NgTest [args]  	         Uses the Angular `ng test` command.
@@ -369,6 +383,12 @@ Neovim ~
 Runs test commands with `:terminal`, which spawns a terminal inside Neovim.
 >
   let test#strategy = 'neovim'
+<
+Neovim sticky~
+
+Runs test commands with `:terminal`, but keeps it open for subsequent runs.
+>
+  let test#strategy = 'neovim_sticky'
 <
 Vim8 Terminal ~
 
@@ -615,6 +635,16 @@ By default, vim-test will echo the test command before running it. You can
 disable this behavior with
 >
   let g:test#echo_command = 0
+<
+To have the Neovim sticky strategy abort any currently running tests before
+scheduling a new one, use:
+>
+  let g:test#neovim_sticky#kill_previous = 1
+<
+To have the Neovim sticky strategy open an existing terminal in a new split
+when it is not currently visible, use:
+>
+    let test#neovim_sticky#reopen_window = 1
 <
 You may find yourself specifying certain options for your test runners in
 certain situations. You can configure your preferred options with

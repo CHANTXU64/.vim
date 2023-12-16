@@ -30,7 +30,7 @@ class GtagsExplorer(Explorer):
             self._cd_option = ''
         self._root_markers = lfEval("g:Lf_RootMarkers")
         self._db_location = os.path.join(lfEval("g:Lf_CacheDirectory"),
-                                     '.LfCache',
+                                     'LeaderF',
                                      'gtags')
         self._store_in_project = lfEval("get(g:, 'Lf_GtagsStoreInProject', 0)") == '1'
         self._store_in_rootmarker = lfEval("get(g:, 'Lf_GtagsStoreInRootMarker', 0)") == '1'
@@ -292,8 +292,20 @@ class GtagsExplorer(Explorer):
         """
         copied from RgExplorer
         """
+
+        def replace(text, pattern, repl):
+            r"""
+            only replace pattern with even number of \ preceding it
+            """
+            result = ''
+            for s in re.split(r'((?:\\\\)+)', text):
+                result += re.sub(pattern, repl, s)
+
+            return result
+
         vim_regex = regex
 
+        vim_regex = vim_regex.replace(r"\\", "\\")
         vim_regex = re.sub(r'([%@&])', r'\\\1', vim_regex)
 
         # non-greedy pattern
@@ -319,12 +331,12 @@ class GtagsExplorer(Explorer):
             vim_regex = re.sub(r'\(\?>(.+?)\)', r'(\1)@>', vim_regex)
 
         # this won't hurt although they are not the same
-        vim_regex = vim_regex.replace(r'\A', r'^')
-        vim_regex = vim_regex.replace(r'\z', r'$')
-        vim_regex = vim_regex.replace(r'\B', r'')
+        vim_regex = replace(vim_regex, r'\\A', r'^')
+        vim_regex = replace(vim_regex, r'\\z', r'$')
+        vim_regex = replace(vim_regex, r'\\B', r'')
 
         # word boundary
-        vim_regex = re.sub(r'\\b', r'(<|>)', vim_regex)
+        vim_regex = replace(vim_regex, r'\\b', r'(<|>)')
 
         # case-insensitive
         vim_regex = vim_regex.replace(r'(?i)', r'\c')
@@ -339,19 +351,19 @@ class GtagsExplorer(Explorer):
         # \a          bell (\x07)
         # \f          form feed (\x0C)
         # \v          vertical tab (\x0B)
-        vim_regex = vim_regex.replace(r'\a', r'%x07')
-        vim_regex = vim_regex.replace(r'\f', r'%x0C')
-        vim_regex = vim_regex.replace(r'\v', r'%x0B')
+        vim_regex = replace(vim_regex, r'\\a', r'%x07')
+        vim_regex = replace(vim_regex, r'\\f', r'%x0C')
+        vim_regex = replace(vim_regex, r'\\v', r'%x0B')
 
         # \123        octal character code (up to three digits) (when enabled)
         # \x7F        hex character code (exactly two digits)
-        vim_regex = re.sub(r'\\(x[0-9A-Fa-f][0-9A-Fa-f])', r'%\1', vim_regex)
+        vim_regex = replace(vim_regex, r'\\(x[0-9A-Fa-f][0-9A-Fa-f])', r'%\1')
         # \x{10FFFF}  any hex character code corresponding to a Unicode code point
         # \u007F      hex character code (exactly four digits)
         # \u{7F}      any hex character code corresponding to a Unicode code point
         # \U0000007F  hex character code (exactly eight digits)
         # \U{7F}      any hex character code corresponding to a Unicode code point
-        vim_regex = re.sub(r'\\([uU])', r'%\1', vim_regex)
+        vim_regex = replace(vim_regex, r'\\([uU])', r'%\1')
 
         vim_regex = re.sub(r'\[\[:ascii:\]\]', r'[\\x00-\\x7F]', vim_regex)
         vim_regex = re.sub(r'\[\[:word:\]\]', r'[0-9A-Za-z_]', vim_regex)
@@ -886,6 +898,7 @@ class GtagsExplManager(Manager):
     def __init__(self):
         super(GtagsExplManager, self).__init__()
         self._match_path = False
+        self._preview_match_ids = []
 
     def _getExplClass(self):
         return GtagsExplorer
@@ -1071,24 +1084,24 @@ class GtagsExplManager(Manager):
                 pass
         else:
             if self._getExplorer().getResultFormat() is None:
-                id = int(lfEval("""matchadd('Lf_hl_gtagsFileName', '^.\{-}\ze\t')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsFileName', '^.\{-}\ze\t')"""))
                 self._match_ids.append(id)
-                id = int(lfEval("""matchadd('Lf_hl_gtagsLineNumber', '\t\zs\d\+\ze\t')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsLineNumber', '\t\zs\d\+\ze\t')"""))
                 self._match_ids.append(id)
             elif self._getExplorer().getResultFormat() == "ctags":
-                id = int(lfEval("""matchadd('Lf_hl_gtagsFileName', '\t\zs.\{-}\ze\t')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsFileName', '\t\zs.\{-}\ze\t')"""))
                 self._match_ids.append(id)
-                id = int(lfEval("""matchadd('Lf_hl_gtagsLineNumber', '\t\zs\d\+$')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsLineNumber', '\t\zs\d\+$')"""))
                 self._match_ids.append(id)
             elif self._getExplorer().getResultFormat() == "ctags-x":
-                id = int(lfEval("""matchadd('Lf_hl_gtagsFileName', '^\S\+\s\+\d\+\s\+\zs\S\+')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsFileName', '^\S\+\s\+\d\+\s\+\zs\S\+')"""))
                 self._match_ids.append(id)
-                id = int(lfEval("""matchadd('Lf_hl_gtagsLineNumber', '^\S\+\s\+\zs\d\+')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsLineNumber', '^\S\+\s\+\zs\d\+')"""))
                 self._match_ids.append(id)
             else: # ctags-mod
-                id = int(lfEval("""matchadd('Lf_hl_gtagsFileName', '^.\{-}\ze\t')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsFileName', '^.\{-}\ze\t')"""))
                 self._match_ids.append(id)
-                id = int(lfEval("""matchadd('Lf_hl_gtagsLineNumber', '\t\zs\d\+\ze\t')"""))
+                id = int(lfEval(r"""matchadd('Lf_hl_gtagsLineNumber', '\t\zs\d\+\ze\t')"""))
                 self._match_ids.append(id)
             try:
                 for i in self._getExplorer().getPatternRegex():
@@ -1106,6 +1119,7 @@ class GtagsExplManager(Manager):
             if k.valid:
                 k.options["cursorline"] = v
         self._cursorline_dict.clear()
+        self._clearPreviewHighlights()
 
     def _bangEnter(self):
         super(GtagsExplManager, self)._bangEnter()
@@ -1184,8 +1198,34 @@ class GtagsExplManager(Manager):
 
         super(GtagsExplManager, self).startExplorer(win_pos, *args, **kwargs)
 
+    def _clearPreviewHighlights(self):
+        for i in self._preview_match_ids:
+            lfCmd("silent! call matchdelete(%d, %d)" % (i, self._preview_winid))
+
+    def _highlightInPreview(self):
+        if lfEval("has('nvim')") != '1':
+            try:
+                for i in self._getExplorer().getPatternRegex():
+                    lfCmd("""call win_execute(%d, "let matchid = matchadd('Lf_hl_gtagsHighlight', '%s', 9)")"""
+                            % (self._preview_winid, re.sub(r'\\(?!")', r'\\\\', escQuote(i))))
+                    id = int(lfEval("matchid"))
+                    self._preview_match_ids.append(id)
+            except vim.error:
+                pass
+        else:
+            cur_winid = lfEval("win_getid()")
+            lfCmd("noautocmd call win_gotoid(%d)" % self._preview_winid)
+            if lfEval("win_getid()") != cur_winid:
+                try:
+                    for i in self._getExplorer().getPatternRegex():
+                        id = int(lfEval("matchadd('Lf_hl_gtagsHighlight', '%s', 9)" % escQuote(i)))
+                        self._preview_match_ids.append(id)
+                except vim.error:
+                    pass
+                lfCmd("noautocmd call win_gotoid(%s)" % cur_winid)
+
     def _previewInPopup(self, *args, **kwargs):
-        if len(args) == 0:
+        if len(args) == 0 or args[0] == '':
             return
 
         line = args[0]
@@ -1207,6 +1247,7 @@ class GtagsExplManager(Manager):
         else:
             source = file
         self._createPopupPreview("", source, line_num)
+        self._highlightInPreview()
 
 
 #*****************************************************

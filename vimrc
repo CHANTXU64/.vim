@@ -27,13 +27,10 @@ Plug 'kana/vim-textobj-entire'
 
 " 语言
 Plug 'Vimjas/vim-python-pep8-indent', { 'for': 'python' }
-Plug 'chrisbra/csv.vim', { 'for': 'csv' }
+Plug 'chrisbra/csv.vim' ", { 'for': 'csv' }
 " Plug 'jaxbot/semantic-highlight.vim', {
 "             \ 'for': ['python', 'javascript', 'c', 'cpp', 'rust', 'typescript']
 "             \ }
-
-" Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'uiiaoo/java-syntax.vim'
 
 " lsp coc
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
@@ -41,11 +38,12 @@ Plug 'josa42/vim-lightline-coc'
 Plug 'honza/vim-snippets'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+" Plug 'uiiaoo/java-syntax.vim'
 
 " Plug 'github/copilot.vim'
 
 " debug
-Plug 'puremourning/vimspector'
+" Plug 'puremourning/vimspector'
 
 Plug 'vim-test/vim-test'
 
@@ -69,6 +67,8 @@ Plug 'ybian/smartim'
 
 Plug 'voldikss/vim-floaterm'
 
+" Plug 'keaising/im-select.nvim'
+
 call plug#end()
 
 augroup load_delimitMate
@@ -83,4 +83,6 @@ augroup END
 so ~/.vim/base.vim
 
 so ~/.vim/plugin_config.vim
+
+" so ~/.vim/neovim_init.lua
 

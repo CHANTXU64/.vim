@@ -103,8 +103,9 @@ class WatchResult( Expandable ):
   def MemoryReference( self ):
     return self.result.get( 'memoryReference' )
 
-  def Update( self, result ):
+  def Update( self, connection, result ):
     self.changed = False
+    self.connection = connection
     if self.result[ 'result' ] != result[ 'result' ]:
       self.changed = True
     self.result = result
@@ -141,8 +142,9 @@ class Variable( Expandable ):
   def MemoryReference( self ):
     return self.variable.get( 'memoryReference' )
 
-  def Update( self, variable ):
+  def Update( self, connection, variable ):
     self.changed = False
+    self.connection = connection
     if self.variable[ 'value' ] != variable[ 'value' ]:
       self.changed = True
     self.variable = variable
@@ -280,28 +282,29 @@ class VariablesView( object ):
         )
 
     # Set the (global!) balloon expr if supported
-    has_balloon      = int( vim.eval( "has( 'balloon_eval' )" ) )
-    has_balloon_term = int( vim.eval( "has( 'balloon_eval_term' )" ) )
-
     self._oldoptions = {}
-    if has_balloon or has_balloon_term:
-      self._oldoptions = {
-        'balloonexpr': vim.options[ 'balloonexpr' ],
-        'balloondelay': vim.options[ 'balloondelay' ],
-      }
-      vim.options[ 'balloonexpr' ] = (
-        "vimspector#internal#balloon#HoverEvalTooltip()"
-      )
+    if settings.Bool( 'enable_auto_hover' ):
+      has_balloon      = int( vim.eval( "has( 'balloon_eval' )" ) )
+      has_balloon_term = int( vim.eval( "has( 'balloon_eval_term' )" ) )
 
-      vim.options[ 'balloondelay' ] = 250
+      if has_balloon or has_balloon_term:
+        self._oldoptions = {
+          'balloonexpr': vim.options[ 'balloonexpr' ],
+          'balloondelay': vim.options[ 'balloondelay' ],
+        }
+        vim.options[ 'balloonexpr' ] = (
+          "vimspector#internal#balloon#HoverEvalTooltip()"
+        )
 
-    if has_balloon:
-      self._oldoptions[ 'ballooneval' ] = vim.options[ 'ballooneval' ]
-      vim.options[ 'ballooneval' ] = True
+        vim.options[ 'balloondelay' ] = 250
 
-    if has_balloon_term:
-      self._oldoptions[ 'balloonevalterm' ] = vim.options[ 'balloonevalterm' ]
-      vim.options[ 'balloonevalterm' ] = True
+      if has_balloon:
+        self._oldoptions[ 'ballooneval' ] = vim.options[ 'ballooneval' ]
+        vim.options[ 'ballooneval' ] = True
+
+      if has_balloon_term:
+        self._oldoptions[ 'balloonevalterm' ] = vim.options[ 'balloonevalterm' ]
+        vim.options[ 'balloonevalterm' ] = True
 
 
   def Clear( self ):
@@ -429,7 +432,7 @@ class VariablesView( object ):
       if watch.result is None or watch.result.connection != connection:
         watch.result = WatchResult( connection, message[ 'body' ] )
       else:
-        watch.result.Update( message[ 'body' ] )
+        watch.result.Update( connection, message[ 'body' ] )
 
       popup_win_id = utils.CreateTooltip( [], is_hover )
       # record the global eval window id
@@ -534,7 +537,7 @@ class VariablesView( object ):
 
   def _UpdateWatchExpression( self, watch: Watch, message: dict ):
     if watch.result is not None:
-      watch.result.Update( message[ 'body' ] )
+      watch.result.Update( watch.connection, message[ 'body' ] )
     else:
       watch.result = WatchResult( watch.connection, message[ 'body' ] )
 
@@ -648,7 +651,7 @@ class VariablesView( object ):
           },
         } )
 
-      variable.Update( new_variable )
+      variable.Update( variable.connection, new_variable )
       view.draw()
 
     def failure_handler( reason, message ):
@@ -822,7 +825,7 @@ class VariablesView( object ):
       if not found:
         variable = Variable( parent.connection, parent, variable_body )
       else:
-        variable.Update( variable_body )
+        variable.Update( parent.connection, variable_body )
 
       new_variables.append( variable )
 
