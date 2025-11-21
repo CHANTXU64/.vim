@@ -113,10 +113,13 @@ set ffs=unix,dos,mac
 set scrolloff=7
 
 " Fast saving
-nmap <Leader>w :w<CR>
-nmap <Leader>q :q<CR>
-nmap q<Leader> <Leader>
-nmap <Leader><Leader>qq :q!<CR>
+"nmap <Leader>w :w<CR>
+"nmap <Leader>q :q<CR>
+"nmap q<Leader> <Leader>
+"nmap <Leader><Leader>qq :q!<CR>
+nmap <C-X><C-S> :w<CR>
+nnoremap <C-X><C-C> :q<CR>
+nmap <C-C> <ESC>
 
 " :W sudo saves the file
 " (useful for handling the permission-denied error)
