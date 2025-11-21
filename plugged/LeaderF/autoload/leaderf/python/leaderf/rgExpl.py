@@ -11,7 +11,6 @@ from functools import wraps
 from .utils import *
 from .explorer import *
 from .manager import *
-from .mru import *
 
 def workingDirectory(func):
     @wraps(func)
@@ -44,6 +43,8 @@ class RgExplorer(Explorer):
         self._display_multi = False
         self._cmd_work_dir = ""
         self._rg = lfEval("get(g:, 'Lf_Rg', 'rg')")
+        self.current_buffer_num = -1
+        self.current_buffer_name_len = 0
 
     def getContent(self, *args, **kwargs):
         arguments_dict = kwargs.get("arguments", {})
@@ -109,6 +110,8 @@ class RgExplorer(Explorer):
             is_perl = True
         else:
             is_perl = False
+        if "-a" in arguments_dict:
+            zero_args_options += "-a "
         if "-v" in arguments_dict:
             zero_args_options += "-v "
         if "--binary" in arguments_dict:
@@ -232,9 +235,16 @@ class RgExplorer(Explorer):
             if "--live" in arguments_dict:
                 if "--no-fixed-strings" in arguments_dict:
                     p = i.replace('"', r'\"')
+                    if os.name != 'nt':
+                        pattern += r'-e "%s" ' % p.replace(r'\$', r'\\$').replace('$', r'\$')
+                    else:
+                        pattern += r'-e "%s" ' % p
                 else:
                     p = i.replace('\\', r'\\').replace('"', r'\"')
-                pattern += r'-e "%s" ' % p
+                    if os.name != 'nt':
+                        pattern += r'-e "%s" ' % p.replace('$', r'\$')
+                    else:
+                        pattern += r'-e "%s" ' % p
             else:
                 if len(i) > 1 and (i[0] == i[-1] == '"' or i[0] == i[-1] == "'"):
                     p = i[1:-1]
@@ -245,7 +255,13 @@ class RgExplorer(Explorer):
                 if p == '':
                     continue
 
-                pattern += r'-e "%s" ' % p
+                if os.name != 'nt':
+                    if "-F" in arguments_dict:
+                        pattern += r'-e "%s" ' % p.replace('$', r'\$')
+                    else:
+                        pattern += r'-e "%s" ' % p.replace(r'\$', r'\\$').replace('$', r'\$')
+                else:
+                    pattern += r'-e "%s" ' % p
 
             if is_literal:
                 if word_or_line == '-w ':
@@ -274,52 +290,93 @@ class RgExplorer(Explorer):
                 except:
                     pass
 
+        buffer_names = { b.number: lfRelpath(b.name) for b in vim.buffers }
+
+        def formatLine(line):
+            try:
+                if "@LeaderF@" not in line:
+                    return line
+
+                _, line = line.split("@LeaderF@", 1)
+                buf_number = re.split("[:-]", line, 1)[0]
+                buf_name = buffer_names[int(buf_number)]
+                return line.replace(buf_number, buf_name, 1)
+            except:
+                return line
+
+        format_line = None
+
         if sys.version_info >= (3, 0):
             tmp_file = partial(tempfile.NamedTemporaryFile, encoding=lfEval("&encoding"))
         else:
             tmp_file = tempfile.NamedTemporaryFile
 
+        self.current_buffer_num = -1
+        self.current_buffer_name_len = 0
         if "--current-buffer" in arguments_dict:
+            self.current_buffer_num = vim.current.buffer.number
             path = ''   # omit the <PATH> option
             if vim.current.buffer.name:
-                try:
-                    path = '"%s"' % os.path.relpath(lfDecode(vim.current.buffer.name))
-                except ValueError:
-                    path = '"%s"' % lfDecode(vim.current.buffer.name)
+                if vim.current.buffer.options["modified"] == False and not vim.current.buffer.options["bt"]:
+                    try:
+                        path = '"%s"' % os.path.relpath(lfDecode(vim.current.buffer.name))
+                    except ValueError:
+                        path = '"%s"' % lfDecode(vim.current.buffer.name)
+                else:
+                    with tmp_file(mode='w', suffix='@LeaderF@'+str(vim.current.buffer.number),
+                                  delete=False) as f:
+                        file_name = lfDecode(f.name)
+                        for line in vim.current.buffer:
+                            f.write(line + '\n')
+
+                    path = '"' + file_name + '"'
+                    tmpfilenames.append(file_name)
+                    format_line = formatLine
+                    self.current_buffer_name_len = len(lfRelpath(vim.current.buffer.name))
             else:
                 file_name = "%d_'No_Name_%d'" % (os.getpid(), vim.current.buffer.number)
                 try:
                     with lfOpen(file_name, 'w', errors='ignore') as f:
-                        for line in vim.current.buffer[:]:
+                        for line in vim.current.buffer:
                             f.write(line + '\n')
                 except IOError:
                     with tmp_file(mode='w', suffix='_'+file_name, delete=False) as f:
                         file_name = lfDecode(f.name)
-                        for line in vim.current.buffer[:]:
+                        for line in vim.current.buffer:
                             f.write(line + '\n')
 
                 path = '"' + file_name + '"'
                 tmpfilenames.append(file_name)
-
-        if "--all-buffers" in arguments_dict:
+        elif "--all-buffers" in arguments_dict:
             path = ''   # omit the <PATH> option
             for b in vim.buffers:
                 if lfEval("buflisted(%d)" % b.number) == '1':
                     if b.name:
-                        try:
-                            path += '"' + os.path.relpath(lfDecode(b.name)) + '" '
-                        except ValueError:
-                            path += '"' + lfDecode(b.name) + '" '
+                        if b.options["modified"] == False:
+                            try:
+                                path += '"' + os.path.relpath(lfDecode(b.name)) + '" '
+                            except ValueError:
+                                path += '"' + lfDecode(b.name) + '" '
+                        else:
+                            with tmp_file(mode='w', suffix='@LeaderF@'+str(b.number),
+                                          delete=False) as f:
+                                file_name = lfDecode(f.name)
+                                for line in b:
+                                    f.write(line + '\n')
+
+                            path += '"' + file_name + '" '
+                            tmpfilenames.append(file_name)
+                            format_line = formatLine
                     else:
                         file_name = "%d_'No_Name_%d'" % (os.getpid(), b.number)
                         try:
                             with lfOpen(file_name, 'w', errors='ignore') as f:
-                                for line in b[:]:
+                                for line in b:
                                     f.write(line + '\n')
                         except IOError:
                             with tmp_file(mode='w', suffix='_'+file_name, delete=False) as f:
                                 file_name = lfDecode(f.name)
-                                for line in b[:]:
+                                for line in b:
                                     f.write(line + '\n')
 
                         path += '"' + file_name + '" '
@@ -336,10 +393,14 @@ class RgExplorer(Explorer):
             heading = "--no-heading"
 
         cmd = '''{} {} --no-config --no-ignore-messages {} --with-filename --color never --line-number '''\
-                '''{} {}{}{}{}{}{}'''.format(self._rg, extra_options, heading, case_flag, word_or_line, zero_args_options,
-                                                  one_args_options, repeatable_options, lfDecode(pattern), path)
+                '''{} {}{}{}{}{}{}'''.format(self._rg, extra_options, heading, case_flag,
+                                             word_or_line, zero_args_options, one_args_options,
+                                             repeatable_options, lfDecode(pattern), path)
         lfCmd("let g:Lf_Debug_RgCmd = '%s'" % escQuote(cmd))
-        content = executor.execute(cmd, encoding=lfEval("&encoding"), cleanup=partial(removeFiles, tmpfilenames), raise_except=raise_except)
+        content = executor.execute(cmd, encoding=lfEval("&encoding"),
+                                   cleanup=partial(removeFiles, tmpfilenames),
+                                   raise_except=raise_except,
+                                   format_line=format_line)
         return content
 
     def translateRegex(self, regex, is_perl=False):
@@ -443,7 +504,7 @@ class RgExplorer(Explorer):
         return escQuote(lfEncode(self._cmd_work_dir))
 
     def supportsNameOnly(self):
-        return False
+        return True
 
     def cleanup(self):
         for exe in self._executor:
@@ -480,15 +541,27 @@ class RgExplManager(Manager):
     def _defineMaps(self):
         lfCmd("call leaderf#Rg#Maps(%d)" % int("--heading" in self._arguments))
 
+    def setStlMode(self, mode):
+        if mode == "FullPath":
+            mode = "WholeLine"
+        elif mode == "NameOnly":
+            mode = "Contents"
+        super(RgExplManager, self).setStlMode(mode)
+
     def _getFileInfo(self, args):
         line = args[0]
 
         if "--heading" in self._arguments:
+            buffer_name_len = self._getExplorer().current_buffer_name_len
             buffer = args[1]
             cursor_line = args[2]
             if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
                 if not re.match(r'^\d+[:-]', line):
                     return (None, None)
+
+                if buffer_name_len > 0:
+                    line_num = re.split("[:-]", line, 1)[0]
+                    return (self._getExplorer().current_buffer_num, line_num)
 
                 for cur_line in reversed(buffer[:cursor_line]):
                     if cur_line == self._getExplorer().getContextSeparator():
@@ -506,6 +579,10 @@ class RgExplManager(Manager):
                 if not re.match(r'^\d+:', line):
                     return (None, None)
 
+                if buffer_name_len > 0:
+                    line_num = line.split(":", 1)[0]
+                    return (self._getExplorer().current_buffer_num, line_num)
+
                 for cur_line in reversed(buffer[:cursor_line]):
                     if cur_line == self._getExplorer().getContextSeparator():
                         continue
@@ -519,6 +596,11 @@ class RgExplManager(Manager):
                     file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
                 line_num = line.split(':')[0]
         else:
+            buffer_name_len = self._getExplorer().current_buffer_name_len
+            if buffer_name_len > 0:
+                line_num = re.split("[:-]", line[buffer_name_len+1:], 1)[0]
+                return (self._getExplorer().current_buffer_num, line_num)
+
             if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
                 m = re.match(r'^(.+?)([:-])(\d+)\2', line)
                 file, sep, line_num = m.group(1, 2, 3)
@@ -533,6 +615,7 @@ class RgExplManager(Manager):
                     m = re.match(r'^(.+?)%s(\d+)%s' % (sep, sep), line)
                     if m:
                         file, line_num = m.group(1, 2)
+
                 if not re.search(r"\d+_'No_Name_(\d+)'", file):
                     i = 1
                     while not os.path.exists(lfDecode(file)):
@@ -543,8 +626,10 @@ class RgExplManager(Manager):
                 m = re.match(r'^(.+?):(\d+):', line)
                 if m is None:
                     return (None, None)
+
                 file, line_num = m.group(1, 2)
-                if not re.search(r"\d+_'No_Name_(\d+)'", file):
+                match = re.search(r"\d+_'No_Name_(\d+)'", file)
+                if not match:
                     if not os.path.isabs(file):
                         file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
                     i = 1
@@ -554,6 +639,9 @@ class RgExplManager(Manager):
                         file, line_num = m.group(1, 2)
                         if not os.path.isabs(file):
                             file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+                else:
+                    buf_number = match.group(1)
+                    return (int(buf_number), line_num)
 
         file = os.path.normpath(lfEncode(file))
 
@@ -571,9 +659,8 @@ class RgExplManager(Manager):
         if file is None:
             return
 
-        match = re.search(r"\d+_'No_Name_(\d+)'", file)
-        if match:
-            buf_number = match.group(1)
+        if isinstance(file, int):
+            buf_number = file
         else:
             buf_number = -1
 
@@ -594,6 +681,8 @@ class RgExplManager(Manager):
             else:
                 lfCmd("hide buffer +%s %s" % (line_num, buf_number))
             lfCmd("norm! ^zv")
+            if self._getExplorer().getPatternRegex():
+                lfCmd("call search('%s', 'zW', line('.'))" % escQuote(self._getExplorer().getPatternRegex()[0]))
             lfCmd("norm! zz")
 
             if "preview" not in kwargs:
@@ -620,9 +709,12 @@ class RgExplManager(Manager):
                   1, return the name only
                   2, return the directory name
         """
-        if self._match_path:
+        if mode == 0 or self._match_path:
             return line
-        else:
+        elif mode == 1:
+            if mode == 0:
+                return line
+
             if self._getExplorer().displayMulti():
                 if line == self._getExplorer().getContextSeparator():
                     return ""
@@ -643,6 +735,8 @@ class RgExplManager(Manager):
                     return line.split(":", 3)[-1]
                 else:
                     return line.split(":", 2)[-1]
+        else:
+            return line.split(":", 1)[0]
 
     def _getDigestStartPos(self, line, mode):
         """
@@ -652,7 +746,7 @@ class RgExplManager(Manager):
                   1, return the start postion of name only
                   2, return the start postion of directory name
         """
-        if self._match_path:
+        if mode == 0 or mode == 2 or self._match_path:
             return 0
         else:
             if self._getExplorer().displayMulti():
@@ -1175,9 +1269,8 @@ class RgExplManager(Manager):
         if file is None:
             return
 
-        match = re.search(r"\d+_'No_Name_(\d+)'", file)
-        if match:
-            source = int(match.group(1))
+        if isinstance(file, int):
+            source = file
         else:
             if lfEval("bufloaded('%s')" % escQuote(file)) == '1':
                 source = int(lfEval("bufadd('%s')" % escQuote(file)))
@@ -1427,7 +1520,7 @@ class RgExplManager(Manager):
             lfCmd("undo")
             lfCmd("echohl WarningMsg | redraw | echo ' undo finished!' | echohl None")
 
-    def quit(self):
+    def confirm(self):
         if self._getInstance().buffer.options["modified"]:
             selection = int(lfEval("""confirm("buffer changed, apply changes or discard?", "&apply\n&discard")"""))
             if selection == 0:
@@ -1446,13 +1539,19 @@ class RgExplManager(Manager):
         self._getInstance().buffer.options["modifiable"] = False
         self._getInstance().buffer.options["undolevels"] = -1
 
+    def quit(self):
+        self.confirm()
         super(RgExplManager, self).quit()
+        lfCmd("silent! autocmd! Lf_Rg_ReplaceMode")
 
+    def accept(self, mode=''):
+        self.confirm()
+        super(RgExplManager, self).accept(mode)
         lfCmd("silent! autocmd! Lf_Rg_ReplaceMode")
 
     def _writeBuffer(self):
         if not self._cli.pattern:   # e.g., when <BS> or <Del> is typed
-            return
+            return 100
 
         if self._read_content_exception is not None:
             raise self._read_content_exception[1]
@@ -1471,6 +1570,8 @@ class RgExplManager(Manager):
 
                 if self._getInstance().getWinPos() not in ('popup', 'floatwin'):
                     lfCmd("redrawstatus")
+
+            return 100
         else:
             cur_len = len(self._content)
             if time.time() - self._start_time > 0.1:

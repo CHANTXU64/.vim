@@ -78,7 +78,8 @@ class BufTagExplorer(Explorer):
                 yield itertools.chain(tag_list, itertools.chain.from_iterable(exe_taglist))
 
     def _getTagResult(self, buffer):
-        if not buffer.name or lfEval("bufloaded(%d)" % buffer.number) == '0':
+        if (not buffer.name or lfEval("bufloaded(%d)" % buffer.number) == '0'
+            or lfEval("&bt") != ''):
             return []
         changedtick = int(lfEval("getbufvar(%d, 'changedtick')" % buffer.number))
         # there is no change since last call
@@ -108,7 +109,7 @@ class BufTagExplorer(Explorer):
                 tmp_file = tempfile.NamedTemporaryFile
 
             with tmp_file(mode='w+', suffix='_'+os.path.basename(buffer.name), delete=False) as f:
-                for line in buffer[:]:
+                for line in buffer:
                     f.write(line + '\n')
                 file_name = f.name
             # {tagname}<Tab>{tagfile}<Tab>{tagaddress}[;"<Tab>{tagfield}..]
@@ -534,6 +535,8 @@ class BufTagExplManager(Manager):
             else:
                 lfCmd(str(index))
                 lfCmd("norm! zz")
+
+            self._previewResult(False)
 
     def _previewInPopup(self, *args, **kwargs):
         if len(args) == 0 or args[0] == '':

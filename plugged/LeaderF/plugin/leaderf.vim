@@ -136,6 +136,13 @@ augroup LeaderF_Gtags
     endif
 augroup END
 
+if get(g:, 'Lf_GitInlineBlameEnable', 0) == 1
+    augroup Lf_Git_Blame
+    autocmd! BufRead * silent call leaderf#Git#StartInlineBlame()
+    autocmd! BufWinEnter * silent call leaderf#Git#StartInlineBlame()
+    augroup END
+endif
+
 noremap <silent> <Plug>LeaderfFileTop        :<C-U>Leaderf file --top<CR>
 noremap <silent> <Plug>LeaderfFileBottom     :<C-U>Leaderf file --bottom<CR>
 noremap <silent> <Plug>LeaderfFileLeft       :<C-U>Leaderf file --left<CR>
@@ -256,6 +263,14 @@ command! -bar -nargs=0 LeaderfWindow Leaderf window
 
 command! -bar -nargs=0 LeaderfQuickFix Leaderf quickfix
 command! -bar -nargs=0 LeaderfLocList  Leaderf loclist
+
+command! -bar -nargs=0 LeaderfGit           Leaderf git
+command! -bar -nargs=0 LeaderfGitSplitDiff  Leaderf git diff --current-file --side-by-side
+command! -bar -nargs=0 LeaderfGitNavigationOpen call leaderf#Git#OpenNavigationPanel()
+command! -bar -nargs=0 LeaderfGitInlineBlameEnable Leaderf git blame --inline
+command! -bar -nargs=0 LeaderfGitInlineBlameDisable call leaderf#Git#DisableInlineBlame()
+command! -bar -nargs=0 LeaderfGitInlineBlameToggle call leaderf#Git#ToggleInlineBlame()
+command! -bar -nargs=0 LeaderfGitInlineBlameUpdate call leaderf#Git#RestartInlineBlame()
 
 try
     if g:Lf_ShortcutF != ""

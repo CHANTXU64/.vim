@@ -17,6 +17,11 @@ from functools import wraps
 
 lfCmd = vim.command
 lfEval = vim.eval
+# https://github.com/neovim/neovim/issues/8336
+if lfEval("has('nvim')") == '1':
+    lfChdir = vim.chdir
+else:
+    lfChdir = os.chdir
 
 lf_encoding = lfEval("&encoding")
 
@@ -136,7 +141,7 @@ def escQuote(str):
     return "" if str is None else str.replace("'","''")
 
 def escSpecial(str):
-    return re.sub('([%#$" ])', r"\\\1", str)
+    return re.sub('([()%#$" ])', r"\\\1", str)
 
 def equal(str1, str2, ignorecase=True):
     if ignorecase:
@@ -161,7 +166,7 @@ def lfWinId(winnr, tab=None):
 
 def lfPrintError(error):
     if lfEval("get(g:, 'Lf_Exception', 0)") == '1':
-        raise error
+        raise Exception(error)
     else:
         error = lfEncode(str(repr(error)))
         lfCmd("echohl Error | redraw | echo '%s' | echohl None" % escQuote(error))
@@ -224,6 +229,13 @@ def lfDrop(type, file_name, line_num=None):
                     lfCmd("hide edit +%d %s" % (line_num, escSpecial(file_name)))
                 else:
                     lfCmd("hide edit %s" % escSpecial(file_name))
+
+
+def shrinkUser(path):
+    home = os.path.expanduser("~")
+    if path.lower().startswith(home):
+        return path.replace(home, "~", 1)
+    return path
 
 def nearestAncestor(markers, path):
     """
@@ -1099,6 +1111,7 @@ extension_ft = {
     ".csh"         : "csh",
     ".tcsh"        : "tcsh",
     ".xml"         : "xml",
+    ".make"        : "make",
     ".csproj.user"        : "xml",
     ".fsproj.user"        : "xml",
     ".vbproj.user"        : "xml",
@@ -1340,6 +1353,8 @@ name_ft = {
     "trustees.conf"      : "trustees",
     "Vagrantfile"        : "ruby",
     ".vimrc"             : "vim",
+    "vimrc"              : "vim",
+    "gvimrc"             : "vim",
     "_vimrc"             : "vim",
     ".exrc"              : "vim",
     "_exrc"              : "vim",
@@ -1432,3 +1447,12 @@ def printTime(func):
             print(func.__name__, time.time() - start)
 
     return deco
+
+def tabmove():
+    tab_pos = int(lfEval("g:Lf_TabpagePosition"))
+    if tab_pos == 0:
+        lfCmd("tabm 0")
+    elif tab_pos == 1:
+        lfCmd("tabm -1")
+    elif tab_pos == 3:
+        lfCmd("tabm")

@@ -18,7 +18,7 @@ let g:test#default_runners = {
   \ 'Groovy':     ['MavenTest', 'GradleTest'],
   \ 'Haskell':    ['StackTest', 'CabalTest'],
   \ 'Java':       ['MavenTest', 'GradleTest'],
-  \ 'JavaScript': ['Ava', 'CucumberJS', 'DenoTest', 'Intern', 'TAP', 'Teenytest', 'Karma', 'Lab', 'Mocha',  'NgTest', 'Nx', 'Jasmine', 'Jest', 'ReactScripts', 'WebdriverIO', 'Cypress', 'VueTestUtils', 'Playwright', 'Vitest', 'Ember'],
+  \ 'JavaScript': ['Ava', 'CucumberJS', 'DenoTest', 'Intern', 'TAP', 'Teenytest', 'Karma', 'Lab', 'Mocha',  'NgTest', 'Nx', 'Jasmine', 'Jest', 'ReactScripts', 'WebdriverIO', 'Cypress', 'VueTestUtils', 'Playwright', 'Vitest', 'Ember', 'NodeTest', 'BunTest'],
   \ 'Kotlin':     ['GradleTest'],
   \ 'Lua':        ['Busted'],
   \ 'Mint':       ['MintTest'],
@@ -34,6 +34,8 @@ let g:test#default_runners = {
   \ 'Swift':      ['SwiftPM'],
   \ 'VimL':       ['Themis', 'VSpec', 'Vader', 'Testify', 'Vroom'],
   \ 'Zig':        ['ZigTest'],
+  \ 'Gleam':      ['GleamTest'],
+  \ 'Robot':      ['RobotFramework'],
 \}
 
 let g:test#custom_strategies = get(g:, 'test#custom_strategies', {})

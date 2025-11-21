@@ -72,7 +72,7 @@ class AnyExplorer(Explorer):
     def getContent(self, *args, **kwargs):
         source = self._config.get("source")
         if not source:
-            return None
+            return []
 
         if isinstance(source, list):
             result = source
@@ -384,10 +384,11 @@ class AnyExplManager(Manager):
                     # for backward compatibility
                     if isinstance(filename, int): # it is a buffer number
                         lfCmd("silent call bufload(%d)" % filename)
-                    elif lfEval("bufloaded('%s')" % escQuote(filename)) == '1':
+                    else:
                         if not self._has_nvim:  # py3 in nvim return str, in vim return bytes
                             filename = lfBytes2Str(filename)
-                        filename = int(lfEval("bufnr('%s')" % escQuote(filename))) # actually, it's a buffer number
+                        if lfEval("bufloaded('%s')" % escQuote(filename)) == '1':
+                            filename = int(lfEval("bufnr('%s')" % escQuote(filename))) # actually, it's a buffer number
                     self._createPopupPreview("", filename, line_num, lfBytes2Str(jump_cmd) if not self._has_nvim else jump_cmd)
             except vim.error as err:
                 raise Exception("Error occurred in user defined %s: %s" % (str(preview), err))
@@ -719,6 +720,12 @@ class AnyHub(object):
             elif category == "jumps":
                 from .jumpsExpl import jumpsExplManager
                 manager = jumpsExplManager
+            elif category == "git":
+                from .gitExpl import gitExplManager
+                manager = gitExplManager
+            elif category == "coc":
+                from .cocExpl import cocExplManager
+                manager = cocExplManager
             else:
                 import ctypes
                 manager_id = lfFunction(lfEval("g:Lf_PythonExtensions['%s'].manager_id" % category))()
@@ -775,11 +782,39 @@ class AnyHub(object):
                     parser = subparsers.add_parser(category, usage=gtags_usage, formatter_class=LfHelpFormatter, help=help, epilog="If [!] is given, enter normal mode directly.")
                 else:
                     parser = subparsers.add_parser(category, help=help, formatter_class=LfHelpFormatter, epilog="If [!] is given, enter normal mode directly.")
-                group = parser.add_argument_group('specific arguments')
-                self._add_argument(group, arg_def, positional_args)
 
-                group = parser.add_argument_group("common arguments")
-                self._add_argument(group, lfEval("g:Lf_CommonArguments"), positional_args)
+                if category == 'git':
+                    alias_dict = lfEval("g:Lf_GitAlias")
+                else:
+                    alias_dict = {}
+
+                if isinstance(arg_def, dict):
+                    subsubparsers = parser.add_subparsers(title="subcommands", description="", help="")
+                    group = parser.add_argument_group("common arguments")
+                    self._add_argument(group, lfEval("g:Lf_CommonArguments"), positional_args)
+                    for command, args in arg_def.items():
+                        help = lfEval("g:Lf_Helps").get(category + "-" + command, "")
+                        subparser = subsubparsers.add_parser(command, help=help, formatter_class=LfHelpFormatter)
+                        group = subparser.add_argument_group('specific arguments')
+                        self._add_argument(group, args, positional_args)
+
+                        group = subparser.add_argument_group("common arguments")
+                        self._add_argument(group, lfEval("g:Lf_CommonArguments"), positional_args)
+
+                        alias = alias_dict.get(command, None)
+                        if alias is not None:
+                            subparser = subsubparsers.add_parser(alias, help=help, formatter_class=LfHelpFormatter)
+                            group = subparser.add_argument_group('specific arguments')
+                            self._add_argument(group, args, positional_args)
+
+                            group = subparser.add_argument_group("common arguments")
+                            self._add_argument(group, lfEval("g:Lf_CommonArguments"), positional_args)
+                else:
+                    group = parser.add_argument_group('specific arguments')
+                    self._add_argument(group, arg_def, positional_args)
+
+                    group = parser.add_argument_group("common arguments")
+                    self._add_argument(group, lfEval("g:Lf_CommonArguments"), positional_args)
 
                 parser.set_defaults(start=partial(self._default_action, category, positional_args))
 

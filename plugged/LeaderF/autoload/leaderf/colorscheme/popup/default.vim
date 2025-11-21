@@ -137,6 +137,51 @@ if &background ==? 'dark'
     highlight def link Lf_hl_jumpsNumber        Number
     highlight def link Lf_hl_jumpsLineCol       String
     highlight def link Lf_hl_jumpsIndicator     Type
+
+    highlight def Lf_hl_gitDiffModification guifg=#87afff guibg=NONE gui=NONE ctermfg=111 ctermbg=NONE cterm=NONE
+    highlight def Lf_hl_gitDiffAddition guifg=#a8e332 guibg=NONE gui=NONE ctermfg=148 ctermbg=NONE cterm=NONE
+    highlight def Lf_hl_gitDiffDeletion guifg=#ff477e guibg=NONE gui=NONE ctermfg=204 ctermbg=NONE cterm=NONE
+    highlight def link Lf_hl_gitHash            Identifier
+    highlight def link Lf_hl_gitRefNames        Special
+    highlight def link Lf_hl_gitFolder          Directory
+    highlight def link Lf_hl_gitTitle           Label
+    highlight def link Lf_hl_gitFilesNum        Number
+    highlight def link Lf_hl_gitFolderIcon      Special
+    highlight def link Lf_hl_gitAddIcon         Lf_hl_gitDiffAddition
+    highlight def link Lf_hl_gitCopyIcon        Number
+    highlight def link Lf_hl_gitDelIcon         Lf_hl_gitDiffDeletion
+    highlight def link Lf_hl_gitModifyIcon      Lf_hl_gitDiffModification
+    highlight def link Lf_hl_gitRenameIcon      Constant
+    highlight def link Lf_hl_gitNumStatAdd      Lf_hl_gitDiffAddition
+    highlight def link Lf_hl_gitNumStatDel      Lf_hl_gitDiffDeletion
+    highlight def link Lf_hl_gitNumStatBinary   Constant
+    highlight def link Lf_hl_gitHelp            Comment
+    call leaderf#colorscheme#popup#link_two("Lf_hl_gitStlChangedNum", "StatusLine", "Number", 1)
+    highlight def link Lf_hl_gitStlFileChanged  StatusLine
+    call leaderf#colorscheme#popup#link_two("Lf_hl_gitStlAdd", "StatusLine", "Lf_hl_gitDiffAddition", 1)
+    call leaderf#colorscheme#popup#link_two("Lf_hl_gitStlDel", "StatusLine", "Lf_hl_gitDiffDeletion", 1)
+    if has('nvim')
+        highlight Lf_hl_gitStlChangedNum gui=nocombine cterm=nocombine
+        highlight Lf_hl_gitStlAdd gui=nocombine cterm=nocombine
+        highlight Lf_hl_gitStlDel gui=nocombine cterm=nocombine
+    endif
+    highlight def link Lf_hl_gitStatPath        Directory
+    highlight def link Lf_hl_gitStatNumber      Number
+    highlight def link Lf_hl_gitStatPlus        Lf_hl_gitNumStatAdd
+    highlight def link Lf_hl_gitStatMinus       Lf_hl_gitNumStatDel
+    highlight def link Lf_hl_gitGraph1          Statement
+    highlight def link Lf_hl_gitGraph2          String
+    highlight def link Lf_hl_gitGraph3          Special
+    highlight def link Lf_hl_gitGraph4          Lf_hl_gitGraph1
+    highlight def link Lf_hl_gitGraphSlash      Constant
+    highlight def link Lf_hl_gitBlameDate       Number
+    highlight def link Lf_hl_gitSelectedOption  Tag
+    highlight def link Lf_hl_gitNonSelectedOption Comment
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffAdd", "DiffAdd")
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffDelete", "DiffDelete")
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffChange", "DiffChange")
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffText", "DiffText")
+    highlight def link Lf_hl_gitInlineBlame Comment
 else
     " Lf_hl_popup_inputText is the wincolor of input window
     highlight def Lf_hl_popup_inputText guifg=#525252 guibg=#f4f3d7 gui=NONE ctermfg=239 ctermbg=230 cterm=NONE
@@ -261,4 +306,49 @@ else
     highlight def link Lf_hl_jumpsNumber        Number
     highlight def link Lf_hl_jumpsLineCol       String
     highlight def link Lf_hl_jumpsIndicator     Type
+
+    highlight def Lf_hl_gitDiffModification guifg=#5f87af guibg=NONE gui=NONE ctermfg=67 ctermbg=NONE cterm=NONE
+    highlight def Lf_hl_gitDiffAddition guifg=#008700 guibg=NONE gui=NONE ctermfg=28 ctermbg=NONE cterm=NONE
+    highlight def Lf_hl_gitDiffDeletion guifg=#df0000 guibg=NONE gui=NONE ctermfg=160 ctermbg=NONE cterm=NONE
+    highlight def link Lf_hl_gitHash            Identifier
+    highlight def link Lf_hl_gitRefNames        Special
+    highlight def link Lf_hl_gitFolder          Directory
+    highlight def link Lf_hl_gitTitle           Label
+    highlight def link Lf_hl_gitFilesNum        Number
+    highlight def link Lf_hl_gitFolderIcon      Special
+    highlight def link Lf_hl_gitAddIcon         Lf_hl_gitDiffAddition
+    highlight def link Lf_hl_gitCopyIcon        Number
+    highlight def link Lf_hl_gitDelIcon         Lf_hl_gitDiffDeletion
+    highlight def link Lf_hl_gitModifyIcon      Lf_hl_gitDiffModification
+    highlight def link Lf_hl_gitRenameIcon      Constant
+    highlight def link Lf_hl_gitNumStatAdd      Lf_hl_gitDiffAddition
+    highlight def link Lf_hl_gitNumStatDel      Lf_hl_gitDiffDeletion
+    highlight def link Lf_hl_gitNumStatBinary   Constant
+    highlight def link Lf_hl_gitHelp            Comment
+    call leaderf#colorscheme#popup#link_two("Lf_hl_gitStlChangedNum", "StatusLine", "Number", 1)
+    highlight def link Lf_hl_gitStlFileChanged  StatusLine
+    call leaderf#colorscheme#popup#link_two("Lf_hl_gitStlAdd", "StatusLine", "Lf_hl_gitDiffAddition", 1)
+    call leaderf#colorscheme#popup#link_two("Lf_hl_gitStlDel", "StatusLine", "Lf_hl_gitDiffDeletion", 1)
+    if has('nvim')
+        highlight Lf_hl_gitStlChangedNum gui=nocombine cterm=nocombine
+        highlight Lf_hl_gitStlAdd gui=nocombine cterm=nocombine
+        highlight Lf_hl_gitStlDel gui=nocombine cterm=nocombine
+    endif
+    highlight def link Lf_hl_gitStatPath        Directory
+    highlight def link Lf_hl_gitStatNumber      Number
+    highlight def link Lf_hl_gitStatPlus        Lf_hl_gitNumStatAdd
+    highlight def link Lf_hl_gitStatMinus       Lf_hl_gitNumStatDel
+    highlight def link Lf_hl_gitGraph1          Statement
+    highlight def link Lf_hl_gitGraph2          String
+    highlight def link Lf_hl_gitGraph3          Special
+    highlight def link Lf_hl_gitGraph4          Lf_hl_gitGraph1
+    highlight def link Lf_hl_gitGraphSlash      Constant
+    highlight def link Lf_hl_gitBlameDate       Number
+    highlight def link Lf_hl_gitSelectedOption  Tag
+    highlight def link Lf_hl_gitNonSelectedOption Comment
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffAdd", "DiffAdd")
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffDelete", "DiffDelete")
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffChange", "DiffChange")
+    call leaderf#colorscheme#popup#link_no_reverse("Lf_hl_gitDiffText", "DiffText")
+    highlight def link Lf_hl_gitInlineBlame Comment
 endif

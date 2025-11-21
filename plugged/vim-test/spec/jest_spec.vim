@@ -61,6 +61,16 @@ describe "Jest"
       TestNearest
 
       Expect g:test#last_command == 'jest --runTestsByPath -t ''^Math Addition adds two numbers$'' -- __tests__/context-test.js'
+
+      view +2 __tests__/escaping-test.js
+      TestNearest
+
+      Expect g:test#last_command == 'jest --runTestsByPath -t ''^Escaping parentheses \\($'' -- __tests__/escaping-test.js'
+
+      view +5 __tests__/escaping-test.js
+      TestNearest
+
+      Expect g:test#last_command == 'jest --runTestsByPath -t ''^Escaping brackets \\[$'' -- __tests__/escaping-test.js'
     end
 
     it "runs CoffeeScript"
@@ -107,10 +117,15 @@ describe "Jest"
   end
 
   it "runs file tests"
-    view __tests__/normal-test.js
+    view +1 __tests__/normal-test.js
     TestFile
 
     Expect g:test#last_command == 'jest --runTestsByPath -- __tests__/normal-test.js'
+
+    view +2 __tests__/(folder)/normal-test.js
+    TestFile
+
+    Expect g:test#last_command == 'jest --runTestsByPath -- __tests__/\(folder\)/normal-test.js'
   end
 
   it "runs test suites"
@@ -154,6 +169,25 @@ describe "Jest"
       TestFile
 
       Expect g:test#last_command == '~/.local/bin/yarn jest --runTestsByPath __tests__/normal-test.js'
+    end
+  end
+
+  context "using jest.config for detection"
+    before
+      !mv package.json package.temp
+      !touch jest.config.js
+    end
+
+    after
+      !mv package.temp package.json
+      !rm jest.config.js
+    end
+
+    it "runs file tests"
+      view +1 __tests__/normal-test.js
+      TestFile
+
+      Expect g:test#last_command == 'jest --runTestsByPath -- __tests__/normal-test.js'
     end
   end
 

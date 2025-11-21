@@ -12,6 +12,7 @@
 :CSVHeader	ft-csv.txt	/*:CSVHeader*
 :CSVHeaderToggle	ft-csv.txt	/*:CSVHeaderToggle*
 :CSVHiColumn	ft-csv.txt	/*:CSVHiColumn*
+:CSVHistogram	ft-csv.txt	/*:CSVHistogram*
 :CSVInit	ft-csv.txt	/*:CSVInit*
 :CSVMoveCol	ft-csv.txt	/*:CSVMoveCol*
 :CSVNewDelimiter	ft-csv.txt	/*:CSVNewDelimiter*
@@ -30,7 +31,7 @@
 :CSVVertFold	ft-csv.txt	/*:CSVVertFold*
 :CSVWhatColumn	ft-csv.txt	/*:CSVWhatColumn*
 :Filter	ft-csv.txt	/*:Filter*
-:InitCSV	ft-csv.txt	/*:InitCSV*
+:InitCSV-deprecated	ft-csv.txt	/*:InitCSV-deprecated*
 AddColumn_CSV	ft-csv.txt	/*AddColumn_CSV*
 Analyze_CSV	ft-csv.txt	/*Analyze_CSV*
 ArrangeColumn_CSV	ft-csv.txt	/*ArrangeColumn_CSV*
@@ -58,7 +59,9 @@ Filter_CSV	ft-csv.txt	/*Filter_CSV*
 HeaderToggle_CSV	ft-csv.txt	/*HeaderToggle_CSV*
 Header_CSV	ft-csv.txt	/*Header_CSV*
 HiColumn_CSV	ft-csv.txt	/*HiColumn_CSV*
+Histogram_CSV	ft-csv.txt	/*Histogram_CSV*
 MaxCol_CSV	ft-csv.txt	/*MaxCol_CSV*
+MedianCol	ft-csv.txt	/*MedianCol*
 MinCol_CSV	ft-csv.txt	/*MinCol_CSV*
 MoveCol_CSV	ft-csv.txt	/*MoveCol_CSV*
 NewDelimiter_CSV	ft-csv.txt	/*NewDelimiter_CSV*

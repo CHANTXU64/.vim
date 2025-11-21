@@ -281,7 +281,9 @@ class GtagsExplorer(Explorer):
 
         if auto_jump:
             first_two = list(itertools.islice(content, 2))
-            if len(first_two) == 1:
+            if len(first_two) == 0:
+                return []
+            elif len(first_two) == 1:
                 return first_two
             else:
                 return content.join_left(first_two)
@@ -621,6 +623,22 @@ class GtagsExplorer(Explorer):
 
         return False
 
+    def _gtagsFilesExists(self, path):
+        """
+        return True if `gtags.files` exists in project root
+        otherwise return False
+        """
+        root_markers = lfEval("g:Lf_RootMarkers")
+        project_root = nearestAncestor(root_markers, path)
+        if project_root == "":
+            return False
+
+        cur_path = os.path.join(path, "gtags.files")
+        if os.path.exists(cur_path):
+            return True
+
+        return False
+
     def _buildCmd(self, dir, **kwargs):
         """
         this function comes from FileExplorer
@@ -631,6 +649,13 @@ class GtagsExplorer(Explorer):
 
         if self._Lf_ExternalCommand:
             return self._Lf_ExternalCommand.replace('"%s"', '%s') % dir.join('""')
+
+        if self._gtagsFilesExists(dir):
+            if os.name == 'nt':
+                cmd = 'type gtags.files'
+            else:
+                cmd = 'cat gtags.files'
+            return cmd
 
         arguments_dict = kwargs.get("arguments", {})
         if self._Lf_UseVersionControlTool:
@@ -955,6 +980,14 @@ class GtagsExplManager(Manager):
     def setArguments(self, arguments):
         self._arguments = arguments
         self._match_path = "--match-path" in arguments
+
+    def autoJump(self, content):
+        if "--auto-jump" in self._arguments and isinstance(content, list) and len(content) == 1:
+            mode = self._arguments["--auto-jump"][0] if len(self._arguments["--auto-jump"]) else ""
+            self._accept(content[0], mode)
+            return True
+
+        return False
 
     def _getDigest(self, line, mode):
         """

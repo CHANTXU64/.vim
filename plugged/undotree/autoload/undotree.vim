@@ -58,6 +58,7 @@ let s:helpmore = ['"    ===== Marks ===== ',
             \'" >num< : The current state',
             \'" {num} : The next redo state',
             \'" [num] : The latest state',
+            \'" =num= : The diff mark',
             \'"   s   : Saved states',
             \'"   S   : The last saved state',
             \'"   ===== Hotkeys =====']
@@ -85,6 +86,8 @@ let s:keymap += [['FocusTarget','<tab>','Set Focus back to the editor']]
 let s:keymap += [['ClearHistory','C','Clear undo history (with confirmation)']]
 let s:keymap += [['TimestampToggle','T','Toggle relative timestamp']]
 let s:keymap += [['DiffToggle','D','Toggle the diff panel']]
+let s:keymap += [['DiffMark','=','Set the diff marker']]
+let s:keymap += [['ClearDiffMark','M','Clear the diff marker']]
 let s:keymap += [['NextState','K','Move to the next undo state']]
 let s:keymap += [['PreviousState','J','Move to the previous undo state']]
 let s:keymap += [['NextSavedState','>','Move to the next saved state']]
@@ -96,16 +99,16 @@ let s:keymap += [['Enter','<cr>','Move to the current state']]
 
 " 'Diff' sign definitions. There are two 'delete' signs; a 'normal' one and one
 " that is used if the very end of the buffer has been deleted (in which case the
-" deleted text is actually bejond the end of the current buffer version and therefore
+" deleted text is actually beyond the end of the current buffer version and therefore
 " it is not possible to place a sign on the exact line - because it doesn't exist.
 " Instead, a 'special' delete sign is placed on the (existing) last line of the
 " buffer)
-exe 'sign define UndotreeAdd text=++ texthl='.undotree_HighlightSyntaxAdd
-exe 'sign define UndotreeChg text=~~ texthl='.undotree_HighlightSyntaxChange
-exe 'sign define UndotreeDel text=-- texthl='.undotree_HighlightSyntaxDel
-exe 'sign define UndotreeDelEnd text=-v texthl='.undotree_HighlightSyntaxDel
+exe 'sign define UndotreeAdd text='.undotree_SignAdded.' texthl='.undotree_HighlightSyntaxAdd
+exe 'sign define UndotreeChg text='.undotree_SignChanged.' texthl='.undotree_HighlightSyntaxChange
+exe 'sign define UndotreeDel text='.undotree_SignDeleted.' texthl='.undotree_HighlightSyntaxDel
+exe 'sign define UndotreeDelEnd text='.undotree_SignDeletedEnd.' texthl='.undotree_HighlightSyntaxDel
 
-" Id to use for all signs. This is an arbirary number that is hoped to be unique
+" Id to use for all signs. This is an arbitrary number that is hoped to be unique
 " within the instance of vim. There is no way of guaranteeing it IS unique, which
 " is a shame because it needs to be!
 "
@@ -301,6 +304,7 @@ function! s:undotree.Init() abort
     " Increase to make it unique.
     let self.width = g:undotree_SplitWidth
     let self.opendiff = g:undotree_DiffAutoOpen
+    let self.diffmark = -1 " Marker for the diff view
     let self.targetid = -1
     let self.targetBufnr = -1
     let self.rawtree = {}  "data passed from undotree()
@@ -389,7 +393,7 @@ endfunction
 function! s:undotree.ActionHelp() abort
     let self.showHelp = !self.showHelp
     call self.Draw()
-    call self.MarkSeqs()
+    call self.MarkSeqs(1)
 endfunction
 
 function! s:undotree.ActionFocusTarget() abort
@@ -436,6 +440,32 @@ function! s:undotree.ActionNextSavedState() abort
     call self.ActionInTarget('later 1f')
 endfunction
 
+function! s:undotree.ActionDiffMark() abort
+    let index = self.Screen2Index(line('.'))
+    if index < 0
+        return
+    endif
+    let seq = self.asciimeta[index].seq
+    if seq == -1
+        return
+    endif
+    if seq == self.diffmark
+        let self.diffmark = -1
+    else
+        let self.diffmark = seq
+    endif
+    call self.UpdateDiff()
+    call self.Draw()
+    call self.MarkSeqs(0)
+endfunction
+
+function! s:undotree.ActionClearDiffMark() abort
+    let self.diffmark = -1
+    call self.UpdateDiff()
+    call self.Draw()
+    call self.MarkSeqs(1)
+endfunction
+
 function! s:undotree.ActionDiffToggle() abort
     let self.opendiff = !self.opendiff
     call t:diffpanel.Toggle()
@@ -480,7 +510,7 @@ function! s:undotree.UpdateDiff() abort
     if !t:diffpanel.IsVisible()
         return
     endif
-    call t:diffpanel.Update(self.seq_cur,self.targetBufnr,self.targetid)
+    call t:diffpanel.Update(self.seq_cur,self.targetBufnr,self.targetid,self.diffmark)
 endfunction
 
 " May fail due to target window closed.
@@ -488,7 +518,7 @@ function! s:undotree.SetTargetFocus() abort
     for winnr in range(1, winnr('$')) "winnr starts from 1
         if getwinvar(winnr,'undotree_id') == self.targetid
             if winnr() != winnr
-                call s:exec("norm! ".winnr."\<c-w>\<c-w>")
+                call s:exec_silent("norm! ".winnr."\<c-w>\<c-w>")
                 return 1
             endif
         endif
@@ -565,6 +595,7 @@ function! s:undotree.Show() abort
     setlocal buftype=nowrite
     setlocal bufhidden=delete
     setlocal nowrap
+    setlocal nolist
     setlocal foldcolumn=0
     setlocal nobuflisted
     setlocal nospell
@@ -576,7 +607,9 @@ function! s:undotree.Show() abort
         setlocal nocursorline
     endif
     setlocal nomodifiable
-    setlocal statusline=%!t:undotree.GetStatusLine()
+    if g:undotree_StatusLine
+        setlocal statusline=%!t:undotree.GetStatusLine()
+    endif
     setfiletype undotree
 
     call self.BindKey()
@@ -606,12 +639,17 @@ function! s:undotree.Update() abort
     if exists('b:isUndotreeBuffer')
         return
     endif
+    " let the user disable undotree for chosen buftypes
+    if index(g:undotree_DisabledBuftypes, &buftype) != -1
+        call s:log("undotree.Update() disabled buftype")
+        return
+    endif
+    " let the user disable undotree for chosen filetypes
+    if index(g:undotree_DisabledFiletypes, &filetype) != -1
+        call s:log("undotree.Update() disabled filetype")
+        return
+    endif
     if (&bt != '' && &bt != 'acwrite') || (&modifiable == 0) || (mode() != 'n')
-        if &bt == 'quickfix' || &bt == 'nofile'
-            "Do nothing for quickfix and q:
-            call s:log("undotree.Update() ignore quickfix")
-            return
-        endif
         if self.targetBufnr == bufnr('%') && self.targetid == w:undotree_id
             call s:log("undotree.Update() invalid buffer NOupdate")
             return
@@ -640,7 +678,7 @@ function! s:undotree.Update() abort
                     return
                 endif
                 call self.SetFocus()
-                call self.MarkSeqs()
+                call self.MarkSeqs(1)
                 call self.UpdateDiff()
                 return
             endif
@@ -663,7 +701,7 @@ function! s:undotree.Update() abort
     call self.Render()
     call self.SetFocus()
     call self.Draw()
-    call self.MarkSeqs()
+    call self.MarkSeqs(1)
     call self.UpdateDiff()
 endfunction
 
@@ -738,7 +776,7 @@ function! s:undotree.Draw() abort
     setlocal nomodifiable
 endfunction
 
-function! s:undotree.MarkSeqs() abort
+function! s:undotree.MarkSeqs(move_cursor) abort
     call s:log("bak(cur,curhead,newhead): ".
                 \self.seq_cur_bak.' '.
                 \self.seq_curhead_bak.' '.
@@ -779,8 +817,10 @@ function! s:undotree.MarkSeqs() abort
         let lineNr = self.Index2Screen(index)
         call setline(lineNr,substitute(getline(lineNr),
                     \'\zs \(\d\+\) \ze [sS ] ','>\1<',''))
-        " move cursor to that line.
-        call s:exec("normal! " . lineNr . "G")
+        if a:move_cursor
+            " move cursor to that line.
+            call s:exec("normal! " . lineNr . "G")
+        endif
     endif
     if self.seq_curhead != -1
         let index = self.seq2index[self.seq_curhead]
@@ -793,6 +833,13 @@ function! s:undotree.MarkSeqs() abort
         let lineNr = self.Index2Screen(index)
         call setline(lineNr,substitute(getline(lineNr),
                     \'\zs \(\d\+\) \ze [sS ] ','[\1]',''))
+    endif
+    " mark diff marker
+    if self.diffmark != -1
+        let index = self.seq2index[self.diffmark]
+        let lineNr = self.Index2Screen(index)
+        call setline(lineNr, substitute(getline(lineNr),
+                        \ '\zs \(\d\+\) \ze [sS ]', '=\1=', ''))
     endif
     setlocal nomodifiable
 endfunction
@@ -934,7 +981,7 @@ function! s:undotree.Render() abort
             endif
         endfor
 
-        " Then, find the element with minimun seq.
+        " Then, find the element with minimum seq.
         let minseq = 99999999
         let minnode = {}
         if foundx == 0
@@ -1055,8 +1102,8 @@ endfunction
 "diff panel
 let s:diffpanel = s:new(s:panel)
 
-function! s:diffpanel.Update(seq,targetBufnr,targetid) abort
-    call s:log('diffpanel.Update(),seq:'.a:seq.' bufname:'.bufname(a:targetBufnr))
+function! s:diffpanel.Update(seq,targetBufnr,targetid,diffmark) abort
+    call s:log('diffpanel.Update(),seq:'.a:seq.' bufname:'.bufname(a:targetBufnr).' diffmark:'.a:diffmark)
     if !self.diffexecutable
         return
     endif
@@ -1067,9 +1114,9 @@ function! s:diffpanel.Update(seq,targetBufnr,targetid) abort
     if a:seq == 0
         let diffresult = []
     else
-        if has_key(self.cache,a:targetBufnr.'_'.a:seq)
+        if has_key(self.cache,a:targetBufnr.'_'.a:seq.'_'.a:diffmark)
             call s:log("diff cache hit.")
-            let diffresult = self.cache[a:targetBufnr.'_'.a:seq]
+            let diffresult = self.cache[a:targetBufnr.'_'.a:seq.'_'.a:diffmark]
         else
             " Double check the target winnr and bufnr
             let targetWinnr = -1
@@ -1091,10 +1138,29 @@ function! s:diffpanel.Update(seq,targetBufnr,targetid) abort
             " remember and restore cursor and window position.
             let savedview = winsaveview()
 
-            let new = getbufline(a:targetBufnr,'^','$')
-            silent undo
-            let old = getbufline(a:targetBufnr,'^','$')
-            silent redo
+            let new = []
+            let old = []
+            let diff_dist = 1
+
+            if a:diffmark != -1
+                let diff_dist = a:seq - a:diffmark
+                if diff_dist > 0
+                    let new = getbufline(a:targetBufnr,'^','$')
+                    execute 'silent earlier ' . diff_dist
+                    let old = getbufline(a:targetBufnr,'^','$')
+                    execute 'silent later ' . diff_dist
+                else
+                    let old = getbufline(a:targetBufnr,'^','$')
+                    execute 'silent later ' . (-diff_dist)
+                    let new = getbufline(a:targetBufnr,'^','$')
+                    execute 'silent earlier ' . (-diff_dist)
+                endif
+            else
+                let new = getbufline(a:targetBufnr,'^','$')
+                silent undo
+                let old = getbufline(a:targetBufnr,'^','$')
+                silent redo
+            endif
 
             call winrestview(savedview)
 
@@ -1117,7 +1183,7 @@ function! s:diffpanel.Update(seq,targetBufnr,targetid) abort
             endif
             let &eventignore = ei_bak
             "Update cache
-            let self.cache[a:targetBufnr.'_'.a:seq] = diffresult
+            let self.cache[a:targetBufnr.'_'.a:seq.'_'.a:diffmark] = diffresult
         endif
     endif
 
@@ -1129,7 +1195,15 @@ function! s:diffpanel.Update(seq,targetBufnr,targetid) abort
     call s:exec('1,$ d _')
 
     call append(0,diffresult)
-    call append(0,'- seq: '.a:seq.' -')
+    if a:diffmark == -1 || a:seq == a:diffmark
+        call append(0,'+ seq: '.a:seq.' +')
+    elseif a:seq > a:diffmark
+        call append(0,'+ seq: '.a:seq.' +')
+        call append(0,'- seq: '.a:diffmark.' -')
+    else
+        call append(0,'+ seq: '.a:diffmark.' +')
+        call append(0,'- seq: '.a:seq.' -')
+    endif
 
     "remove the last empty line
     if getline("$") == ""
@@ -1162,7 +1236,7 @@ function! s:diffpanel.ParseDiff(diffresult, targetBufnr) abort
     " matchadd associates with windows.
     if exists("w:undotree_diffmatches")
         for i in w:undotree_diffmatches
-            call matchdelete(i)
+            silent! call matchdelete(i)
         endfor
     endif
 
@@ -1235,9 +1309,14 @@ function! s:diffpanel.Init() abort
     let self.bufname = "diffpanel_".s:getUniqueID()
     let self.cache = {}
     let self.changes = {'add':0, 'del':0}
-    let self.diffexecutable = executable('diff')
+    let self.diffexecutable = executable(g:undotree_DiffCommand)
     if !self.diffexecutable
-        echoerr '"diff" is not executable.'
+        " If the command contains parameters, strip out the executable itself
+        let cmd = matchstr(g:undotree_DiffCommand.' ', '.\{-}\ze\s.*')
+        let self.diffexecutable = executable(cmd)
+        if !self.diffexecutable
+            echoerr '"'.cmd.'" is not executable.'
+        endif
     endif
 endfunction
 
@@ -1280,13 +1359,16 @@ function! s:diffpanel.Show() abort
     setlocal buftype=nowrite
     setlocal bufhidden=delete
     setlocal nowrap
+    setlocal nolist
     setlocal nobuflisted
     setlocal nospell
     setlocal nonumber
     setlocal norelativenumber
     setlocal nocursorline
     setlocal nomodifiable
-    setlocal statusline=%!t:diffpanel.GetStatusLine()
+    if g:undotree_StatusLine
+        setlocal statusline=%!t:diffpanel.GetStatusLine()
+    endif
 
     let &eventignore = ei_bak
 
@@ -1322,7 +1404,7 @@ function! s:diffpanel.CleanUpHighlight() abort
         call s:exec_silent("norm! ".i."\<c-w>\<c-w>")
         if exists("w:undotree_diffmatches")
             for j in w:undotree_diffmatches
-                call matchdelete(j)
+                silent! call matchdelete(j)
             endfor
             let w:undotree_diffmatches = []
         endif
@@ -1469,7 +1551,7 @@ function! undotree#UndotreePersistUndo(goSetUndofile) abort
             call mkdir(g:undotree_UndoDir, 'p', 0700)
             call s:log(" > [Dir " . g:undotree_UndoDir . "] created.")
         endif
-        exe "set undodir=" . g:undotree_UndoDir
+        exe "set undodir=" . fnameescape(g:undotree_UndoDir)
         call s:log(" > [set undodir=" . g:undotree_UndoDir . "] executed.")
         if filereadable(undofile(expand('%'))) || a:goSetUndofile
             setlocal undofile

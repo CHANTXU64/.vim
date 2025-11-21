@@ -60,14 +60,17 @@ def modifiableController(func):
     def deco(self, *args, **kwargs):
         self._getInstance().buffer.options['modifiable'] = True
         func(self, *args, **kwargs)
-        self._getInstance().buffer.options['modifiable'] = False
+        try:
+            self._getInstance().buffer.options['modifiable'] = False
+        except:
+            pass
     return deco
 
 def catchException(func):
     @wraps(func)
     def deco(self, *args, **kwargs):
         try:
-            func(self, *args, **kwargs)
+            return func(self, *args, **kwargs)
         except vim.error as e: # for neovim
             if str(e) != "b'Keyboard interrupt'" and str(e) != 'Keyboard interrupt':
                 raise e
@@ -129,7 +132,10 @@ class Manager(object):
         self._arguments = {}
         self._getExplClass()
         self._preview_filetype = None
+        self._orig_source = None
         self._preview_config = {}
+        self.is_autocmd = False
+        self.is_ctrl_c = False
         self._circular_scroll = lfEval("get(g:, 'Lf_EnableCircularScroll', 0)") == '1'
         if lfEval("has('patch-8.1.1615') || has('nvim-0.5.0')") == '0':
             lfCmd("let g:Lf_PreviewInPopup = 0")
@@ -208,6 +214,9 @@ class Manager(object):
     def _acceptSelection(self, *args, **kwargs):
         pass
 
+    def autoJump(self, content):
+        return False
+
     def _getDigest(self, line, mode):
         """
         this function can be overridden
@@ -278,8 +287,11 @@ class Manager(object):
         elif self._cli._is_live:
             mode = 'Fuzzy'
 
-        self._getInstance().setStlMode(mode)
+        self.setStlMode(mode)
         self._cli.setCurrentMode(mode)
+
+    def setStlMode(self, mode):
+        self._getInstance().setStlMode(mode)
 
     def _beforeEnter(self):
         self._resetAutochdir()
@@ -407,12 +419,13 @@ class Manager(object):
         if lfEval("has('nvim')") == '1':
             if self._preview_winid:
                 if int(lfEval("nvim_win_is_valid(%d) == v:true" % self._preview_winid)):
-                    lfCmd("noautocmd call nvim_win_close(%d, 1)" % self._preview_winid)
+                    lfCmd("call nvim_win_close(%d, 1)" % self._preview_winid)
                 self._preview_winid = 0
         else:
             if self._preview_winid:
-                lfCmd("noautocmd call popup_close(%d)" % self._preview_winid)
+                lfCmd("call popup_close(%d)" % self._preview_winid)
                 self._preview_winid = 0
+                lfCmd("silent! noautocmd bwipe /Lf_preview_{}".format(id(self)))
 
         self._preview_filetype = None
 
@@ -428,6 +441,7 @@ class Manager(object):
         if not self._needPreview(preview, preview_in_popup):
             if preview_in_popup:
                 self._closePreviewPopup()
+                self._getInstance().enlargePopupWindow()
             return
 
         line_num = self._getInstance().window.cursor[0]
@@ -435,6 +449,10 @@ class Manager(object):
 
         if preview_in_popup:
             self._previewInPopup(line, self._getInstance().buffer, line_num)
+
+            if not self.isPreviewWindowOpen():
+                self._getInstance().enlargePopupWindow()
+
             return
 
         orig_pos = self._getInstance().getOriginalPos()
@@ -496,8 +514,8 @@ class Manager(object):
             lfCmd("call nvim_win_set_option(%d, 'colorcolumn', '')" % winid)
             lfCmd("call nvim_win_set_option(%d, 'winhighlight', 'Normal:Lf_hl_popup_window')" % winid)
         else:
-            lfCmd("call win_execute(%d, 'setlocal number norelativenumber cursorline')" % winid)
-            lfCmd("call win_execute(%d, 'setlocal nofoldenable foldmethod=manual')" % winid)
+            lfCmd("noautocmd call win_execute(%d, 'setlocal number norelativenumber cursorline')" % winid)
+            lfCmd("noautocmd call win_execute(%d, 'setlocal nofoldenable foldmethod=manual')" % winid)
             if lfEval("get(g:, 'Lf_PopupShowFoldcolumn', 1)") == '0' or lfEval("get(g:, 'Lf_PopupShowBorder', 1)") == '1':
                 lfCmd("call win_execute(%d, 'setlocal foldcolumn=0')" % winid)
             else:
@@ -509,6 +527,7 @@ class Manager(object):
 
     def _createPreviewWindow(self, config, source, line_num, jump_cmd):
         self._preview_config = config
+        self._orig_source = source
 
         if lfEval("has('nvim')") == '1':
             if isinstance(source, int):
@@ -519,7 +538,7 @@ class Manager(object):
                     if self._isBinaryFile(source):
                         lfCmd("""let content = map(range(128), '"^@"')""")
                     else:
-                        lfCmd("let content = readfile('%s', '', 4096)" % escQuote(source))
+                        lfCmd("let content = readfile('%s', '', 20480)" % escQuote(source))
                 except vim.error as e:
                     lfPrintError(e)
                     return
@@ -535,7 +554,12 @@ class Manager(object):
             cur_winid = lfEval("win_getid()")
             lfCmd("noautocmd call win_gotoid(%d)" % self._preview_winid)
             if not isinstance(source, int):
-                lfCmd("silent! doautocmd filetypedetect BufNewFile %s" % source)
+                file_type = getExtension(source)
+                if file_type is None:
+                    lfCmd("silent! doautocmd filetypedetect BufNewFile %s" % source)
+                else:
+                    lfCmd("noautocmd set ft=%s" % getExtension(source))
+                    lfCmd("set syntax=%s" % getExtension(source))
             lfCmd("noautocmd call win_gotoid(%s)" % cur_winid)
 
             self._setWinOptions(self._preview_winid)
@@ -548,6 +572,44 @@ class Manager(object):
                 lfCmd("""call nvim_win_set_cursor(%d, [%d, 1])""" % (self._preview_winid, line_num))
             lfCmd("norm! zz")
             lfCmd("noautocmd call win_gotoid(%s)" % cur_winid)
+        elif lfEval("exists('*popup_setbuf')") == "1":
+            if isinstance(source, int):
+                lfCmd("noautocmd silent! let winid = popup_create(%d, %s)"
+                      % (source, json.dumps(config)))
+            else:
+                filename = source
+                try:
+                    if self._isBinaryFile(filename):
+                        lfCmd("""let content = map(range(128), '"^@"')""")
+                    else:
+                        lfCmd("let content = readfile('%s', '', 20480)" % escQuote(filename))
+                except vim.error as e:
+                    lfPrintError(e)
+                    return
+
+                lfCmd("noautocmd silent! let winid = popup_create(bufadd('/Lf_preview_%s'), %s)"
+                      % (id(self), json.dumps(config)))
+                lfCmd("call win_execute(winid, 'setlocal modeline')")
+                lfCmd("call win_execute(winid, 'setlocal undolevels=-1')")
+                lfCmd("call win_execute(winid, 'setlocal noswapfile')")
+                lfCmd("call win_execute(winid, 'setlocal nobuflisted')")
+                lfCmd("call win_execute(winid, 'setlocal bufhidden=hide')")
+                lfCmd("call win_execute(winid, 'setlocal buftype=nofile')")
+                lfCmd("noautocmd call popup_settext(winid, content)")
+
+                lfCmd("call win_execute(winid, 'silent! doautocmd filetypedetect BufNewFile %s')"
+                      % escQuote(filename))
+
+            self._preview_winid = int(lfEval("winid"))
+            self._setWinOptions(self._preview_winid)
+            self._preview_filetype = lfEval("getbufvar(winbufnr(winid), '&ft')")
+
+            if jump_cmd:
+                lfCmd("""call win_execute(%d, '%s')""" % (self._preview_winid, escQuote(jump_cmd)))
+                lfCmd("call win_execute(%d, 'norm! zz')" % self._preview_winid)
+            elif line_num > 0:
+                lfCmd("""call win_execute(%d, "call cursor(%d, 1)")""" % (self._preview_winid, line_num))
+                lfCmd("call win_execute(%d, 'norm! zz')" % self._preview_winid)
         else:
             if isinstance(source, int):
                 lfCmd("let content = getbufline(%d, 1, '$')" % source)
@@ -558,7 +620,7 @@ class Manager(object):
                     if self._isBinaryFile(filename):
                         lfCmd("""let content = map(range(128), '"^@"')""")
                     else:
-                        lfCmd("let content = readfile('%s', '', 4096)" % escQuote(filename))
+                        lfCmd("let content = readfile('%s', '', 20480)" % escQuote(filename))
                 except vim.error as e:
                     lfPrintError(e)
                     return
@@ -588,6 +650,8 @@ class Manager(object):
                 if the type is str, it is a file name
 
         """
+        self._getInstance().shrinkPopupWindow()
+
         self._is_previewed = True
 
         show_borders = lfEval("get(g:, 'Lf_PopupShowBorder', 1)") == '1'
@@ -847,7 +911,7 @@ class Manager(object):
             lfPrintError(e)
             return True
 
-    def _useExistingWindow(self, title, source, line_num, jump_cmd):
+    def setOptionsForCursor(self):
         preview_pos = self._arguments.get("--preview-position", [""])[0]
         if preview_pos == "":
             preview_pos = lfEval("get(g:, 'Lf_PreviewPosition', 'top')")
@@ -862,53 +926,89 @@ class Manager(object):
             else:
                 lfCmd("call popup_setoptions(%d, %s)" % (self._preview_winid, str(self._preview_config)))
 
-        if lfEval("has('nvim')") == '1':
-            if isinstance(source, int):
-                lfCmd("noautocmd call nvim_win_set_buf(%d, %d)" % (self._preview_winid, source))
-                self._setWinOptions(self._preview_winid)
-                self._preview_filetype = ''
-            else:
-                try:
-                    if self._isBinaryFile(source):
-                        lfCmd("""let content = map(range(128), '"^@"')""")
-                    else:
-                        lfCmd("let content = readfile('%s', '', 4096)" % escQuote(source))
-                except vim.error as e:
-                    lfPrintError(e)
-                    return
-                if lfEval("!exists('g:Lf_preview_scratch_buffer') || !bufexists(g:Lf_preview_scratch_buffer)") == '1':
-                    lfCmd("noautocmd let g:Lf_preview_scratch_buffer = nvim_create_buf(0, 1)")
-                lfCmd("noautocmd call nvim_buf_set_option(g:Lf_preview_scratch_buffer, 'undolevels', -1)")
-                lfCmd("noautocmd call nvim_buf_set_option(g:Lf_preview_scratch_buffer, 'modeline', v:true)")
-                lfCmd("noautocmd call nvim_buf_set_lines(g:Lf_preview_scratch_buffer, 0, -1, v:false, content)")
-                lfCmd("noautocmd call nvim_win_set_buf(%d, g:Lf_preview_scratch_buffer)" % self._preview_winid)
+    def _useExistingWindow(self, title, source, line_num, jump_cmd):
+        self.setOptionsForCursor()
 
-                cur_filetype = getExtension(source)
+        if self._orig_source != source:
+            self._orig_source = source
+
+            if lfEval("has('nvim')") == '1':
+                if isinstance(source, int):
+                    lfCmd("silent noautocmd call nvim_win_set_buf(%d, %d)" % (self._preview_winid, source))
+                    self._setWinOptions(self._preview_winid)
+                else:
+                    try:
+                        if self._isBinaryFile(source):
+                            lfCmd("""let content = map(range(128), '"^@"')""")
+                        else:
+                            lfCmd("let content = readfile('%s', '', 20480)" % escQuote(source))
+                    except vim.error as e:
+                        lfPrintError(e)
+                        return
+                    if lfEval("!exists('g:Lf_preview_scratch_buffer') || !bufexists(g:Lf_preview_scratch_buffer)") == '1':
+                        lfCmd("noautocmd let g:Lf_preview_scratch_buffer = nvim_create_buf(0, 1)")
+                    lfCmd("noautocmd call nvim_buf_set_option(g:Lf_preview_scratch_buffer, 'undolevels', -1)")
+                    lfCmd("noautocmd call nvim_buf_set_option(g:Lf_preview_scratch_buffer, 'modeline', v:true)")
+                    lfCmd("noautocmd call nvim_buf_set_lines(g:Lf_preview_scratch_buffer, 0, -1, v:false, content)")
+                    lfCmd("silent noautocmd call nvim_win_set_buf(%d, g:Lf_preview_scratch_buffer)" % self._preview_winid)
+                    preview_filetype = lfEval("getbufvar(winbufnr(%d), '&ft')" % self._preview_winid)
+
+                    cur_filetype = getExtension(source)
+                    if cur_filetype != preview_filetype:
+                        if cur_filetype is None:
+                            lfCmd("call win_execute(%d, 'silent! doautocmd filetypedetect BufNewFile %s')"
+                                  % (self._preview_winid, escQuote(source)))
+                        else:
+                            lfCmd("call win_execute(%d, 'noautocmd set ft=%s')" % (self._preview_winid, cur_filetype))
+                            lfCmd("call win_execute(%d, 'set syntax=%s')" % (self._preview_winid, cur_filetype))
+            elif lfEval("exists('*popup_setbuf')") == "1":
+                if isinstance(source, int):
+                    lfCmd("call popup_setbuf(%d, %d)" % (self._preview_winid, source))
+                else:
+                    filename = source
+                    try:
+                        if self._isBinaryFile(filename):
+                            lfCmd("""let content = map(range(128), '"^@"')""")
+                        else:
+                            lfCmd("let content = readfile('%s', '', 20480)" % escQuote(filename))
+                    except vim.error as e:
+                        lfPrintError(e)
+                        return
+                    lfCmd("silent call popup_setbuf(%d, bufadd('/Lf_preview_%d'))" % (self._preview_winid, id(self)))
+                    lfCmd("call win_execute(%d, 'setlocal modeline')" % self._preview_winid)
+                    lfCmd("call win_execute(%d, 'setlocal undolevels=-1')" % self._preview_winid)
+                    lfCmd("call win_execute(%d, 'setlocal noswapfile')" % self._preview_winid)
+                    lfCmd("call win_execute(%d, 'setlocal nobuflisted')" % self._preview_winid)
+                    lfCmd("call win_execute(%d, 'setlocal bufhidden=hide')" % self._preview_winid)
+                    lfCmd("call win_execute(%d, 'setlocal buftype=nofile')" % self._preview_winid)
+                    lfCmd("noautocmd call popup_settext(%d, content)" % self._preview_winid)
+                    cur_filetype = lfEval("getbufvar(winbufnr(%d), '&ft')" % self._preview_winid)
+
+                    if cur_filetype != getExtension(filename):
+                        lfCmd("call win_execute(%d, 'silent! doautocmd filetypedetect BufNewFile %s')"
+                              % (self._preview_winid, escQuote(filename)))
+            else:
+                if isinstance(source, int):
+                    lfCmd("noautocmd call popup_settext(%d, getbufline(%d, 1, 20480))" % (self._preview_winid, source))
+                    filename = vim.buffers[source].name
+                else:
+                    filename = source
+                    try:
+                        if self._isBinaryFile(filename):
+                            lfCmd("""let content = map(range(128), '"^@"')""")
+                        else:
+                            lfCmd("let content = readfile('%s', '', 20480)" % escQuote(filename))
+                    except vim.error as e:
+                        lfPrintError(e)
+                        return
+                    lfCmd("noautocmd call popup_settext(%d, content)" % self._preview_winid)
+
+                cur_filetype = getExtension(filename)
                 if cur_filetype != self._preview_filetype:
-                    lfCmd("call win_execute(%d, 'silent! doautocmd filetypedetect BufNewFile %s')" % (self._preview_winid, escQuote(source)))
+                    lfCmd("call win_execute(%d, 'silent! doautocmd filetypedetect BufNewFile %s')" % (self._preview_winid, escQuote(filename)))
                     self._preview_filetype = lfEval("getbufvar(winbufnr(%d), '&ft')" % self._preview_winid)
-        else:
-            if isinstance(source, int):
-                lfCmd("noautocmd call popup_settext(%d, getbufline(%d, 1, '$'))" % (self._preview_winid, source) )
-                filename = vim.buffers[source].name
-            else:
-                filename = source
-                try:
-                    if self._isBinaryFile(filename):
-                        lfCmd("""let content = map(range(128), '"^@"')""")
-                    else:
-                        lfCmd("let content = readfile('%s', '', 4096)" % escQuote(filename))
-                except vim.error as e:
-                    lfPrintError(e)
-                    return
-                lfCmd("noautocmd call popup_settext(%d, content)" % self._preview_winid )
 
-            cur_filetype = getExtension(filename)
-            if cur_filetype != self._preview_filetype:
-                lfCmd("call win_execute(%d, 'silent! doautocmd filetypedetect BufNewFile %s')" % (self._preview_winid, escQuote(filename)))
-                self._preview_filetype = lfEval("getbufvar(winbufnr(%d), '&ft')" % self._preview_winid)
-
-        self._setWinOptions(self._preview_winid)
+            self._setWinOptions(self._preview_winid)
 
         if jump_cmd:
             lfCmd("""call win_execute(%d, '%s')""" % (self._preview_winid, escQuote(jump_cmd)))
@@ -1348,6 +1448,8 @@ class Manager(object):
         """
         direction is in {'j', 'k', 'Down', 'Up', 'PageDown', 'PageUp'}
         """
+        count = int(lfEval("v:count"))
+
         if (direction in ("j", "Down") and self._getInstance().window.cursor[0] == len(self._getInstance().buffer)
             and self._circular_scroll):
             lfCmd('noautocmd exec "norm! gg"')
@@ -1355,9 +1457,9 @@ class Manager(object):
             lfCmd('noautocmd exec "norm! G"')
         else:
             if len(direction) > 1:
-                lfCmd(r'noautocmd exec "norm! \<{}>"'.format(direction))
+                lfCmd(r'noautocmd exec "norm! {}\<{}>"'.format(count, direction))
             else:
-                lfCmd('noautocmd exec "norm! {}"'.format(direction))
+                lfCmd('noautocmd exec "norm! {}{}"'.format(count, direction))
 
         if self._getInstance().getWinPos() == 'floatwin':
             self._cli._buildPopupPrompt()
@@ -1735,7 +1837,7 @@ class Manager(object):
                                             pattern=pattern, is_name_only=True, sort_results=do_sort)
                     getHighlights = partial(fuzzyEngine.getHighlights, engine=self._fuzzy_engine,
                                             pattern=pattern, is_name_only=True)
-                    highlight_method = partial(self._highlight, True, getHighlights, True)
+                    highlight_method = partial(self._highlight, False, getHighlights, True)
                 elif is_fuzzyMatch_C and isAscii(self._cli.pattern[0]):
                     use_fuzzy_match_c = True
                     pattern = fuzzyMatchC.initPattern(self._cli.pattern[0])
@@ -1827,7 +1929,7 @@ class Manager(object):
                                                 is_name_only=True, sort_results=do_sort)
                 elif self._getExplorer().getStlCategory() == "Rg":
                     return_index = False
-                    if "--match-path" in self._arguments:
+                    if self._cli.isFullPath or "--match-path" in self._arguments:
                         filter_method = partial(fuzzyEngine.fuzzyMatch, engine=self._fuzzy_engine, pattern=pattern,
                                                 is_name_only=True, sort_results=do_sort)
                     else:
@@ -1858,6 +1960,12 @@ class Manager(object):
                     filter_method = partial(fuzzyEngine.fuzzyMatchPart, engine=self._fuzzy_engine,
                                             pattern=pattern, category=fuzzyEngine.Category_Line,
                                             param=fuzzyEngine.createParameter(1), is_name_only=True, sort_results=do_sort)
+                elif self._getExplorer().getStlCategory() == "Git_diff":
+                    return_index = False
+                    mode = 0 if self._cli.isFullPath else 1
+                    filter_method = partial(fuzzyEngine.fuzzyMatchPart, engine=self._fuzzy_engine,
+                                            pattern=pattern, category=fuzzyEngine.Category_GitDiff,
+                                            param=fuzzyEngine.createParameter(mode), is_name_only=False, sort_results=do_sort)
                 elif self._getExplorer().getStlCategory() in ["Self", "Buffer", "Mru", "BufTag",
                         "Function", "History", "Cmd_History", "Search_History", "Filetype",
                         "Command", "Window", "QuickFix", "LocList"]:
@@ -1926,7 +2034,7 @@ class Manager(object):
                 if return_index == True:
                     step = 30000 * cpu_count
                 else:
-                    step = 60000 * cpu_count
+                    step = 50000 * cpu_count
 
             _, self._result_content = self._filter(step, filter_method, content, is_continue, True, return_index)
         else:
@@ -1952,9 +2060,6 @@ class Manager(object):
         else:
             self._highlight_method = highlight_method
             self._highlight_method()
-
-        if len(self._cli.pattern) > 1 and not is_continue:
-            lfCmd("silent! redraw")
 
     def _guessFilter(self, filename, suffix, dirname, icon, iterable):
         """
@@ -2266,13 +2371,7 @@ class Manager(object):
             self._cursorline_dict.clear()
             self._issue_422_set_option()
             if mode == 't' and len(vim.tabpages) > tabpage_count:
-                tab_pos = int(lfEval("g:Lf_TabpagePosition"))
-                if tab_pos == 0:
-                    lfCmd("tabm 0")
-                elif tab_pos == 1:
-                    lfCmd("tabm -1")
-                elif tab_pos == 3:
-                    lfCmd("tabm")
+                tabmove()
 
     def accept(self, mode=''):
         if self._getInstance().isReverseOrder():
@@ -2663,10 +2762,7 @@ class Manager(object):
         else:
             content = self._getExplorer().getContent(*args, **kwargs)
             self._getInstance().setCwd(lfGetCwd())
-            if self._getExplorer().getStlCategory() in ["Gtags"] and "--auto-jump" in self._arguments \
-                    and isinstance(content, list) and len(content) == 1:
-                mode = self._arguments["--auto-jump"][0] if len(self._arguments["--auto-jump"]) else ""
-                self._accept(content[0], mode)
+            if self.autoJump(content) == True:
                 return
 
             self._index = 0
@@ -2677,6 +2773,9 @@ class Manager(object):
             self._cli.setPattern(pattern)
             self._result_content = []
             self._cb_content = []
+
+        if content is None:
+            return
 
         if not content:
             lfCmd("echohl Error | redraw | echo ' No content!' | echohl NONE")
@@ -2848,7 +2947,7 @@ class Manager(object):
                     self._timer_id = None
 
                 lfPrintError(self._read_content_exception[1])
-                return
+                return None
             else:
                 raise self._read_content_exception[1]
 
@@ -2861,7 +2960,9 @@ class Manager(object):
                 else:
                     step = 2000
                 self._search(self._content, True, step)
-            return
+                return None
+            else:
+                return 100
 
         if content:
             i = -1
@@ -2920,8 +3021,8 @@ class Manager(object):
 
                     self._getInstance().setStlResultsCount(len(self._content))
 
-                    if not self.isPreviewWindowOpen():
-                        self._previewResult(False)
+                if not self.isPreviewWindowOpen():
+                    self._previewResult(False)
 
                 if self._getInstance().getWinPos() not in ('popup', 'floatwin'):
                     lfCmd("redrawstatus")
@@ -2938,6 +3039,10 @@ class Manager(object):
 
                     if bang:
                         self._getInstance().appendBuffer(self._result_content[self._initial_count:])
+                else:
+                    return 100
+            else:
+                return 100
         else:
             cur_len = len(self._content)
             if time.time() - self._start_time > 0.1:
@@ -2984,6 +3089,8 @@ class Manager(object):
 
                 if not self.isPreviewWindowOpen():
                     self._previewResult(False)
+
+        return None
 
 
     @modifiableController

@@ -71,10 +71,10 @@ function! s:InitDict(var, dict)
 endfunction
 
 call s:InitVar('g:Lf_WindowHeight', '0.5')
-call s:InitVar('g:Lf_TabpagePosition', 2)
+call s:InitVar('g:Lf_TabpagePosition', 3)
 call s:InitVar('g:Lf_ShowRelativePath', 1)
 call s:InitVar('g:Lf_DefaultMode', 'FullPath')
-call s:InitVar('g:Lf_CursorBlink', 1)
+call s:InitVar('g:Lf_CursorBlink', 0)
 call s:InitVar('g:Lf_NeedCacheTime', '1.5')
 call s:InitVar('g:Lf_NumberOfCache', 5)
 call s:InitVar('g:Lf_UseMemoryCache', 1)
@@ -143,6 +143,21 @@ call s:InitDict('g:Lf_GtagsfilesCmd', {
             \})
 call s:InitVar('g:Lf_HistoryEditPromptIfEmpty', 1)
 call s:InitVar('g:Lf_PopupBorders', ["─","│","─","│","╭","╮","╯","╰"])
+call s:InitVar('g:Lf_GitFolderIcons', {
+            \ 'open': '',
+            \ 'closed': '',
+            \})
+call s:InitVar('g:Lf_GitKeyMap', {
+            \ 'previous_change': '[c',
+            \ 'next_change': ']c',
+            \ 'edit_file': '<CR>',
+            \})
+
+call s:InitDict('g:Lf_GitAlias', {
+            \ "status": "st",
+            \ "diff":   "df",
+            \ "blame":  "bl",
+            \})
 
 let s:Lf_CommandMap = {
             \ '<C-A>':         ['<C-A>'],
@@ -601,6 +616,7 @@ function! leaderf#PopupClosed(id_list, manager_id, winid, result) abort
     " result is -1 if CTRL-C was pressed,
     if a:result == -1
         exec g:Lf_py "import ctypes"
+        exec g:Lf_py printf("ctypes.cast(%d, ctypes.py_object).value.is_ctrl_c = True", a:manager_id)
         exec g:Lf_py printf("ctypes.cast(%d, ctypes.py_object).value.quit()", a:manager_id)
         for id in a:id_list
             if id != a:winid
@@ -611,8 +627,15 @@ function! leaderf#PopupClosed(id_list, manager_id, winid, result) abort
 endfunction
 
 function! leaderf#Quit(manager_id) abort
-    exec g:Lf_py "import ctypes"
-    exec g:Lf_py printf("ctypes.cast(%d, ctypes.py_object).value.quit()", a:manager_id)
+exec g:Lf_py "<< EOF"
+import ctypes
+manager = ctypes.cast(int(vim.eval("a:manager_id")), ctypes.py_object).value
+if manager.is_ctrl_c == False:
+    manager.is_autocmd = True
+    manager.quit()
+    manager.is_autocmd = False
+manager.is_ctrl_c = False
+EOF
 endfunction
 
 function! leaderf#ResetPopupOptions(winid, option, value) abort

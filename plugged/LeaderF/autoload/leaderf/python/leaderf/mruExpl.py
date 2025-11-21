@@ -127,6 +127,7 @@ class MruExplorer(Explorer):
         self._max_bufname_len = max(int(lfEval("strdisplaywidth('%s')"
                                         % escQuote(getBasename(line))))
                                     for line in lines)
+        self._max_bufname_len = min(25, self._max_bufname_len)
         for i, line in enumerate(lines):
             if lfEval("g:Lf_ShowRelativePath") == '1' and show_absolute == False:
                 line = lfRelpath(line)
@@ -387,7 +388,9 @@ class MruExplManager(Manager):
             source = int(lfEval("bufadd('%s')" % escQuote(file)))
         else:
             source = file
-        self._createPopupPreview(file, source, 0)
+
+        jump_cmd = 'silent! normal! g`"'
+        self._createPopupPreview(file, source, 0, jump_cmd)
 
 
 #*****************************************************

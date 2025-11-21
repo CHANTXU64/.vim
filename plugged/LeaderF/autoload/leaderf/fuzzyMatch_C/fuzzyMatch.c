@@ -37,6 +37,7 @@
     #if defined(_M_AMD64) || defined(_M_X64)
         #define FM_BITSCAN_WINDOWS64
         #pragma intrinsic(_BitScanReverse64)
+        #pragma intrinsic(_BitScanForward64)
     #endif
 
 #endif
@@ -47,10 +48,10 @@
     {
         unsigned long index;
         #if defined(FM_BITSCAN_WINDOWS64)
-        if ( !_BitScanReverse64(&index, x) )
-            return 0;
-        else
+        if ( _BitScanReverse64(&index, x) )
             return index + 1;
+        else
+            return 0;
         #else
         if ( (x & 0xFFFFFFFF00000000) == 0 )
         {
@@ -69,14 +70,28 @@
 
     #define FM_BIT_LENGTH(x) FM_BitLength(x)
 
+    #if defined(FM_BITSCAN_WINDOWS64)
+
+        uint16_t FM_ctz(uint64_t x) {
+            unsigned long index;
+            if (_BitScanForward64(&index, x)) {
+                return (uint16_t)index;
+            }
+            return 64;
+        }
+        #define FM_CTZ(x) FM_ctz(x)
+
+    #endif
 #elif defined(__GNUC__)
 
     #define FM_BIT_LENGTH(x) ((uint32_t)(8 * sizeof(unsigned long long) - __builtin_clzll(x)))
+    #define FM_CTZ(x) __builtin_ctzll(x)
 
 #elif defined(__clang__)
 
     #if __has_builtin(__builtin_clzll)
         #define FM_BIT_LENGTH(x) ((uint32_t)(8 * sizeof(unsigned long long) - __builtin_clzll(x)))
+        #define FM_CTZ(x) __builtin_ctzll(x)
     #endif
 
 #endif
@@ -116,21 +131,33 @@
 
 #endif
 
-static uint64_t deBruijn = 0x022FDD63CC95386D;
+#if !defined(FM_CTZ)
 
-static uint8_t MultiplyDeBruijnBitPosition[64] =
-{
-    0,  1,  2,  53, 3,  7,  54, 27,
-    4,  38, 41, 8,  34, 55, 48, 28,
-    62, 5,  39, 46, 44, 42, 22, 9,
-    24, 35, 59, 56, 49, 18, 29, 11,
-    63, 52, 6,  26, 37, 40, 33, 47,
-    61, 45, 43, 21, 23, 58, 17, 10,
-    51, 25, 36, 32, 60, 20, 57, 16,
-    50, 31, 19, 15, 30, 14, 13, 12,
-};
+    static uint64_t deBruijn = 0x022FDD63CC95386D;
 
-#define FM_CTZ(x) MultiplyDeBruijnBitPosition[((uint64_t)((x) & -(int64_t)(x)) * deBruijn) >> 58]
+    static uint8_t MultiplyDeBruijnBitPosition[64] =
+    {
+        0,  1,  2,  53, 3,  7,  54, 27,
+        4,  38, 41, 8,  34, 55, 48, 28,
+        62, 5,  39, 46, 44, 42, 22, 9,
+        24, 35, 59, 56, 49, 18, 29, 11,
+        63, 52, 6,  26, 37, 40, 33, 47,
+        61, 45, 43, 21, 23, 58, 17, 10,
+        51, 25, 36, 32, 60, 20, 57, 16,
+        50, 31, 19, 15, 30, 14, 13, 12,
+    };
+
+    #define FM_CTZ(x) MultiplyDeBruijnBitPosition[((uint64_t)((x) & -(int64_t)(x)) * deBruijn) >> 58]
+
+#endif
+
+#if defined(_MSC_VER)
+    #define THREAD_LOCAL thread_local
+#else
+    #define THREAD_LOCAL __thread
+#endif
+
+static THREAD_LOCAL uint64_t TEXT_MASK[256*2];
 
 static uint16_t valTable[64] =
 {
@@ -225,7 +252,6 @@ ValueElements* evaluate_nameOnly(TextContext* pText_ctxt,
         }
         if ( bits == 0 )
         {
-            memset(val, 0, sizeof(ValueElements));
             return val;
         }
         else
@@ -322,6 +348,10 @@ ValueElements* evaluate_nameOnly(TextContext* pText_ctxt,
                     {
                         score = prefix_score + pVal->score - 0.2f * (pVal->beg - i);
                         end_pos = pVal->end;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
@@ -468,13 +498,15 @@ ValueElements* evaluate(TextContext* pText_ctxt,
 #endif
         special = k == 0 ? 5 : 3;
     else if ( isupper(text[i]) )
-        special = !isupper(text[i-1]) || (i+1 < text_len && islower(text[i+1])) ? 3 : 0;
+        special = (!isupper(text[i-1]) || (i+1 < text_len && islower(text[i+1])) ?
+                   (i < 5 ? 5 : 3) : 0);
     /* else if ( text[i-1] == '_' || text[i-1] == '-' || text[i-1] == ' ' ) */
     /*     special = 3;                                                     */
     /* else if ( text[i-1] == '.' )                                         */
     /*     special = 3;                                                     */
     else if ( !isalnum(text[i-1]) )
-        special = 3;
+        /* if there is an icon at the beginning, `if ( i == 0 )` won't meet */
+        special = i < 5 ? 5 : 3;
     else
         special = 0;
     ++i;
@@ -692,6 +724,7 @@ float getWeight(const char* text, uint16_t text_len,
     }
 
     int16_t first_char_pos = -1;
+    uint16_t short_text_len = text_len;
     if ( pPattern_ctxt->is_lower )
     {
         int16_t i;
@@ -718,13 +751,22 @@ float getWeight(const char* text, uint16_t text_len,
         if ( last_char_pos == -1 )
             return MIN_WEIGHT;
 
-        col_num = (text_len + 63) >> 6;     /* (text_len + 63)/64 */
-        /* uint64_t text_mask[256][col_num] */
-        text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
-        if ( !text_mask )
+        short_text_len = last_char_pos + 1;
+        col_num = (short_text_len + 63) >> 6;     /* (short_text_len + 63)/64 */
+        if (col_num <= 2)
         {
-            fprintf(stderr, "Out of memory in getWeight()!\n");
-            return MIN_WEIGHT;
+            memset(TEXT_MASK, 0, sizeof(TEXT_MASK));
+            text_mask = TEXT_MASK;
+        }
+        else
+        {
+            /* uint64_t text_mask[256][col_num] */
+            text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
+            if ( !text_mask )
+            {
+                fprintf(stderr, "Out of memory in getWeight()!\n");
+                return MIN_WEIGHT;
+            }
         }
         char c;
         for ( i = first_char_pos; i <= last_char_pos; ++i )
@@ -796,13 +838,22 @@ float getWeight(const char* text, uint16_t text_len,
         if ( last_char_pos == -1 )
             return MIN_WEIGHT;
 
-        col_num = (text_len + 63) >> 6;
-        /* uint64_t text_mask[256][col_num] */
-        text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
-        if ( !text_mask )
+        short_text_len = last_char_pos + 1;
+        col_num = (short_text_len + 63) >> 6;
+        if (col_num <= 2)
         {
-            fprintf(stderr, "Out of memory in getWeight()!\n");
-            return MIN_WEIGHT;
+            memset(TEXT_MASK, 0, sizeof(TEXT_MASK));
+            text_mask = TEXT_MASK;
+        }
+        else
+        {
+            /* uint64_t text_mask[256][col_num] */
+            text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
+            if ( !text_mask )
+            {
+                fprintf(stderr, "Out of memory in getWeight()!\n");
+                return MIN_WEIGHT;
+            }
         }
         char c;
         int16_t i;
@@ -834,7 +885,10 @@ float getWeight(const char* text, uint16_t text_len,
 
     if ( j < pattern_len )
     {
-        free(text_mask);
+        if (col_num > 2)
+        {
+            free(text_mask);
+        }
         return MIN_WEIGHT;
     }
 
@@ -842,7 +896,7 @@ float getWeight(const char* text, uint16_t text_len,
     {
         int16_t i;
         j = 0;
-        for ( i = first_char_pos; i < text_len; ++i )
+        for ( i = first_char_pos; i < short_text_len; ++i )
         {
             if ( j < pPattern_ctxt->actual_pattern_len )
             {
@@ -858,17 +912,20 @@ float getWeight(const char* text, uint16_t text_len,
 
         if ( j < pPattern_ctxt->actual_pattern_len )
         {
-            free(text_mask);
+            if (col_num > 2)
+            {
+                free(text_mask);
+            }
             return MIN_WEIGHT;
         }
     }
 
     TextContext text_ctxt;
     text_ctxt.text = text;
-    text_ctxt.text_len = text_len;
+    text_ctxt.text_len = short_text_len;
     text_ctxt.text_mask = text_mask;
     text_ctxt.col_num = col_num;
-    text_ctxt.offset = 0;
+    text_ctxt.offset = first_char_pos;
 
     ValueElements val[64];
     memset(val, 0, sizeof(val));
@@ -879,7 +936,10 @@ float getWeight(const char* text, uint16_t text_len,
         uint16_t beg = pVal->beg;
         uint16_t end = pVal->end;
 
-        free(text_mask);
+        if (col_num > 2)
+        {
+            free(text_mask);
+        }
 
         return score + (1 >> beg) + 1.0f/(beg + end) + 1.0f/text_len;
     }
@@ -889,9 +949,12 @@ float getWeight(const char* text, uint16_t text_len,
         float score = pVal->score;
         uint16_t beg = pVal->beg;
 
-        free(text_mask);
+        if (col_num > 2)
+        {
+            free(text_mask);
+        }
 
-        return score + (float)pattern_len/text_len + (float)(pattern_len << 1)/(text_len - beg);
+        return score + (float)(pattern_len<<1)/text_len + (float)pattern_len/(text_len - beg);
     }
 }
 
@@ -1454,9 +1517,10 @@ HighlightGroup* getHighlights(const char* text,
         }
     }
 
+    int16_t first_char_pos = -1;
+    uint16_t short_text_len = text_len;
     if ( pPattern_ctxt->is_lower )
     {
-        int16_t first_char_pos = -1;
         int16_t i;
         for ( i = 0; i < text_len; ++i )
         {
@@ -1477,13 +1541,22 @@ HighlightGroup* getHighlights(const char* text,
             }
         }
 
-        col_num = (text_len + 63) >> 6;     /* (text_len + 63)/64 */
-        /* uint64_t text_mask[256][col_num] */
-        text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
-        if ( !text_mask )
+        short_text_len = last_char_pos + 1;
+        col_num = (short_text_len + 63) >> 6;     /* (short_text_len + 63)/64 */
+        if (col_num <= 2)
         {
-            fprintf(stderr, "Out of memory in getHighlights()!\n");
-            return NULL;
+            memset(TEXT_MASK, 0, sizeof(TEXT_MASK));
+            text_mask = TEXT_MASK;
+        }
+        else
+        {
+            /* uint64_t text_mask[256][col_num] */
+            text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
+            if ( !text_mask )
+            {
+                fprintf(stderr, "Out of memory in getHighlights()!\n");
+                return NULL;
+            }
         }
         char c;
         for ( i = first_char_pos; i <= last_char_pos; ++i )
@@ -1496,7 +1569,6 @@ HighlightGroup* getHighlights(const char* text,
     }
     else
     {
-        int16_t first_char_pos = -1;
         if ( isupper(first_char) )
         {
             int16_t i;
@@ -1548,13 +1620,22 @@ HighlightGroup* getHighlights(const char* text,
             }
         }
 
-        col_num = (text_len + 63) >> 6;
-        /* uint64_t text_mask[256][col_num] */
-        text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
-        if ( !text_mask )
+        short_text_len = last_char_pos + 1;
+        col_num = (short_text_len + 63) >> 6;
+        if (col_num <= 2)
         {
-            fprintf(stderr, "Out of memory in getHighlights()!\n");
-            return NULL;
+            memset(TEXT_MASK, 0, sizeof(TEXT_MASK));
+            text_mask = TEXT_MASK;
+        }
+        else
+        {
+            /* uint64_t text_mask[256][col_num] */
+            text_mask = (uint64_t*)calloc(col_num << 8, sizeof(uint64_t));
+            if ( !text_mask )
+            {
+                fprintf(stderr, "Out of memory in getHighlights()!\n");
+                return NULL;
+            }
         }
 
         char c;
@@ -1581,17 +1662,20 @@ HighlightGroup* getHighlights(const char* text,
 
     TextContext text_ctxt;
     text_ctxt.text = text;
-    text_ctxt.text_len = text_len;
+    text_ctxt.text_len = short_text_len;
     text_ctxt.text_mask = text_mask;
     text_ctxt.col_num = col_num;
-    text_ctxt.offset = 0;
+    text_ctxt.offset = first_char_pos;
 
     /* HighlightGroup* groups[pattern_len] */
     HighlightGroup** groups = (HighlightGroup**)calloc(pattern_len, sizeof(HighlightGroup*));
     if ( !groups )
     {
         fprintf(stderr, "Out of memory in getHighlights()!\n");
-        free(text_mask);
+        if (col_num > 2)
+        {
+            free(text_mask);
+        }
         return NULL;
     }
 
@@ -1601,7 +1685,10 @@ HighlightGroup* getHighlights(const char* text,
     else
         pGroup = evaluateHighlights(&text_ctxt, pPattern_ctxt, 0, groups);
 
-    free(text_mask);
+    if (col_num > 2)
+    {
+        free(text_mask);
+    }
     uint16_t i;
     for ( i = 0; i < pattern_len; ++i )
     {

@@ -76,13 +76,13 @@ g:Lf_WindowHeight                               *g:Lf_WindowHeight*
     Default value is 0.5.
 
 g:Lf_TabpagePosition                            *g:Lf_TabpagePosition*
-    Specify where to put the newly opened tab page.
+    Specify where to put the newly opened tabpage.
     The value can be 0, 1, 2, ...
-    0 - make the newly opened tab page the first one.
-    1 - put the newly opened tab page before the current one.
-    2 - put the newly opened tab page after the current one.
-    3 - make the newly opened tab page the last one.
-    Default value is 2.
+    0 - make the newly opened tabpage the first one.
+    1 - put the newly opened tabpage before the current one.
+    2 - put the newly opened tabpage after the current one.
+    3 - make the newly opened tabpage the last one.
+    Default value is 3.
 
 g:Lf_ShowRelativePath                           *g:Lf_ShowRelativePath*
     Whether to show the relative path in the LeaderF window.
@@ -1126,6 +1126,122 @@ g:Lf_EnableCircularScroll                     *g:Lf_EnableCircularScroll*
 
     Default value is 0.
 
+g:Lf_GitCommands                              *g:Lf_GitCommands*
+    Define a list of commands you may want to use frequently.
+    The list is as follows: >
+    let g:Lf_GitCommands = [
+                    \ {"Leaderf git diff":                "fuzzy search and view the diffs"},
+                    \ {"Leaderf git diff --cached":       "fuzzy search and view `git diff --cached`"},
+                    \ {"Leaderf git diff HEAD":           "fuzzy search and view `git diff HEAD`"},
+                    \ {"Leaderf git diff --side-by-side": "fuzzy search and view the side-by-side diffs"},
+                    \ ]
+<
+    Open the commands panel using `:Leaderf git` .
+
+g:Lf_GitFolderIcons                           *g:Lf_GitFolderIcons*
+    To customize the folder icons in tree panel.
+    Default value is { 'open': '', 'closed': '' }.
+
+g:Lf_GitAddIcon                               *g:Lf_GitAddIcon*
+    To customize the icon of added file in tree panel.
+    Default value is ''.
+
+g:Lf_GitCopyIcon                              *g:Lf_GitCopyIcon*
+    To customize the icon of copied file in tree panel.
+    Default value is ''.
+
+g:Lf_GitDelIcon                               *g:Lf_GitDelIcon*
+    To customize the icon of deleted file in tree panel.
+    Default value is ''.
+
+g:Lf_GitModifyIcon                            *g:Lf_GitModifyIcon*
+    To customize the icon of modified file in tree panel.
+    Default value is ''.
+
+g:Lf_GitRenameIcon                            *g:Lf_GitRenameIcon*
+    To customize the icon of renamed file in tree panel.
+    Default value is ''.
+
+g:Lf_GitNavigationPanelHeight                 *g:Lf_GitNavigationPanelHeight*
+    To customize the height of navigation(tree) panel.
+    Default value is &lines * 0.3.
+
+g:Lf_GitNavigationPanelWidth                  *g:Lf_GitNavigationPanelWidth*
+    To customize the width of navigation(tree) panel.
+    Default value is 44.
+
+g:Lf_GitContextNum                            *g:Lf_GitContextNum*
+    Show diffs with g:Lf_GitContextNum lines of context.
+    Default value is 6.
+
+g:Lf_GitDiffViewMode                          *g:Lf_GitDiffViewMode*
+    Show diffs in a side by side view or in a unified view.
+    Value can be: 'side-by-side' or 'unified'.
+    Default value is 'unified'.
+
+g:Lf_GitHightlightLineNumber                  *g:Lf_GitHightlightLineNumber*
+    Specify whether to highlight the line number when diff view is in
+    'unified' mode. If enabled, the line numbers of changed lines are also
+    highlighted with 'DiffAdd' or 'DiffDelete'.
+    Default value is 1.
+
+g:Lf_GitWorkingDirectoryMode                  *g:Lf_GitWorkingDirectoryMode*
+    Specify the working directory when launch Leaderf git command. The value
+    can be:
+    c - the nearest ancestor directory of current working directory that
+        contains '.git'.
+    f - the nearest ancestor directory of current file that contains '.git'.
+        Fall back to 'c' if no such ancestor directory found.
+
+    Default value is 'f'.
+
+g:Lf_GitKeyMap                                *g:Lf_GitKeyMap*
+    Customize the shortcut keys.
+    Default value is : >
+    let g:Lf_GitKeyMap = {
+            \ 'previous_change': '[c',
+            \ 'next_change': ']c',
+            \ 'edit_file': '<CR>',
+            \ }
+<
+    it means you can use [c to jump backwards to the previous start of a change
+    and use ]c to jump forwards to the next start of a change.
+
+g:Lf_GitInlineBlameEnable                     *g:Lf_GitInlineBlameEnable*
+    Whether to enable inline blame or not by default.
+
+    Default value is 0.
+
+g:Lf_GitBlameTimeFormat                       *g:Lf_GitBlameTimeFormat*
+    Specify a format string to represent the date and time, the format string
+    is the same as used by strftime(), for example, '%Y-%m-%d %H:%M:%S'.
+
+    Default value is "".
+
+g:Lf_CocCommands                              *g:Lf_CocCommands*
+    Define a list of commands you may want to use frequently.
+    The list is as follows: >
+    let g:Lf_CocCommands = [
+                \ {"Leaderf! coc definitions --auto-jump": "run CocAction('jumpDefinition')"},
+                \ {"Leaderf! coc references --auto-jump": "run CocAction('jumpReferences')"},
+                \ {"Leaderf! coc references --auto-jump --exclude-declaration": "run CocAction('jumpUsed')"},
+                \ {"Leaderf! coc declarations --auto-jump": "run CocAction('jumpDeclaration')"},
+                \ {"Leaderf! coc implementations --auto-jump": "run CocAction('jumpImplementation')"},
+                \ {"Leaderf! coc typeDefinitions --auto-jump": "run CocAction('jumpTypeDefinition')"},
+                \ ]
+<
+    Open the commands panel using `:Leaderf coc` .
+
+g:Lf_GitAlias                                 *g:Lf_GitAlias*
+    Define the alias of git subcommand.
+
+    Default value is : >
+    let g:Lf_GitAlias = {
+            \ "status": "st",
+            \ "diff":   "df",
+            \ "blame":  "bl",
+            \}
+<
 ==============================================================================
 USAGE                                           *leaderf-usage*
 
@@ -1200,6 +1316,29 @@ USAGE                                           *leaderf-usage*
 
 :LeaderfRgRecall                                *LeaderfRgRecall*
     Recall last search of rg.
+
+:LeaderfGit                                     *LeaderfGit*
+    List some frequently used commands of Leaderf git.
+
+:LeaderfGitSplitDiff                            *LeaderfGitSplitDiff*
+    Show the diffs of current file in a vertical split window.
+    It is a shortcut of `:Leaderf git diff --current-file --side-by-side`
+
+:LeaderfGitNavigationOpen                       *LeaderfGitNavigationOpen*
+    Open the navigation panel.
+
+:LeaderfGitInlineBlameEnable                    *LeaderfGitInlineBlameEnable*
+    Enable inline blame. This command is a shortcut of `:Leaderf git blame --inline`
+
+:LeaderfGitInlineBlameDisable                   *LeaderfGitInlineBlameDisable*
+    Disable inline blame.
+
+:LeaderfGitInlineBlameToggle                    *LeaderfGitInlineBlameToggle*
+    Toggle inline blame.
+
+:LeaderfGitInlineBlameUpdate                    *LeaderfGitInlineBlameUpdate*
+    If the file is updated in the git repository, we need to use this command
+    to update the inline blame.
 
 Some handy maps for `Leaderf rg`:
 
